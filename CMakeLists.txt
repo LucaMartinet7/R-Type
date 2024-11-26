@@ -1,24 +1,30 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Check for required packages
-find_package(Asio REQUIRED)
-
-if(NOT Asio_FOUND)
-    message(FATAL_ERROR "Asio not found. Please install it using 'sudo apt-get install libasio-dev'")
-endif()
-
 # Set the project name
-project(MyProject)
+project(RTypeECS)
 
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Add the executable
-add_executable(MyProject main.cpp)
-
-# Include directories
+# Add the include directory for header files
 include_directories(include)
 
-# Link libraries
-# target_link_libraries(MyProject <library_name>)
+# Add the source directory for main.cpp
+add_executable(RTypeECS src/main.cpp)
+
+# Add the systems directory for system implementations
+file(GLOB SYSTEMS_SRC systems/*.cpp)
+target_sources(RTypeECS PRIVATE ${SYSTEMS_SRC})
+
+# Read .env file
+file(READ "${CMAKE_SOURCE_DIR}/.env" ENV_CONTENTS)
+string(REGEX MATCH "SFML_DIR=([^\\n]+)" _ ${ENV_CONTENTS})
+set(SFML_DIR ${CMAKE_MATCH_1})
+
+# Remove trailing quote from SFML_DIR
+string(REGEX REPLACE "\"" "" SFML_DIR ${SFML_DIR})
+
+# Find and link SFML
+find_package(SFML COMPONENTS system window graphics REQUIRED)
+target_link_libraries(RTypeECS sfml-system sfml-window sfml-graphics)
