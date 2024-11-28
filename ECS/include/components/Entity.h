@@ -1,6 +1,9 @@
-//
-// Created by noe on 26/11/2024.
-//
+/*
+** EPITECH PROJECT, 2024
+** R-Type ECS
+** File description:
+** Entity
+*/
 
 #ifndef ENTITY_H
   #define ENTITY_H

@@ -1,6 +1,9 @@
-//
-// Created by noe on 26/11/2024.
-//
+/*
+** EPITECH PROJECT, 2024
+** R-type ECS
+** File description:
+** Draw System
+*/
 
 #ifndef DRAWSYSTEM_H
     #define DRAWSYSTEM_H
