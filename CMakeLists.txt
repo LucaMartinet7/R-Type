@@ -16,6 +16,7 @@ add_executable(RtypeECS
 target_include_directories(RtypeECS PRIVATE
         ECS/include/systems
         ECS/include/components
+        ECS/include/utils
 )
 
 # Find and link SFML

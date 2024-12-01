@@ -21,12 +21,17 @@ int main() {
     registry.register_component<Drawable>();
     registry.register_component<Controllable>();
 
-    // Create entities and add components
-    auto entity = registry.spawn_entity();
-    registry.add_component<Position>(entity, {0.0f, 0.0f});
-    registry.add_component<Velocity>(entity, {0.0f, 0.0f});
-    registry.add_component<Drawable>(entity, {sf::RectangleShape(sf::Vector2f(50.0f, 50.0f))});
-    registry.add_component<Controllable>(entity, {});
+    // Create a controllable entity
+    auto controllableEntity = registry.spawn_entity();
+    registry.add_component<Position>(controllableEntity, {0.0f, 0.0f});
+    registry.add_component<Velocity>(controllableEntity, {0.0f, 0.0f});
+    registry.add_component<Drawable>(controllableEntity, {sf::RectangleShape(sf::Vector2f(50.0f, 50.0f))});
+    registry.add_component<Controllable>(controllableEntity, {});
+
+    // Create a non-controllable entity
+    auto nonControllableEntity = registry.spawn_entity();
+    registry.add_component<Position>(nonControllableEntity, {100.0f, 100.0f});
+    registry.add_component<Drawable>(nonControllableEntity, {sf::RectangleShape(sf::Vector2f(50.0f, 50.0f))});
 
     // Add systems
     registry.add_system<Position, Velocity>(position_system);
