@@ -16,6 +16,7 @@
 #include <optional>
 #include "SparseArray.h"
 #include "Entity.h"
+#include <tuple>
 
 class Registry {
 public:
@@ -80,11 +81,25 @@ public:
         get_components<Component>().erase(from);
     }
 
+    template <class... Components, typename Function>
+    void add_system(Function&& f) {
+        systems.emplace_back([this, f = std::forward<Function>(f)]() {
+            f(*this, get_components<Components>()...);
+        });
+    }
+
+    void run_systems() {
+        for (auto& system : systems) {
+            system();
+        }
+    }
+
 private:
     Entity nextEntity = 0;
     std::vector<Entity> deadEntities;
     std::unordered_map<std::type_index, std::any> _componentArrays;
     std::vector<std::function<void(Registry&, Entity const&)>> eraseFunctions;
+    std::vector<std::function<void()>> systems;
 };
 
 #endif // REGISTRY_H

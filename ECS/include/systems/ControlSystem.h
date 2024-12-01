@@ -13,10 +13,7 @@
 #include "Controllable.h"
 #include <SFML/Window.hpp>
 
-void control_system(Registry& registry) {
-    auto& velocities = registry.get_components<Velocity>();
-    auto& controllables = registry.get_components<Controllable>();
-
+void control_system(Registry& registry, sparse_array<Velocity>& velocities, sparse_array<Controllable>& controllables) {
     for (size_t i = 0; i < velocities.size() && i < controllables.size(); ++i) {
         auto& vel = velocities[i];
         auto& ctrl = controllables[i];
