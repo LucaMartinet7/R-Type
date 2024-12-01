@@ -25,5 +25,10 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(asio)
 add_library(asio INTERFACE)
 
-add_executable(${SERVER_BINARY} Server/main.cpp Server/Server.cpp)
+add_executable(${SERVER_BINARY}
+                  Server/main.cpp
+                  Server/Server.cpp
+                  Server/Server.hpp
+                  Server/Errors/Throws.hpp
+                  )
 target_link_libraries(${SERVER_BINARY} asio)

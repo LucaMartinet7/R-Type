@@ -42,4 +42,5 @@ namespace RType
     //general
     NEW_EXCEPTION(StandardException)
     NEW_EXCEPTION(UnknownException)
+    NEW_EXCEPTION(PermissionDeniedException)
 }
