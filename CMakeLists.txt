@@ -11,6 +11,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CLIENT_BINARY "r-type_client")
 set(SERVER_BINARY "r-type_server")
 
+# Define the macro for Boost bind global placeholders
+add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
+
 # fetch
 include(FetchContent)
 
@@ -22,5 +25,5 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(asio)
 add_library(asio INTERFACE)
 
-add_executable(${SERVER_BINARY} Server/src/main.cpp Server/src/server.cpp)
+add_executable(${SERVER_BINARY} Server/main.cpp Server/Server.cpp)
 target_link_libraries(${SERVER_BINARY} asio)
