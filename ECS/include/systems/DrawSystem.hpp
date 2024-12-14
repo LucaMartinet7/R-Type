@@ -8,9 +8,9 @@
 #ifndef DRAWSYSTEM_H
     #define DRAWSYSTEM_H
 
-#include "Registry.h"
-#include "Position.h"
-#include "Drawable.h"
+#include "Registry.hpp"
+#include "Position.hpp"
+#include "Drawable.hpp"
 #include <SFML/Graphics.hpp>
 
 inline void draw_system(Registry& registry, sf::RenderWindow& window, sparse_array<Position>& positions, sparse_array<Drawable>& drawables) {

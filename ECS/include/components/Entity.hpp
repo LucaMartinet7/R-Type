@@ -8,6 +8,8 @@
 #ifndef ENTITY_H
   #define ENTITY_H
 
+#include <cstddef>
+
 class Entity {
   public:
     explicit Entity(std::size_t id) : id(id) {}

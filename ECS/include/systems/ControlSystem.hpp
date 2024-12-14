@@ -8,11 +8,11 @@
 #ifndef CONTROLSYSTEM_H
     #define CONTROLSYSTEM_H
 
-#include "Registry.h"
-#include "Velocity.h"
-#include "Controllable.h"
+#include "Registry.hpp"
+#include "Velocity.hpp"
+#include "Controllable.hpp"
 #include <SFML/Window.hpp>
-#include "CollisionSystem.h"
+#include "CollisionSystem.hpp"
 
 inline void control_system(Registry& registry, sparse_array<Velocity>& velocities, sparse_array<Controllable>& controllables, sparse_array<Position>& positions, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables) {
     for (size_t i = 0; i < velocities.size() && i < controllables.size(); ++i) {

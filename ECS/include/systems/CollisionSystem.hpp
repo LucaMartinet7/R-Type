@@ -8,10 +8,12 @@
 #ifndef COLLISIONSYSTEM_H
     #define COLLISIONSYSTEM_H
 
-#include "Registry.h"
-#include "Position.h"
-#include "Collidable.h"
-#include "Projectile.h"
+#include "Registry.hpp"
+#include "Position.hpp"
+#include "Collidable.hpp"
+#include "Drawable.hpp"
+#include "Projectile.hpp"
+#include "Controllable.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>

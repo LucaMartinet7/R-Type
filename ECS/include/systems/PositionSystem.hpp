@@ -8,9 +8,9 @@
 #ifndef POSITIONSYSTEM_H
     #define POSITIONSYSTEM_H
 
-#include "Registry.h"
-#include "Position.h"
-#include "Velocity.h"
+#include "Registry.hpp"
+#include "Position.hpp"
+#include "Velocity.hpp"
 
 inline void position_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Velocity>& velocities) {
     for (size_t i = 0; i < positions.size() && i < velocities.size(); ++i) {

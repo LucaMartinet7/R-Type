@@ -14,8 +14,8 @@
 #include <functional>
 #include <vector>
 #include <optional>
-#include "SparseArray.h"
-#include "Entity.h"
+#include "SparseArray.hpp"
+#include "Entity.hpp"
 #include <tuple>
 
 class Registry {

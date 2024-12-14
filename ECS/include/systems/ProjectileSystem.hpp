@@ -8,11 +8,11 @@
 #ifndef PROJECTILESYSTEM_H
     #define PROJECTILESYSTEM_H
 
-#include "Registry.h"
-#include "Position.h"
-#include "Projectile.h"
-#include "Drawable.h"
-#include "Collidable.h"
+#include "Registry.hpp"
+#include "Position.hpp"
+#include "Projectile.hpp"
+#include "Drawable.hpp"
+#include "Collidable.hpp"
 
 inline void projectile_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Projectile>& projectiles, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables) {
     for (size_t i = 0; i < positions.size() && i < projectiles.size() && i < drawables.size() && i < collidables.size(); ++i) {
