@@ -34,8 +34,7 @@ namespace RType {
          * @param io_context The io_context object used for asynchronous operations.
          * @param port The port number on which the server will listen for incoming UDP packets.
          */
-        Server(boost::asio::io_context& io_context, short port);
-
+        Server(boost::asio::io_context& io_context, short port, ThreadSafeQueue<Network::Packet> &packetQueue);
         /**
          * @brief Destroys the Server object.
          */
@@ -74,5 +73,8 @@ namespace RType {
         boost::asio::ip::udp::socket socket_; ///< The UDP socket used for communication.
         boost::asio::ip::udp::endpoint remote_endpoint_; ///< The remote endpoint from which data is received.
         std::array<char, MAX_LENGTH> recv_buffer_; ///< Buffer to store received data.
+
+        ThreadSafeQueue<Network::Packet> &m_packetQueue;
+        std::unordered_map<std::string, std::function<void(const std::vector<std::string>&)>> packet_handlers_;
     };
 }

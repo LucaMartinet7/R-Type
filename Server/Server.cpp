@@ -20,11 +20,13 @@ using boost::asio::ip::udp;
  * @param io_context The io_context object used for asynchronous operations.
  * @param port The port number on which the server will listen for incoming UDP packets.
  */
-RType::Server::Server(boost::asio::io_context &io_context, short port) : socket_(io_context, udp::endpoint(udp::v4(), port))
+RType::Server::Server(boost::asio::io_context &io_context, short port, ThreadSafeQueue<Network::Packet> &packetQueue) 
+: socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue)
 {
     initialize_packet_handlers();
     start_receive();
 }
+
 
 RType::Server::~Server()
 {
@@ -74,25 +76,35 @@ void RType::Server::handle_receive(const boost::system::error_code &error, std::
         while (std::getline(ss, segment, ';'))
             segments.push_back(segment);
 
-        std::cout << "segments: ";
-        for (const auto &seg : segments) {
-            std::cout << seg << " ";
+        if (segments.empty()) {
+            start_receive();
+            return;
         }
-        std::cout << std::endl;
 
         std::string packet_type_str = segments[0];
-        std::cout << "Received packet type: " << packet_type_str << std::endl; // Add this line
         auto it = packet_handlers_.find(packet_type_str);
         if (it != packet_handlers_.end()) {
-            it->second(segments);
-        } else {
-            throw std::runtime_error("Invalid packet type: " + packet_type_str);
-        }
+            // Instead of processing here fully, create a packet and push it to the queue
+            // We'll just convert known strings to PacketType
+            Network::Packet packet;
+            if (packet_type_str == "GAME_START") {
+                packet.type = Network::PacketType::GAME_START;
+            } else if (packet_type_str == "PLAYER_JOIN") {
+                packet.type = Network::PacketType::PLAYER_JOIN;
+            } else {
+                packet.type = Network::PacketType::NONE;
+            }
+            // You can store additional data if needed in packet.data
 
-        std::cout << "Received packet: " << received_data << std::endl;
+            // Push packet into the queue
+            m_packetQueue.push(std::move(packet));
+        } else {
+            std::cerr << "Received unknown packet type: " << packet_type_str << std::endl;
+        }
     }
     start_receive();
 }
+
 
 void RType::Server::handle_connected_packet(const std::vector<std::string>& segments)
 {

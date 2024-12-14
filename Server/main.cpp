@@ -28,12 +28,21 @@ void runServer(short port)
 {
     try {
         boost::asio::io_context io_context;
+        ThreadSafeQueue<Network::Packet> packetQueue;
+
+        // Start the PacketHandler thread
+        PacketHandler packetHandler(packetQueue);
+        packetHandler.start();
+
         RType::Server server(io_context, port);
 
         std::cout << "Server started" << std::endl;
         std::cout << "Listening on UDP port " << port << std::endl;
 
         io_context.run();
+        
+        // When server shuts down, stop packet handler
+        packetHandler.stop();
     } catch (const boost::system::system_error& e) {
         if (e.code() == boost::asio::error::access_denied) {
             throw RType::PermissionDeniedException("Permission denied");
