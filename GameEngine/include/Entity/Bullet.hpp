@@ -5,7 +5,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "IEntity.hpp"
-#include "components/Registry.hpp"
+#include "Registry.hpp"
 #include "components/Position.hpp"
 #include "components/Projectile.hpp"
 #include "components/Drawable.hpp"
@@ -13,21 +13,7 @@
 
 class Bullet : public IEntity {
 public:
-    Bullet(float x, float y, std::string asset, Registry& registry) : registry(registry) {
-        if (!_bulletText.loadFromFile(asset)) {
-            std::cout << "Error: Could not display Bullet!" << std::endl;
-        }
-
-        _bulletSprite.setTexture(_bulletText);
-        _bulletSprite.setPosition(x, y);
-
-        // Add to ECS registry
-        bulletEntity = registry.spawn_entity();
-        registry.add_component<Position>(bulletEntity, {x, y});
-        registry.add_component<Projectile>(bulletEntity, {0.2f});
-        registry.add_component<Drawable>(bulletEntity, {_bulletSprite});
-        registry.add_component<Collidable>(bulletEntity, {true});
-    }
+    Bullet(float x, float y, std::string asset, Registry& registry);
 
     virtual bool isPlayer() {
         return false;
@@ -37,7 +23,7 @@ public:
         return _bulletSprite;
     }
 
-    virtual void setSpritePosition(int x, int y) {
+    virtual void setSpritePosition(float x, float y) {
         _bulletSprite.setPosition(x, y);
         auto& pos = registry.get_components<Position>()[bulletEntity];
         pos->x = x;

@@ -1,6 +1,6 @@
 #include "Obstacles.hpp"
 
-Obstacles::Obstacles(int x, int y, const std::string& asset, Registry& registry)
+Obstacles::Obstacles(float x, float y, const std::string& asset, Registry& registry)
     : registry(registry) {
     if (!_obstaclesText.loadFromFile(asset)) {
         std::cerr << "Error: Could not load obstacle texture!" << std::endl;
@@ -11,7 +11,7 @@ Obstacles::Obstacles(int x, int y, const std::string& asset, Registry& registry)
 
     // Add to ECS registry
     obstacleEntity = registry.spawn_entity();
-    registry.add_component<Position>(obstacleEntity, {x, y});
+    registry.add_component<Position>(obstacleEntity, Position{x, y});
     registry.add_component<Drawable>(obstacleEntity, {_obstaclesSprite});
     registry.add_component<Collidable>(obstacleEntity, {true});
 }

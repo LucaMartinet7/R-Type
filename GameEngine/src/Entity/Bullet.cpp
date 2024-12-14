@@ -1,14 +1,17 @@
 #include "Bullet.hpp"
 
-Bullet::Bullet(int x, int y, std::string asset) {
-    if (!_bulletText.loadFromFile(asset)) {
-      std::cout << "Error: Could not display Bullet !" << std::endl;
+Bullet::Bullet(float x, float y, std::string asset, Registry& registry) : registry(registry) {
+        if (!_bulletText.loadFromFile(asset)) {
+            std::cout << "Error: Could not display Bullet!" << std::endl;
+        }
+
+        _bulletSprite.setTexture(_bulletText);
+        _bulletSprite.setPosition(x, y);
+
+        // Add to ECS registry
+        bulletEntity = registry.spawn_entity();
+        registry.add_component<Position>(bulletEntity, {x, y});
+        registry.add_component<Projectile>(bulletEntity, {0.2f});
+        registry.add_component<Drawable>(bulletEntity, Drawable{_bulletSprite});
+        registry.add_component<Collidable>(bulletEntity, {true});
     }
-
-    _bulletSprite.setTexture(_bulletText);
-    _bulletSprite.setPosition(x, y);
-}
-
-virtual void bulletmove(int movement) {
-        _bulletSprite.setPosition(x + movement, y);
-}

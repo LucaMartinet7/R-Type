@@ -12,7 +12,7 @@
 
 class Obstacles : public IEntity {
 public:
-    Obstacles(int x, int y, const std::string& asset, Registry& registry);
+    Obstacles(float x, float y, const std::string& asset, Registry& registry);
 
     virtual bool isPlayer() override {
         return false;
@@ -22,7 +22,7 @@ public:
         return _obstaclesSprite;
     }
 
-    virtual void setSpritePosition(int x, int y) override {
+    virtual void setSpritePosition(float x, float y) override {
         _obstaclesSprite.setPosition(x, y);
         auto& pos = registry.get_components<Position>()[obstacleEntity];
         if (pos) {

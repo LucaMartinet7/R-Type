@@ -19,7 +19,7 @@
 
 class Player: public IEntity {
 public:
-    Player(Registry& registry, int x, int y, const std::string& asset);
+    Player(Registry& registry, float x, float y, const std::string& asset);
 
     virtual bool isPlayer() override {
         return true;
@@ -29,7 +29,7 @@ public:
         return _playerSprite;
     }
 
-    virtual void setSpritePosition(int x, int y) override {
+    virtual void setSpritePosition(float x, float y) override {
         _playerSprite.setPosition(x, y);
         auto& pos = registry.get_components<Position>()[playerEntity];
         if (pos) {

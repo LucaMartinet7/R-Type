@@ -9,7 +9,8 @@
     #define POSITION_H
 
 struct Position {
-    float x, y;
+    float x;
+    float y;
 };
 
 #endif // POSITION_H
