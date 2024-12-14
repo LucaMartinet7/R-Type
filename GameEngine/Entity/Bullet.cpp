@@ -8,3 +8,7 @@ Bullet::Bullet(int x, int y, std::string asset) {
     _bulletSprite.setTexture(_bulletText);
     _bulletSprite.setPosition(x, y);
 }
+
+virtual void bulletmove(int movement) {
+        _bulletSprite.setPosition(x + movement, y);
+}
