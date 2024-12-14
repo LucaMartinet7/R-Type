@@ -11,16 +11,17 @@
 #include "Registry.h"
 #include "Position.h"
 #include "Collidable.h"
+#include "Projectile.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>
 
 
-bool check_collision(const sf::RectangleShape& shape1, const sf::RectangleShape& shape2) {
+inline bool check_collision(const sf::RectangleShape& shape1, const sf::RectangleShape& shape2) {
     return shape1.getGlobalBounds().intersects(shape2.getGlobalBounds());
 }
 
-std::vector<std::pair<size_t, size_t>> collision_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables, sparse_array<Controllable>& controllables, bool is_start) {
+inline std::vector<std::pair<size_t, size_t>> collision_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables, sparse_array<Controllable>& controllables, sparse_array<Projectile>& projectiles, bool is_start) {
     std::vector<std::pair<size_t, size_t>> collisions;
     for (size_t i = 0; i < positions.size() && i < drawables.size() && i < collidables.size(); ++i) {
         auto& pos = positions[i];
@@ -40,6 +41,15 @@ std::vector<std::pair<size_t, size_t>> collision_system(Registry& registry, spar
                         collisions.emplace_back(i, j); // Record collision
                         if (controllables[i] || controllables[j]) {
                             registry.kill_entity(controllables[i] ? i : j);
+                        }
+                        if (projectiles[i] || projectiles[j]) {
+                            registry.kill_entity(projectiles[i] ? j : i);
+                            registry.kill_entity(projectiles[i] ? i : j);
+                        } else {
+                            if (!controllables[i] && !controllables[j]) {
+                                registry.kill_entity(i);
+                                registry.kill_entity(j);
+                            }
                         }
                         std::cout << "Collision detected between entities " << i << " and " << j << std::endl;
                     }

@@ -12,7 +12,7 @@
 #include "Position.h"
 #include "Velocity.h"
 
-void position_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Velocity>& velocities) {
+inline void position_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Velocity>& velocities) {
     for (size_t i = 0; i < positions.size() && i < velocities.size(); ++i) {
         auto& pos = positions[i];
         auto& vel = velocities[i];

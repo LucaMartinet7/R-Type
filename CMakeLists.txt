@@ -10,12 +10,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Add the executable
 add_executable(RtypeECS
         ECS/src/main.cpp
+        ECS/src/Game.cpp
 )
 
 # Include directories
 target_include_directories(RtypeECS PRIVATE
         ECS/include/systems
         ECS/include/components
+        ECS/include/
 )
 
 # Find and link SFML

@@ -13,7 +13,7 @@
 #include "Drawable.h"
 #include <SFML/Graphics.hpp>
 
-void draw_system(Registry& registry, sf::RenderWindow& window, sparse_array<Position>& positions, sparse_array<Drawable>& drawables) {
+inline void draw_system(Registry& registry, sf::RenderWindow& window, sparse_array<Position>& positions, sparse_array<Drawable>& drawables) {
     for (size_t i = 0; i < positions.size() && i < drawables.size(); ++i) {
         auto& pos = positions[i];
         auto& drawable = drawables[i];

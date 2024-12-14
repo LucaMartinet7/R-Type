@@ -14,7 +14,7 @@
 #include <SFML/Window.hpp>
 #include "CollisionSystem.h"
 
-void control_system(Registry& registry, sparse_array<Velocity>& velocities, sparse_array<Controllable>& controllables, sparse_array<Position>& positions, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables) {
+inline void control_system(Registry& registry, sparse_array<Velocity>& velocities, sparse_array<Controllable>& controllables, sparse_array<Position>& positions, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables) {
     for (size_t i = 0; i < velocities.size() && i < controllables.size(); ++i) {
         auto& vel = velocities[i];
         auto& ctrl = controllables[i];
