@@ -15,6 +15,7 @@
 
 int main() {
     Registry registry;
+    bool is_start = true;
 
     // Register components
     registry.register_component<Position>();
@@ -75,7 +76,7 @@ int main() {
             registry.run_systems();
 
             // Check for collisions
-            auto collisions = collision_system(registry, registry.get_components<Position>(), registry.get_components<Drawable>(), registry.get_components<Collidable>(), registry.get_components<Controllable>());
+            auto collisions = collision_system(registry, registry.get_components<Position>(), registry.get_components<Drawable>(), registry.get_components<Collidable>(), registry.get_components<Controllable>(), is_start);
             for (const auto& [entity1, entity2] : collisions) {
                 if (registry.get_components<Controllable>()[entity1]) {
                     registry.kill_entity(entity1);
@@ -83,6 +84,9 @@ int main() {
                 if (registry.get_components<Controllable>()[entity2]) {
                     registry.kill_entity(entity2);
                 }
+            }
+            if (is_start) {
+                is_start = false;
             }
 
             draw_system(registry, window, registry.get_components<Position>(), registry.get_components<Drawable>());

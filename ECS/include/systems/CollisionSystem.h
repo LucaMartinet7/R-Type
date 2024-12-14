@@ -20,7 +20,7 @@ bool check_collision(const sf::RectangleShape& shape1, const sf::RectangleShape&
     return shape1.getGlobalBounds().intersects(shape2.getGlobalBounds());
 }
 
-std::vector<std::pair<size_t, size_t>> collision_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables, sparse_array<Controllable>& controllables) {
+std::vector<std::pair<size_t, size_t>> collision_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables, sparse_array<Controllable>& controllables, bool is_start) {
     std::vector<std::pair<size_t, size_t>> collisions;
     for (size_t i = 0; i < positions.size() && i < drawables.size() && i < collidables.size(); ++i) {
         auto& pos = positions[i];
@@ -34,8 +34,7 @@ std::vector<std::pair<size_t, size_t>> collision_system(Registry& registry, spar
                 if (otherPos && otherDrawable && otherCollidable && otherCollidable->is_collidable) {
                     if (check_collision(drawable->shape, otherDrawable->shape)) {
                         // Avoid immediate collision at the start
-                        if ((pos->x == 50.0f && pos->y == 50.0f && otherPos->x == 375.0f && otherPos->y == 275.0f) ||
-                            (otherPos->x == 50.0f && otherPos->y == 50.0f && pos->x == 375.0f && pos->y == 275.0f)) {
+                        if (is_start) {
                             continue;
                         }
                         collisions.emplace_back(i, j); // Record collision
