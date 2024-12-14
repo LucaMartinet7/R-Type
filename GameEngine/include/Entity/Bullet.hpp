@@ -15,7 +15,7 @@ class Bullet: public IEntity {
         virtual bool isPlayer() {
           return false;
         }
-        
+
         virtual sf::Sprite getSprite() {
           return _bulletSprite;
         }
@@ -42,6 +42,17 @@ class Bullet: public IEntity {
       sf::Texture _bulletText;
       sf::Sprite _bulletSprite;
 };
+
+
+void Game::createProjectile() {
+    auto projectileEntity = registry.spawn_entity();
+    auto& playerPos = registry.get_components<Position>()[controllableEntity];
+    registry.add_component<Position>(projectileEntity, {playerPos->x + 50.0f, playerPos->y + 25.0f});
+    registry.add_component<Projectile>(projectileEntity, {0.2f});
+    registry.add_component<Drawable>(projectileEntity, {sf::RectangleShape(sf::Vector2f(5.0f, 5.0f))});
+}
+
+
 
 
 #endif
