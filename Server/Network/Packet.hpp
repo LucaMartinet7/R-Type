@@ -7,13 +7,37 @@
 
 #pragma once
 
-namespace Network {
-    class Packet {
-        public:
-            Packet();
-            ~Packet();
+#include "PacketType.hpp"
+#include "Data.hpp"
 
-        protected:
+#include <variant>
+
+namespace Network {
+
+    struct Packet {
+        PacketType type;
+        std::variant<
+            StartData,
+            JoinData,
+            ConnectData,
+            PositionData,
+            PlayerPositionData,
+            ScoreData,
+            EntityData,
+            DisconnectData,
+            DeathData,
+            BossData
+        > data;
+    };
+}
+
+namespace Network {
+    class Manager {
+        public:
+            Manager() = default;
+            ~Manager() = default;
+            // void createPacket(PacketType type, void *data);
+
         private:
     };
 }

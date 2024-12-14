@@ -31,4 +31,13 @@ add_executable(${SERVER_BINARY}
                   Server/Server.hpp
                   Server/Errors/Throws.hpp
                   )
-target_link_libraries(${SERVER_BINARY} asio pthread)
+
+add_executable(${CLIENT_BINARY}
+                  Client/main.cpp
+                  Client/Client.cpp
+                  Client/Client.hpp
+                  Server/Errors/Throws.hpp
+                  )
+
+target_link_libraries(${SERVER_BINARY} asio)
+target_link_libraries(${CLIENT_BINARY} asio)

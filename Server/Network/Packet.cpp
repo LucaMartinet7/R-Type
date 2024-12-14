@@ -7,6 +7,3 @@
 
 #include "Packet.hpp"
 
-Network::Packet::Packet() {}
-
-Network::Packet::~Packet() {}

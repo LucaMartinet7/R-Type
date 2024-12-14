@@ -1,4 +1,7 @@
 /*
+** EPITECH PROJECT, 2024
+** R-Type [WSL: Ubuntu]
+** File description:
 ** PacketType
 */
 
@@ -9,24 +12,23 @@
 #include "Packet.hpp"
 
 namespace Network {
-    enum class PacketType : uint8_t {
+    enum class PacketType {
         NONE = 0,
         CONNECTED = 1,
-        DISCONNECTED,
-        GAME_START,
-        PLAYER_DEAD,
-        PLAYER_JOIN,
-        PLAYER_SHOOT,
-        PLAYER_HIT,
-        PLAYER_SCORE,
-        ENEMY_SPAWNED,
-        ENEMY_DEAD,
-        ENEMY_MOVED,
-        ENEMY_SHOOT,
-        ENEMY_LIFE_UPDATE,
-        MAP_UPDATE,
-        GAME_END,
-        LEADER_CHANGE,
-        PLAYER_MOVED,
+        DISCONNECTED = 2,
+        GAME_START = 3,
+        PLAYER_DEAD = 4,
+        PLAYER_JOIN = 5,
+        PLAYER_SHOOT = 6,
+        PLAYER_HIT = 7,
+        PLAYER_SCORE = 8,
+        ENEMY_SPAWNED = 9,
+        ENEMY_DEAD = 10,
+        ENEMY_MOVED = 11,
+        ENEMY_SHOOT = 12,
+        ENEMY_LIFE_UPDATE = 13,
+        MAP_UPDATE = 14,
+        GAME_END = 15,
+        PLAYER_MOVED = 17,
     };
 }

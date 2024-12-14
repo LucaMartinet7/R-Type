@@ -6,8 +6,8 @@
 */
 
 #include "Server.hpp"
-#include <boost/asio.hpp>
-
+#include <iostream>
+#include <boost/iostreams/stream.hpp>
 
 using boost::asio::ip::udp;
 
@@ -22,10 +22,14 @@ using boost::asio::ip::udp;
  */
 RType::Server::Server(boost::asio::io_context &io_context, short port) : socket_(io_context, udp::endpoint(udp::v4(), port))
 {
+    initialize_packet_handlers();
     start_receive();
 }
 
-RType::Server::~Server() {}
+RType::Server::~Server()
+{
+    socket_.close();
+}
 
 /**
  * @brief Starts an asynchronous receive operation.
@@ -38,9 +42,16 @@ void RType::Server::start_receive()
 {
     socket_.async_receive_from(
         boost::asio::buffer(recv_buffer_), remote_endpoint_,
-        [this](const boost::system::error_code& error, std::size_t bytes_transferred) {
-            handle_receive(error, bytes_transferred);
-        });
+        boost::bind(&RType::Server::handle_receive, this,
+                    boost::asio::placeholders::error,
+                    boost::asio::placeholders::bytes_transferred));
+}
+
+void RType::Server::initialize_packet_handlers() {
+    packet_handlers_["CONNECTED"] = std::bind(&Server::handle_connected_packet, this, std::placeholders::_1);
+    packet_handlers_["DISCONNECTED"] = std::bind(&Server::handle_disconnected_packet, this, std::placeholders::_1);
+    packet_handlers_["GAME_START"] = std::bind(&Server::handle_game_start_packet, this, std::placeholders::_1);
+    // Add more packet types and handlers as needed
 }
 
 /**
@@ -53,23 +64,76 @@ void RType::Server::start_receive()
  * @param error The error code indicating the result of the receive operation.
  * @param bytes_transferred The number of bytes received.
  */
-void RType::Server::handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred)
+void RType::Server::handle_receive(const boost::system::error_code &error, std::size_t bytes_transferred)
 {
-    if (!error) {
-        std::string message(recv_buffer_.data(), bytes_transferred);
-        std::cout << "Received: " << message << " from " << remote_endpoint_ << std::endl;
+    if (!error || error == boost::asio::error::message_size) {
+        std::string received_data(recv_buffer_.data(), bytes_transferred);
+        std::stringstream ss(received_data);
+        std::string segment;
+        std::vector<std::string> segments;
+        while (std::getline(ss, segment, ';'))
+            segments.push_back(segment);
 
-        std::string response = "Message received!";
-        socket_.async_send_to(
-            boost::asio::buffer(response), remote_endpoint_,
-            [](const boost::system::error_code& send_error, std::size_t bytes_sent) {
-                if (!send_error) {
-                    std::cout << "Response sent." << std::endl;
-                }
-            });
-        start_receive();
-    } else {
-        std::cerr << "Error receiving: " << error.message() << std::endl;
+        std::cout << "segments: ";
+        for (const auto &seg : segments) {
+            std::cout << seg << " ";
+        }
+        std::cout << std::endl;
+
+        std::string packet_type_str = segments[0];
+        std::cout << "Received packet type: " << packet_type_str << std::endl; // Add this line
+        auto it = packet_handlers_.find(packet_type_str);
+        if (it != packet_handlers_.end()) {
+            it->second(segments);
+        } else {
+            throw std::runtime_error("Invalid packet type: " + packet_type_str);
+        }
+
+        std::cout << "Received packet: " << received_data << std::endl;
     }
+    start_receive();
 }
 
+void RType::Server::handle_connected_packet(const std::vector<std::string>& segments)
+{
+    std::cout << "Handling CONNECTED packet with segments: ";
+    for (const auto& segment : segments) {
+        std::cout << segment << " ";
+    }
+    std::cout << std::endl;
+
+    Network::Packet packet;
+    packet.type = Network::PacketType::CONNECTED;
+    Network::ConnectData data;
+    data.id = std::stoi(segments[1]);
+    // data.player[0] = static_cast<char>(std::stoi(segments[2]));
+    packet.data = data;
+    std::cout << "Player connected with ID: " << data.id << " and Player ID: " << data.player << std::endl;
+}
+
+void RType::Server::handle_disconnected_packet(const std::vector<std::string>& segments)
+{
+    if (segments.size() < 2) {
+        throw std::runtime_error("Invalid DISCONNECTED packet format");
+    }
+    Network::Packet packet;
+    packet.type = Network::PacketType::DISCONNECTED;
+    Network::DisconnectData data;
+    data.id = std::stoi(segments[1]);
+    packet.data = data;
+    std::cout << "Player disconnected with ID: " << data.id << std::endl;
+}
+
+void RType::Server::handle_game_start_packet(const std::vector<std::string>& segments)
+{
+    if (segments.size() < 2) {
+        throw std::runtime_error("Invalid GAME_START packet format");
+    }
+    Network::Packet packet;
+    packet.type = Network::PacketType::GAME_START;
+    Network::StartData data;
+    data.id = std::stoi(segments[1]);
+    packet.data = data;
+    std::cout << "Game started with ID: " << data.id << std::endl;
+    // Handle the rest of the packet data...
+}

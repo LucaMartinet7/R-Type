@@ -12,9 +12,10 @@
 
 #include <iostream>
 
+#include "Network/Packet.hpp"
+
 
 #define MAX_LENGTH 1024
-
 
 using namespace boost::placeholders; // Used for Boost.Asio asynchronous operations to bind placeholders for callback functions
 
@@ -39,8 +40,17 @@ namespace RType {
          * @brief Destroys the Server object.
          */
         ~Server();
+        void handle_receive(const boost::system::error_code &error, std::size_t bytes_transferred);
 
     private:
+        using PacketHandler = std::function<void(const std::vector<std::string>&)>;
+        std::unordered_map<std::string, PacketHandler> packet_handlers_;
+
+        void handle_connected_packet(const std::vector<std::string>& segments);
+        void handle_disconnected_packet(const std::vector<std::string>& segments);
+        void handle_game_start_packet(const std::vector<std::string>& segments);
+
+        void initialize_packet_handlers();
         /**
          * @brief Starts an asynchronous receive operation.
          *
@@ -60,7 +70,6 @@ namespace RType {
          * @param error The error code indicating the result of the receive operation.
          * @param bytes_transferred The number of bytes received.
          */
-        void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
 
         boost::asio::ip::udp::socket socket_; ///< The UDP socket used for communication.
         boost::asio::ip::udp::endpoint remote_endpoint_; ///< The remote endpoint from which data is received.
