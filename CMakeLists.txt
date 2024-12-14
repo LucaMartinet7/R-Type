@@ -19,28 +19,35 @@ add_subdirectory(ECS)
 
 # Define game engine sources
 set(SOURCES
-    # Core Game Engine files
-    GameEngine/ManageElement.cpp
-    GameEngine/ManageScene.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Entity/Bullet.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Entity/Obstacles.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Entity/Player.cpp
 
-    # layers sources
-    GameEngine/Layers/Game.cpp
-    GameEngine/Layers/Lobby.cpp
-    GameEngine/Layers/Menu.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Layers/Game.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Layers/Menu.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Layers/Lobby.cpp
 
-    # Object sources
-    GameEngine/Object/Background.cpp
-    GameEngine/Object/Buttons.cpp
-    GameEngine/Object/Icons.cpp
-    GameEngine/Object/Input.cpp
-    GameEngine/Object/Text.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Object/Background.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Object/Buttons.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Object/Icons.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Object/Input.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Object/Text.cpp
 
-    # Entity sources
-    GameEngine/Entity/Player.cpp
-    GameEngine/Entity/Obstacles.cpp
-    GameEngine/Entity/Bullet.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/ManageElement.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/ManageScene.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/main.cpp
+
 )
 
+# Define include directories
+include_directories(
+    ${PROJECT_SOURCE_DIR}/ECS/components
+    ${PROJECT_SOURCE_DIR}/ECS/systems
+    ${PROJECT_SOURCE_DIR}/GameEngine/include/Entity
+    ${PROJECT_SOURCE_DIR}/GameEngine/include/Layers
+    ${PROJECT_SOURCE_DIR}/GameEngine/include/Object
+    ${PROJECT_SOURCE_DIR}/GameEngine/include
+)
 # Add game engine library
 add_library(GameEngine STATIC ${SOURCES})
 

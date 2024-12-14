@@ -1,46 +1,59 @@
 #ifndef OBSTACLES_HPP_
 #define OBSTACLES_HPP_
 
-// Standard libs
 #include <iostream>
-
-// Local libs
+#include <string>
+#include <SFML/Graphics.hpp>
 #include "IEntity.hpp"
+#include "Registry.hpp"
+#include "Position.hpp"
+#include "Drawable.hpp"
+#include "Collidable.hpp"
 
-class Obstacles: public IEntity {
-    public:
-        Obstacles(int x, int y, std::string asset);
+class Obstacles : public IEntity {
+public:
+    Obstacles(int x, int y, const std::string& asset, Registry& registry);
 
-        virtual bool isPlayer() {
-          return false;
+    virtual bool isPlayer() override {
+        return false;
+    }
+
+    virtual sf::Sprite getSprite() override {
+        return _obstaclesSprite;
+    }
+
+    virtual void setSpritePosition(int x, int y) override {
+        _obstaclesSprite.setPosition(x, y);
+        auto& pos = registry.get_components<Position>()[obstacleEntity];
+        if (pos) {
+            pos->x = x;
+            pos->y = y;
         }
-        
-        virtual sf::Sprite getSprite() {
-          return _obstaclesSprite;
-        }
+    }
 
-        virtual void setSpritePosition(int x, int y) {
-          _obstaclesSprite.setPosition(x, y);
-        }
+    virtual int getSourceRect() override {
+        return _sourceSprite.left;
+    }
 
-        virtual int getSourceRect() {
-            return _sourceSprite.left;
-        }
+    virtual void setSourceRect(int rect) override {
+        _sourceSprite.left = rect;
+        updateTextureRect();
+    }
 
-        virtual void setSourceRect(int rect) {
-            _sourceSprite.left = rect;
-        }
+    virtual void updateTextureRect() override {
+        _obstaclesSprite.setTextureRect(_sourceSprite);
+    }
 
-        virtual void updateTextureRect() {
-            _obstaclesSprite.setTextureRect(_sourceSprite);
-        }
+    ~Obstacles() {
+        registry.kill_entity(obstacleEntity);
+    }
 
-        ~Obstacles() = default;
-    private:
-      sf::IntRect _sourceSprite;
-      sf::Texture _obstaclesText;
-      sf::Sprite _obstaclesSprite;
-      sf::Music _music;
+private:
+    sf::IntRect _sourceSprite;
+    sf::Texture _obstaclesText;
+    sf::Sprite _obstaclesSprite;
+    Registry& registry;
+    Registry::Entity obstacleEntity;
 };
 
-#endif
+#endif // OBSTACLES_HPP_
