@@ -7,7 +7,7 @@
 // SFML
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include "Objet/TypeEnum.hpp"
+#include "TypeEnum.hpp"
 
 class IEntity {
     public:

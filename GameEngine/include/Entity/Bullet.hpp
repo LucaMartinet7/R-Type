@@ -13,7 +13,7 @@
 
 class Bullet : public IEntity {
 public:
-    Bullet(int x, int y, std::string asset, Registry& registry) : registry(registry) {
+    Bullet(float x, float y, std::string asset, Registry& registry) : registry(registry) {
         if (!_bulletText.loadFromFile(asset)) {
             std::cout << "Error: Could not display Bullet!" << std::endl;
         }

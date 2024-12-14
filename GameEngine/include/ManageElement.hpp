@@ -9,7 +9,7 @@
 #include <SFML/Graphics.hpp>
 
 // Local libs
-#include "IObject.hpp"
+#include "Object/IObject.hpp"
 #include "Buttons.hpp"
 #include "Icons.hpp"
 #include "Background.hpp"
