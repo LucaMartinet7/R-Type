@@ -9,9 +9,10 @@
 
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
-
+#include <boost/iostreams/stream.hpp>
 #include <iostream>
 
+#include "Network/ThreadSafeQueue.hpp"
 #include "Network/Packet.hpp"
 
 
@@ -40,16 +41,10 @@ namespace RType {
          */
         ~Server();
         void handle_receive(const boost::system::error_code &error, std::size_t bytes_transferred);
+        void send_to_client(const std::string& message, const boost::asio::ip::udp::endpoint& client_endpoint);
 
     private:
         using PacketHandler = std::function<void(const std::vector<std::string>&)>;
-        std::unordered_map<std::string, PacketHandler> packet_handlers_;
-
-        void handle_connected_packet(const std::vector<std::string>& segments);
-        void handle_disconnected_packet(const std::vector<std::string>& segments);
-        void handle_game_start_packet(const std::vector<std::string>& segments);
-
-        void initialize_packet_handlers();
         /**
          * @brief Starts an asynchronous receive operation.
          *
@@ -58,7 +53,6 @@ namespace RType {
          * is called to process the received data.
          */
         void start_receive();
-
         /**
          * @brief Handles the completion of an asynchronous receive operation.
          *

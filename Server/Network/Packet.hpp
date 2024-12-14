@@ -19,7 +19,7 @@ namespace Network {
         std::variant<
             StartData,
             JoinData,
-            ConnectData,
+            ReqConnect,
             PositionData,
             PlayerPositionData,
             ScoreData,

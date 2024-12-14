@@ -9,21 +9,24 @@
 
 using boost::asio::ip::udp;
 
-RType::Client::Client(boost::asio::io_context& io_context, const std::string& host, short port)
-    : socket_(io_context)
+RType::Client::Client(boost::asio::io_context& io_context, const std::string& host, short server_port, short client_port)
+    : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context)
 {
     udp::resolver resolver(io_context);
-    udp::resolver::query query(udp::v4(), host, std::to_string(port));
+    udp::resolver::query query(udp::v4(), host, std::to_string(server_port));
     server_endpoint_ = *resolver.resolve(query).begin();
-    socket_.open(udp::v4());
-    std::cout << "Connected to " << host << ":" << port << std::endl;
+    std::cout << "Connected to " << host << ":" << server_port << " from client port " << client_port << std::endl;
 
-    receive();
+    start_receive();
+    receive_thread_ = std::thread(&Client::run_receive, this);
 }
 
 RType::Client::~Client()
 {
     socket_.close();
+    if (receive_thread_.joinable()) {
+        receive_thread_.join();
+    }
 }
 
 void RType::Client::send(const std::string& message)
@@ -35,20 +38,20 @@ void RType::Client::send(const std::string& message)
                     boost::asio::placeholders::bytes_transferred));
 }
 
-void RType::Client::receive()
+void RType::Client::start_receive()
 {
     socket_.async_receive_from(
-        boost::asio::buffer(recv_buffer_), sender_endpoint_,
-        [this](const boost::system::error_code& error, std::size_t bytes_transferred) {
-            handle_receive(error, bytes_transferred);
-        });
+        boost::asio::buffer(recv_buffer_), server_endpoint_,
+        boost::bind(&RType::Client::handle_receive, this,
+                    boost::asio::placeholders::error,
+                    boost::asio::placeholders::bytes_transferred));
 }
 
 void RType::Client::handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred)
 {
-    if (!error) {
+    if (!error || error == boost::asio::error::message_size) {
         std::cout << "Received: " << std::string(recv_buffer_.data(), bytes_transferred) << std::endl;
-        receive();
+        start_receive();
     } else {
         std::cerr << "Error receiving: " << error.message() << std::endl;
     }
@@ -61,4 +64,9 @@ void RType::Client::handle_send(const boost::system::error_code& error, std::siz
     } else {
         std::cerr << "Error sending: " << error.message() << std::endl;
     }
+}
+
+void RType::Client::run_receive()
+{
+    io_context_.run();
 }

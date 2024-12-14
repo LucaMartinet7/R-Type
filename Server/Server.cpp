@@ -6,6 +6,7 @@
 */
 
 #include "Server.hpp"
+#include "Network/ThreadSafeQueue.hpp"
 #include <iostream>
 #include <boost/iostreams/stream.hpp>
 
@@ -20,10 +21,9 @@ using boost::asio::ip::udp;
  * @param io_context The io_context object used for asynchronous operations.
  * @param port The port number on which the server will listen for incoming UDP packets.
  */
-RType::Server::Server(boost::asio::io_context &io_context, short port, ThreadSafeQueue<Network::Packet> &packetQueue) 
+RType::Server::Server(boost::asio::io_context &io_context, short port, ThreadSafeQueue<Network::Packet> &packetQueue)
 : socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue)
 {
-    initialize_packet_handlers();
     start_receive();
 }
 
@@ -47,13 +47,6 @@ void RType::Server::start_receive()
         boost::bind(&RType::Server::handle_receive, this,
                     boost::asio::placeholders::error,
                     boost::asio::placeholders::bytes_transferred));
-}
-
-void RType::Server::initialize_packet_handlers() {
-    packet_handlers_["CONNECTED"] = std::bind(&Server::handle_connected_packet, this, std::placeholders::_1);
-    packet_handlers_["DISCONNECTED"] = std::bind(&Server::handle_disconnected_packet, this, std::placeholders::_1);
-    packet_handlers_["GAME_START"] = std::bind(&Server::handle_game_start_packet, this, std::placeholders::_1);
-    // Add more packet types and handlers as needed
 }
 
 /**
@@ -80,72 +73,52 @@ void RType::Server::handle_receive(const boost::system::error_code &error, std::
             start_receive();
             return;
         }
-
-        std::string packet_type_str = segments[0];
-        auto it = packet_handlers_.find(packet_type_str);
-        if (it != packet_handlers_.end()) {
-            // Instead of processing here fully, create a packet and push it to the queue
-            // We'll just convert known strings to PacketType
-            Network::Packet packet;
-            if (packet_type_str == "GAME_START") {
-                packet.type = Network::PacketType::GAME_START;
-            } else if (packet_type_str == "PLAYER_JOIN") {
-                packet.type = Network::PacketType::PLAYER_JOIN;
-            } else {
-                packet.type = Network::PacketType::NONE;
-            }
-            // You can store additional data if needed in packet.data
-
-            // Push packet into the queue
-            m_packetQueue.push(std::move(packet));
-        } else {
-            std::cerr << "Received unknown packet type: " << packet_type_str << std::endl;
+        if (segments.size() < 2) {
+            std::cerr << "Error: Received data does not contain enough segments." << std::endl;
+            start_receive();
+            return;
         }
+        std::string packet_type_str = segments[0];
+        std::string packet_data = segments[1];
+        Network::Packet packet;
+        std::cout << "Received packet type: " << packet_type_str << std::endl;
+        std::cout << "Received packet data: " << packet_data << std::endl;
+        if (packet_type_str == "REQCONNECT") {
+            packet.data = Network::ReqConnect{0, {0}};
+            packet.type = Network::PacketType::REQCONNECT;
+        } else if (packet_type_str == "DISCONNECTED") {
+            packet.data = Network::DisconnectData{0};
+            packet.type = Network::PacketType::DISCONNECTED;
+        } else if (packet_type_str == "GAME_START") {
+            packet.data = Network::StartData{0};
+            packet.type = Network::PacketType::GAME_START;
+        } else if (packet_type_str == "PLAYER_JOIN") {
+            packet.data = Network::JoinData{0};
+            packet.type = Network::PacketType::PLAYER_JOIN;
+        } else if (packet_type_str == "PLAYER_MOVED") {
+            packet.data = Network::PositionData{0, 0};
+            packet.type = Network::PacketType::PLAYER_MOVED;
+        } else {
+            std::cerr << "Unknown packet type: " << packet_type_str << std::endl;
+            start_receive();
+            return;
+        }
+        // Push the packet to the queue
+        m_packetQueue.push(packet);
+
+        start_receive();
     }
-    start_receive();
 }
 
-
-void RType::Server::handle_connected_packet(const std::vector<std::string>& segments)
+void RType::Server::send_to_client(const std::string& message, const udp::endpoint& client_endpoint)
 {
-    std::cout << "Handling CONNECTED packet with segments: ";
-    for (const auto& segment : segments) {
-        std::cout << segment << " ";
-    }
-    std::cout << std::endl;
-
-    Network::Packet packet;
-    packet.type = Network::PacketType::CONNECTED;
-    Network::ConnectData data;
-    data.id = std::stoi(segments[1]);
-    // data.player[0] = static_cast<char>(std::stoi(segments[2]));
-    packet.data = data;
-    std::cout << "Player connected with ID: " << data.id << " and Player ID: " << data.player << std::endl;
-}
-
-void RType::Server::handle_disconnected_packet(const std::vector<std::string>& segments)
-{
-    if (segments.size() < 2) {
-        throw std::runtime_error("Invalid DISCONNECTED packet format");
-    }
-    Network::Packet packet;
-    packet.type = Network::PacketType::DISCONNECTED;
-    Network::DisconnectData data;
-    data.id = std::stoi(segments[1]);
-    packet.data = data;
-    std::cout << "Player disconnected with ID: " << data.id << std::endl;
-}
-
-void RType::Server::handle_game_start_packet(const std::vector<std::string>& segments)
-{
-    if (segments.size() < 2) {
-        throw std::runtime_error("Invalid GAME_START packet format");
-    }
-    Network::Packet packet;
-    packet.type = Network::PacketType::GAME_START;
-    Network::StartData data;
-    data.id = std::stoi(segments[1]);
-    packet.data = data;
-    std::cout << "Game started with ID: " << data.id << std::endl;
-    // Handle the rest of the packet data...
+    socket_.async_send_to(
+        boost::asio::buffer(message), client_endpoint,
+        [](const boost::system::error_code& error, std::size_t bytes_transferred) {
+            if (!error) {
+                std::cout << "Message sent to client." << std::endl;
+            } else {
+                std::cerr << "Error sending to client: " << error.message() << std::endl;
+            }
+        });
 }

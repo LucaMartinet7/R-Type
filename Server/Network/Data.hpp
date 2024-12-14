@@ -20,7 +20,7 @@ namespace Network {
                 public:
                     int id;
             };
-            struct ConnectData {
+            struct ReqConnect {
                 public:
                     int id;
                     char player[MAX_PLAYERS];

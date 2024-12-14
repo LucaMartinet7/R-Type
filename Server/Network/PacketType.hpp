@@ -14,7 +14,7 @@
 namespace Network {
     enum class PacketType {
         NONE = 0,
-        CONNECTED = 1,
+        REQCONNECT = 1,
         DISCONNECTED = 2,
         GAME_START = 3,
         PLAYER_DEAD = 4,

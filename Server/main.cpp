@@ -7,9 +7,12 @@
 
 #include <boost/asio.hpp>
 #include <iostream>
-
+#include <string>
 #include "Server.hpp"
 #include "Errors/Throws.hpp"
+#include "Network/Packet.hpp"
+#include "Network/ThreadSafeQueue.hpp"
+#include "Network/PacketHandler.hpp"
 
 short parsePort(int ac, char **av)
 {
@@ -29,19 +32,16 @@ void runServer(short port)
     try {
         boost::asio::io_context io_context;
         ThreadSafeQueue<Network::Packet> packetQueue;
-
-        // Start the PacketHandler thread
-        PacketHandler packetHandler(packetQueue);
+        Network::PacketHandler packetHandler(packetQueue);
         packetHandler.start();
 
-        RType::Server server(io_context, port);
+        RType::Server server(io_context, port, packetQueue);
 
         std::cout << "Server started" << std::endl;
         std::cout << "Listening on UDP port " << port << std::endl;
 
         io_context.run();
-        
-        // When server shuts down, stop packet handler
+
         packetHandler.stop();
     } catch (const boost::system::system_error& e) {
         if (e.code() == boost::asio::error::access_denied) {

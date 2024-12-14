@@ -30,6 +30,7 @@ add_executable(${SERVER_BINARY}
                   Server/Server.cpp
                   Server/Server.hpp
                   Server/Errors/Throws.hpp
+                  Server/Network/PacketHandler.cpp
                   )
 
 add_executable(${CLIENT_BINARY}

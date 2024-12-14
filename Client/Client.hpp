@@ -12,24 +12,27 @@
 #include <boost/array.hpp>
 #include <iostream>
 #include <array>
+#include <thread>
 
 #define MAX_LENGTH 1024
 
 namespace RType {
     class Client {
     public:
-        Client(boost::asio::io_context& io_context, const std::string& host, short port);
+        Client(boost::asio::io_context& io_context, const std::string& host, short server_port, short client_port);
         ~Client();
         void send(const std::string& message);
-        void receive();
+        void start_receive();
 
     private:
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
+        void run_receive();
 
         boost::asio::ip::udp::socket socket_;
         boost::asio::ip::udp::endpoint server_endpoint_;
-        boost::asio::ip::udp::endpoint sender_endpoint_;
         std::array<char, MAX_LENGTH> recv_buffer_;
+        std::thread receive_thread_;
+        boost::asio::io_context& io_context_;
     };
 }

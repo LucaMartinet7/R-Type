@@ -9,24 +9,23 @@
 
 int main(int ac, char **av)
 {
-    if (ac != 3) {
-        std::cerr << "Usage: " << av[0] << " <host> <port>" << std::endl;
+    if (ac != 4) {
+        std::cerr << "Usage: " << av[0] << " <host> <server-port> <client-port>" << std::endl;
         return 1;
     }
 
     std::string host = av[1];
-    short port = std::stoi(av[2]);
+    short server_port = std::stoi(av[2]);
+    short client_port = std::stoi(av[3]);
 
     try {
         boost::asio::io_context io_context;
-        RType::Client client(io_context, host, port);
+        RType::Client client(io_context, host, server_port, client_port);
 
         std::string message;
         while (std::getline(std::cin, message)) {
             client.send(message);
         }
-
-        io_context.run();
     } catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
