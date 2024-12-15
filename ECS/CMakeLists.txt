@@ -21,6 +21,10 @@ set(ECS_SOURCES
     components/Drawable.hpp
     components/Controllable.hpp
     components/Collidable.hpp
+    components/Projectile.hpp
+    components/Registry.hpp
+    components/SparseArray.hpp
+    components/Entity.hpp
 )
 
 # Add ECS library

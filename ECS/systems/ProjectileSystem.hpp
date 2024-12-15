@@ -9,8 +9,9 @@
     #define PROJECTILESYSTEM_H
 
 #include "Registry.hpp"
-#include "Position.hpp"
-#include "Projectile.hpp"
+#include "components/Position.hpp"
+#include "components/Velocity.hpp"
+#include "components/Projectile.hpp"
 #include "Drawable.hpp"
 #include "Collidable.hpp"
 

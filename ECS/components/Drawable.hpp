@@ -11,7 +11,7 @@
 #include <SFML/Graphics.hpp>
 
 struct Drawable {
-    sf::Sprite sprite;
+    sf::RectangleShape shape;
 };
 
 #endif // DRAWABLE_H

@@ -19,33 +19,14 @@ add_subdirectory(ECS)
 
 # Define game engine sources
 set(SOURCES
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Entity/Bullet.cpp
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Entity/Obstacles.cpp
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Entity/Player.cpp
-
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Layers/Game.cpp
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Layers/Menu.cpp
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Layers/Lobby.cpp
-
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Object/Background.cpp
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Object/Buttons.cpp
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Object/Icons.cpp
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Object/Input.cpp
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Object/Text.cpp
-
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/ManageElement.cpp
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/ManageScene.cpp
+    ${PROJECT_SOURCE_DIR}/GameEngine/src/Game.cpp
     ${PROJECT_SOURCE_DIR}/GameEngine/src/main.cpp
-
 )
 
 # Define include directories
 include_directories(
     ${PROJECT_SOURCE_DIR}/ECS/components
     ${PROJECT_SOURCE_DIR}/ECS/systems
-    ${PROJECT_SOURCE_DIR}/GameEngine/include/Entity
-    ${PROJECT_SOURCE_DIR}/GameEngine/include/Layers
-    ${PROJECT_SOURCE_DIR}/GameEngine/include/Object
     ${PROJECT_SOURCE_DIR}/GameEngine/include
 )
 # Add game engine library
