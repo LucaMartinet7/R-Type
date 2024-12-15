@@ -16,6 +16,15 @@ void signalHandler(int signum) {
     std::exit(signum);
 }
 
+void RType::Client::run() {
+    send("REQCONNECT");
+    while (window.isOpen()) {
+        processEvents();
+        render();
+    }
+    send("DISCONNECTED");
+}
+
 int main(int ac, char **av)
 {
     if (ac != 4) {

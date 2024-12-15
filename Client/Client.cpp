@@ -5,7 +5,13 @@
 ** Client
 */
 
+#include "Packet.hpp"
+#include "Network/ThreadSafeQueue.hpp"
 #include "Client.hpp"
+#include "Projectile.hpp"
+#include "Player.hpp"
+#include "Position.hpp"
+#include "DrawSystem.hpp"
 
 using boost::asio::ip::udp;
 
@@ -69,4 +75,55 @@ void RType::Client::handle_send(const boost::system::error_code& error, std::siz
 void RType::Client::run_receive()
 {
     io_context_.run();
+}
+
+void RType::Client::processEvents() {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed)
+            window.close();
+        if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::Right) {
+                std::string message = "PLAYER_MOVED;RIGHT";
+                send(message);
+            }
+            if (event.key.code == sf::Keyboard::Left) {
+                std::string message = "PLAYER_MOVED;LEFT";
+                send(message);
+            }
+            if (event.key.code == sf::Keyboard::Up) {
+                std::string message = "PLAYER_MOVED;UP";
+                send(message);
+            }
+            if (event.key.code == sf::Keyboard::Down) {
+                std::string message = "PLAYER_MOVED;DOWN";
+                send(message);
+            }
+        }
+    }
+}
+
+void RType::Client::render() {
+    std::string input(recv_buffer_.data());
+    std::string type;
+    std::string data;
+    float new_x = 0.0, new_y = 0.0;
+
+    size_t delimiterPos = input.find(';');
+    if (delimiterPos != std::string::npos) {
+        type = input.substr(0, delimiterPos);
+        data = input.substr(delimiterPos + 1);
+    }
+
+    size_t commaPos = data.find(',');
+    if (commaPos != std::string::npos) {
+        new_x = std::stof(data.substr(0, commaPos));
+        new_y = std::stof(data.substr(commaPos + 1));
+    }
+    
+    Player player(registry, new_x, new_y);
+    
+    window.clear();
+    draw_system(registry, window, registry.get_components<Position>(), registry.get_components<Drawable>());
+    window.display();
 }

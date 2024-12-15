@@ -23,6 +23,10 @@ public:
         return entity;
     }
 
+    Registry getRegistry() const {
+        return registry;
+    }
+    
 private:
     Registry& registry;
     Registry::Entity entity;

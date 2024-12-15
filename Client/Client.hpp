@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
+#include "Player.hpp"
+#include "Registry.hpp"
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/array.hpp>
@@ -34,11 +37,18 @@ namespace RType {
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
         void run_receive();
+        void run();
+        void render();
+        void processEvents();
 
         boost::asio::ip::udp::socket socket_;
         boost::asio::ip::udp::endpoint server_endpoint_;
         std::array<char, MAX_LENGTH> recv_buffer_;
         std::thread receive_thread_;
         boost::asio::io_context& io_context_;
+        sf::RenderWindow window;
+        bool gameStarted;
+        Registry &registry;
+        Registry::Entity entity_player;
     };
 }
