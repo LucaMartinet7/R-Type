@@ -9,10 +9,14 @@
 #include "systems/PositionSystem.hpp"
 #include "systems/ControlSystem.hpp"
 #include "systems/ProjectileSystem.hpp"
+#include "Entity/Player.hpp"
+#include "Entity/Enemy.hpp"
+#include "Entity/Bullet.hpp"
+#include "Layers/Menu.hpp"
 #include <iostream>
 
 Game::Game()
-    : window(sf::VideoMode(800, 600), "Rtype"), gameStarted(false), is_start(true) {
+    : window(sf::VideoMode(800, 600), "Rtype"), gameStarted(false), is_start(true), hasPlayers(true), menu() {
     // Register components
     registry.register_component<Position>();
     registry.register_component<Velocity>();
@@ -22,18 +26,11 @@ Game::Game()
     registry.register_component<Projectile>();
 
     // Create a controllable entity
-    controllableEntity = registry.spawn_entity();
-    registry.add_component<Position>(controllableEntity, {50.0f, 50.0f});
-    registry.add_component<Velocity>(controllableEntity, {0.0f, 0.0f});
-    registry.add_component<Drawable>(controllableEntity, {sf::RectangleShape(sf::Vector2f(50.0f, 50.0f))});
-    registry.add_component<Controllable>(controllableEntity, {});
-    registry.add_component<Collidable>(controllableEntity, {true});
+    Player player(registry, 50.0f, 50.0f);
+    controllableEntity = player.getEntity();
 
     // Create a non-controllable entity
-    auto nonControllableEntity = registry.spawn_entity();
-    registry.add_component<Position>(nonControllableEntity, {375.0f, 275.0f});
-    registry.add_component<Drawable>(nonControllableEntity, {sf::RectangleShape(sf::Vector2f(50.0f, 50.0f))});
-    registry.add_component<Collidable>(nonControllableEntity, {true});
+    Enemy enemy(registry, 375.0f, 275.0f);
 
     // Add systems
     registry.add_system<Position, Velocity>(position_system);
@@ -44,10 +41,6 @@ Game::Game()
         std::cerr << "Failed to load font 'assets/font.otf'" << std::endl;
         throw std::runtime_error("Failed to load font");
     }
-
-    startButton.setSize(sf::Vector2f(200, 100));
-    startButton.setFillColor(sf::Color::Green);
-    startButton.setPosition(300, 250);
 }
 
 void Game::run() {
@@ -84,10 +77,24 @@ void Game::update() {
             registry.kill_entity(entity2);
         }
     }
+
+    // Check if there are no more players
+    hasPlayers = false;
+    for (const auto& controllable : registry.get_components<Controllable>()) {
+        if (controllable) {
+            hasPlayers = true;
+            break;
+        }
+    }
+    if (!hasPlayers) {
+        gameStarted = false;
+        menu.setGameOver(true);
+    }
+
     if (is_start) {
         is_start = false;
     }
-    }
+}
 
 void Game::render() {
     window.clear();
@@ -95,11 +102,7 @@ void Game::render() {
     if (gameStarted) {
         draw_system(registry, window, registry.get_components<Position>(), registry.get_components<Drawable>());
     } else {
-        sf::Text text("Click to Start", font, 50);
-        text.setFillColor(sf::Color::White);
-        text.setPosition(250, 150);
-        window.draw(text);
-        window.draw(startButton);
+        menu.render(window);
     }
 
     window.display();
@@ -108,18 +111,17 @@ void Game::render() {
 void Game::handlePlayerInput(sf::Mouse::Button button, bool isPressed) {
     if (button == sf::Mouse::Left) {
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-        if (startButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+        if (menu.isStartButtonClicked(mousePos)) {
             gameStarted = true;
         } else if (gameStarted) {
-            createProjectile();
+            shoot();
         }
     }
 }
 
-void Game::createProjectile() {
-    auto projectileEntity = registry.spawn_entity();
+void Game::shoot() {
     auto& playerPos = registry.get_components<Position>()[controllableEntity];
-    registry.add_component<Position>(projectileEntity, {playerPos->x + 50.0f, playerPos->y + 25.0f});
-    registry.add_component<Projectile>(projectileEntity, {1.0f});
-    registry.add_component<Drawable>(projectileEntity, {sf::RectangleShape(sf::Vector2f(5.0f, 5.0f))});
+    Bullet bullet(registry, playerPos->x + 50.0f, playerPos->y + 25.0f, 1.0f);
 }
+
+

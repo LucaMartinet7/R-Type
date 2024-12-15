@@ -11,6 +11,8 @@
 #include <SFML/Graphics.hpp>
 #include "components/Entity.hpp"
 #include "Registry.hpp"
+#include "Layers/Menu.hpp"
+#include "Entity/Enemy.hpp"
 
 class Game {
 public:
@@ -22,7 +24,7 @@ private:
     void update();
     void render();
     void handlePlayerInput(sf::Mouse::Button button, bool isPressed);
-    void createProjectile();
+    void shoot();
 
     Registry registry;
     sf::RenderWindow window;
@@ -30,7 +32,9 @@ private:
     sf::RectangleShape startButton;
     bool gameStarted;
     bool is_start;
+    bool hasPlayers;
     Registry::Entity controllableEntity;
+    Menu menu;
 };
 
 #endif // GAME_H
