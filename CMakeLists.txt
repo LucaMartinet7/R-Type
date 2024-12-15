@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Set the project name
+project(R-Type)
 project(RType)
 
 # Specify the C++ standard
