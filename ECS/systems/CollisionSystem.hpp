@@ -53,7 +53,6 @@ inline std::vector<std::pair<size_t, size_t>> collision_system(Registry& registr
                                 registry.kill_entity(j);
                             }
                         }
-                        std::cout << "Collision detected between entities " << i << " and " << j << std::endl;
                     }
                 }
             }

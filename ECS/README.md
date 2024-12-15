@@ -23,6 +23,7 @@ Components are simple data structures that store an entity's state. Each type of
 | **Velocity**  | Stores the velocity of an entity. |
 | **Drawable**  | Stores the drawable shape of an entity. |
 | **Controllable** | Marks an entity as controllable by the user. |
+| **Projectile** | (In Development) Stores the properties of a projectile entity. |
 
 ---
 
@@ -34,6 +35,7 @@ Systems encapsulate the logic for manipulating components. They operate on entit
 | **Position System** | Updates the position of entities based on their velocity. |
 | **Control System**  | Updates the velocity of controllable entities based on user input. |
 | **Draw System**     | Renders drawable entities on the screen. |
+| **Projectile System** | (In Development) Manages the behavior and lifecycle of projectile entities. |
 
 ---
 
@@ -44,31 +46,6 @@ The **Registry** class is the heart of the ECS. It handles:
 - System execution based on registered entities.  
 
 **Key File**: `Registry.h`
-
----
-
-### Main Program  
-The main program (`main.cpp`) serves as the entry point of the ECS implementation. It:  
-1. Initializes the ECS framework.  
-2. Registers components and systems.  
-3. Creates entities with their respective components.  
-4. Runs the ECS update loop, executing system logic.  
-
----
-
-## Building the Project  
-To build the project, follow these steps:  
-1. Ensure you have **CMake** installed.  
-2. In your terminal, navigate to the project's root directory and run the following commands:  
-
-   ```bash
-   mkdir build
-   cd build
-   cmake ..
-   make
-   ```
-
-This will generate the `RtypeECS` executable in the `build` directory.
 
 ---
 
