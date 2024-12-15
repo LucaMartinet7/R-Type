@@ -23,12 +23,11 @@ namespace Network {
             struct ReqConnect {
                 public:
                     int id;
-                    char player[MAX_PLAYERS];
             };
             struct PositionData {
                 public:
-                    int x;
-                    int y;
+                    float x;
+                    float y;
             };
             struct PlayerPositionData {
                 public:

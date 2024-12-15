@@ -7,8 +7,6 @@
 
 #include "Server.hpp"
 #include "Network/ThreadSafeQueue.hpp"
-#include <iostream>
-#include <boost/iostreams/stream.hpp>
 
 using boost::asio::ip::udp;
 
@@ -22,7 +20,7 @@ using boost::asio::ip::udp;
  * @param port The port number on which the server will listen for incoming UDP packets.
  */
 RType::Server::Server(boost::asio::io_context &io_context, short port, ThreadSafeQueue<Network::Packet> &packetQueue)
-: socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue)
+: socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue), _nbClients(0)
 {
     start_receive();
 }
@@ -59,35 +57,29 @@ void RType::Server::start_receive()
  * @param error The error code indicating the result of the receive operation.
  * @param bytes_transferred The number of bytes received.
  */
+
 void RType::Server::handle_receive(const boost::system::error_code &error, std::size_t bytes_transferred)
 {
     if (!error || error == boost::asio::error::message_size) {
         std::string received_data(recv_buffer_.data(), bytes_transferred);
-        std::stringstream ss(received_data);
-        std::string segment;
         std::vector<std::string> segments;
-        while (std::getline(ss, segment, ';'))
-            segments.push_back(segment);
+        boost::split(segments, received_data, boost::is_any_of(";"));
 
         if (segments.empty()) {
             start_receive();
             return;
         }
-        if (segments.size() < 2) {
-            std::cerr << "Error: Received data does not contain enough segments." << std::endl;
-            start_receive();
-            return;
-        }
         std::string packet_type_str = segments[0];
-        std::string packet_data = segments[1];
+        std::string packet_data;
+        if (segments.size() >= 2) {
+             packet_data = segments[1];
+        }
         Network::Packet packet;
-        std::cout << "Received packet type: " << packet_type_str << std::endl;
-        std::cout << "Received packet data: " << packet_data << std::endl;
         if (packet_type_str == "REQCONNECT") {
-            packet.data = Network::ReqConnect{0, {0}};
+            packet.data = reqConnectData(remote_endpoint_);
             packet.type = Network::PacketType::REQCONNECT;
         } else if (packet_type_str == "DISCONNECTED") {
-            packet.data = Network::DisconnectData{0};
+            packet.data = disconnectData(remote_endpoint_);
             packet.type = Network::PacketType::DISCONNECTED;
         } else if (packet_type_str == "GAME_START") {
             packet.data = Network::StartData{0};
@@ -96,19 +88,20 @@ void RType::Server::handle_receive(const boost::system::error_code &error, std::
             packet.data = Network::JoinData{0};
             packet.type = Network::PacketType::PLAYER_JOIN;
         } else if (packet_type_str == "PLAYER_MOVED") {
-            packet.data = Network::PositionData{0, 0};
+            packet.data = playerMovedData(packet_data, remote_endpoint_);
             packet.type = Network::PacketType::PLAYER_MOVED;
         } else {
             std::cerr << "Unknown packet type: " << packet_type_str << std::endl;
+            send_to_client("KO: Unknown packet type", remote_endpoint_);
             start_receive();
             return;
         }
-        // Push the packet to the queue
         m_packetQueue.push(packet);
-
         start_receive();
     }
 }
+
+//SEND MESSAGES
 
 void RType::Server::send_to_client(const std::string& message, const udp::endpoint& client_endpoint)
 {
@@ -121,4 +114,71 @@ void RType::Server::send_to_client(const std::string& message, const udp::endpoi
                 std::cerr << "Error sending to client: " << error.message() << std::endl;
             }
         });
+}
+
+void RType::Server::Broadcast(const std::string& message)
+{
+    for (const auto& client : clients_) {
+        send_to_client(message, client.second.getEndpoint());
+    }
+}
+
+//COMMANDS
+
+uint32_t RType::Server::createClient(boost::asio::ip::udp::endpoint& client_endpoint)
+{
+    uint32_t nb = this->_nbClients;
+
+    for (const auto& client : clients_) {
+        if (client.second.getEndpoint() == client_endpoint)
+            return client.first;
+    }
+    ClientRegister newClient(nb, client_endpoint);
+    clients_.insert(std::make_pair(nb, newClient));
+    this->_nbClients++;
+    return nb;
+}
+
+Network::ReqConnect RType::Server::reqConnectData(boost::asio::ip::udp::endpoint& client_endpoint)
+{
+    Network::ReqConnect data;
+    size_t idClient;
+    idClient = createClient(client_endpoint);
+    data.id = idClient;
+    send_to_client("OK: Client " + std::to_string(data.id) + " connected.", client_endpoint);
+    return data;
+}
+
+Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endpoint& client_endpoint)
+{
+    Network::DisconnectData data;
+    for (auto it = clients_.begin(); it != clients_.end(); ++it) {
+        if (it->second.getEndpoint() == client_endpoint) {
+            data.id = it->second.getId();
+            std::cout << "Client " << data.id << " disconnected." << std::endl;
+            send_to_client("OK: Client " + std::to_string(data.id) + " disconnected.", client_endpoint);
+            clients_.erase(it);
+            return data;
+        }
+    }
+    data.id = -1;
+    std::cerr << "Client not found." << std::endl;
+    send_to_client("KO: Client not Registered", client_endpoint);
+    return data;
+}
+
+Network::PositionData RType::Server::playerMovedData(const std::string& data, boost::asio::ip::udp::endpoint& client_endpoint)
+{
+    Network::PositionData pos;
+    std::vector<std::string> segments;
+    boost::split(segments, data, boost::is_any_of(","));
+    if (segments.size() != 2) {
+        std::cerr << "Invalid data format." << std::endl;
+        return pos;
+    }
+    pos.x = std::stof(segments[0]);
+    pos.y = std::stof(segments[1]);
+    std::cout << "Player moved to (" << pos.x << ", " << pos.y << ")" << std::endl;
+    send_to_client("OK: Player moved to (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ")", client_endpoint);
+    return pos;
 }

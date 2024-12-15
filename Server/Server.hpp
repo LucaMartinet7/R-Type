@@ -10,11 +10,14 @@
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/iostreams/stream.hpp>
+#include <boost/algorithm/string.hpp>
 #include <iostream>
 
 #include "Network/ThreadSafeQueue.hpp"
 #include "Network/Packet.hpp"
+#include "ClientRegister.hpp"
 
+typedef std::map<uint32_t, ClientRegister> ClientList;
 
 #define MAX_LENGTH 1024
 
@@ -42,6 +45,10 @@ namespace RType {
         ~Server();
         void handle_receive(const boost::system::error_code &error, std::size_t bytes_transferred);
         void send_to_client(const std::string& message, const boost::asio::ip::udp::endpoint& client_endpoint);
+        void Broadcast(const std::string& message);
+        Network::ReqConnect reqConnectData(boost::asio::ip::udp::endpoint& client_endpoint);
+        Network::DisconnectData disconnectData(boost::asio::ip::udp::endpoint& client_endpoint);
+        Network::PositionData playerMovedData(const std::string& data, boost::asio::ip::udp::endpoint& client_endpoint);
 
     private:
         using PacketHandler = std::function<void(const std::vector<std::string>&)>;
@@ -64,11 +71,16 @@ namespace RType {
          * @param bytes_transferred The number of bytes received.
          */
 
+        uint32_t createClient(boost::asio::ip::udp::endpoint& client_endpoint);
+
         boost::asio::ip::udp::socket socket_; ///< The UDP socket used for communication.
         boost::asio::ip::udp::endpoint remote_endpoint_; ///< The remote endpoint from which data is received.
         std::array<char, MAX_LENGTH> recv_buffer_; ///< Buffer to store received data.
 
         ThreadSafeQueue<Network::Packet> &m_packetQueue;
         std::unordered_map<std::string, std::function<void(const std::vector<std::string>&)>> packet_handlers_;
+        std::unordered_map<Network::PacketType, void(*)(const Network::Packet&)> m_handlers;
+        ClientList clients_;
+        size_t _nbClients;
     };
 }

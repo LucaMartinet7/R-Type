@@ -13,6 +13,7 @@
 #include <iostream>
 #include <array>
 #include <thread>
+#include <csignal>
 
 #define MAX_LENGTH 1024
 
@@ -23,6 +24,11 @@ namespace RType {
         ~Client();
         void send(const std::string& message);
         void start_receive();
+
+        void sendExitPacket() {
+            std::string exit_message = "DISCONNECTED";
+            send(exit_message);
+        }
 
     private:
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
