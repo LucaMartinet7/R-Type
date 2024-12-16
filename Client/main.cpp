@@ -39,7 +39,6 @@ int main(int ac, char **av)
         while (std::getline(std::cin, message)) {
             client.send(message);
         }
-        
     } catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }

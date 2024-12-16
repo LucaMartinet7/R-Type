@@ -6,7 +6,6 @@
 */
 
 #include "Server.hpp"
-#include "Network/ThreadSafeQueue.hpp"
 
 using boost::asio::ip::udp;
 
@@ -145,7 +144,7 @@ Network::ReqConnect RType::Server::reqConnectData(boost::asio::ip::udp::endpoint
     size_t idClient;
     idClient = createClient(client_endpoint);
     data.id = idClient;
-    send_to_client("OK: Client " + std::to_string(data.id) + " connected.", client_endpoint);
+    send_to_client("Client;" + std::to_string(data.id), client_endpoint);
     return data;
 }
 
@@ -156,7 +155,7 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
         if (it->second.getEndpoint() == client_endpoint) {
             data.id = it->second.getId();
             std::cout << "Client " << data.id << " disconnected." << std::endl;
-            send_to_client("OK: Client " + std::to_string(data.id) + " disconnected.", client_endpoint);
+            send_to_client("Client " + std::to_string(data.id) + " disconnected.", client_endpoint);
             clients_.erase(it);
             return data;
         }
@@ -172,13 +171,16 @@ Network::PositionData RType::Server::playerMovedData(const std::string& data, bo
     Network::PositionData pos;
     std::vector<std::string> segments;
     boost::split(segments, data, boost::is_any_of(","));
-    if (segments.size() != 2) {
+    std::cout << "Player moved: " << data << std::endl;
+    if (segments.size() != 3) {
         std::cerr << "Invalid data format." << std::endl;
         return pos;
     }
-    pos.x = std::stof(segments[0]);
-    pos.y = std::stof(segments[1]);
-    std::cout << "Player moved to (" << pos.x << ", " << pos.y << ")" << std::endl;
-    send_to_client("OK: Player moved to (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ")", client_endpoint);
+    pos.direction = segments[0];
+    pos.x = std::stof(segments[1]);
+    pos.y = std::stof(segments[2]);
+    //add logic to move the character depending on the direction
+    // Broadcast("MOVED_PLAYER;" + pos.direction + "," + std::to_string(pos.x) + "," + std::to_string(pos.y));
+    send_to_client("MOVED_PLAYER;" + std::to_string(pos.x) + "," + std::to_string(pos.y), client_endpoint);
     return pos;
 }

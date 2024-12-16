@@ -26,6 +26,7 @@ namespace Network {
             };
             struct PositionData {
                 public:
+                    std::string direction;
                     float x;
                     float y;
             };

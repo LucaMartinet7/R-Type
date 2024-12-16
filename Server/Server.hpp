@@ -12,6 +12,7 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/algorithm/string.hpp>
 #include <iostream>
+#include <map>
 
 #include "Network/ThreadSafeQueue.hpp"
 #include "Network/Packet.hpp"

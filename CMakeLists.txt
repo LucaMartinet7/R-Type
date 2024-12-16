@@ -19,12 +19,43 @@ add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 include(FetchContent)
 
 FetchContent_Declare(
-  asio
-  GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
-  GIT_TAG asio-1-18-0
+    Boost
+    URL https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.xz
+    DOWNLOAD_NAME boost_1_83_0.tar.gz
+    DOWNLOAD_NO_PROGRESS TRUE
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=Release
+        -DCONFIG=Release
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
-FetchContent_MakeAvailable(asio)
-add_library(asio INTERFACE)
+
+FetchContent_MakeAvailable(Boost)
+
+set(BOOST_RUNTIME_LINK static)
+set(BOOST_INCLUDE_LIBRARIES
+  asio
+  assert
+  align
+  array
+  bind
+  coroutine
+  config
+  context
+  core
+  chrono
+  date_time
+  exception
+  function
+  filesystem
+  move
+  system
+  smart_ptr
+  throw_exception
+  type_traits
+  utility
+)
+
+# Remove the find_package(Boost 1.83 REQUIRED COMPONENTS ...) line
 
 add_executable(${SERVER_BINARY}
                   Server/main.cpp
@@ -32,6 +63,8 @@ add_executable(${SERVER_BINARY}
                   Server/Server.hpp
                   Server/Errors/Throws.hpp
                   Server/Network/PacketHandler.cpp
+                  Server/Network/PacketHandler.hpp
+                  Server/ClientRegister.hpp
                   )
 
 add_executable(${CLIENT_BINARY}
@@ -41,5 +74,6 @@ add_executable(${CLIENT_BINARY}
                   Server/Errors/Throws.hpp
                   )
 
-target_link_libraries(${SERVER_BINARY} asio)
-target_link_libraries(${CLIENT_BINARY} asio)
+# Link the Boost libraries provided by FetchContent
+target_link_libraries(${SERVER_BINARY} Boost::asio Boost::system)
+target_link_libraries(${CLIENT_BINARY} Boost::asio Boost::system)
