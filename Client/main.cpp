@@ -35,10 +35,11 @@ int main(int ac, char **av)
         // Set up the signal handler
         std::signal(SIGINT, signalHandler);
 
-        std::string message;
-        while (std::getline(std::cin, message)) {
-            client.send(message);
-        }
+        //std::string message;
+        //while (std::getline(std::cin, message)) {
+        //    client.send(message);
+        //}
+        client.run();
         
     } catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;

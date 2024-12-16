@@ -9,6 +9,8 @@
 
 #define MAX_PLAYERS 2
 
+#include <iostream>
+
 namespace Network {
         extern "C"
         {
@@ -26,6 +28,7 @@ namespace Network {
             };
             struct PositionData {
                 public:
+                    std::string directions;
                     float x;
                     float y;
             };
