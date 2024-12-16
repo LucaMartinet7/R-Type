@@ -24,7 +24,6 @@ RType::Client::Client(boost::asio::io_context& io_context, const std::string& ho
     std::cout << "Connected to " << host << ":" << server_port << " from client port " << client_port << std::endl;
     start_receive();
     receive_thread_ = std::thread(&Client::run_receive, this);
-    send("REQCONNECT");
 }
 
 RType::Client::~Client()
@@ -79,7 +78,6 @@ void RType::Client::run_receive()
 
 void RType::Client::processEvents() {
     sf::Event event;
-    std::cout << "Running client..." << std::endl;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed)
             window.close();
@@ -106,13 +104,13 @@ void RType::Client::processEvents() {
 
 void RType::Client::render() {
     std::string input(recv_buffer_.data());
-    std::cout << "Received: " << input << std::endl;
+
     std::string type;
     std::string data;
     float new_x = 0.0, new_y = 0.0;
 
     size_t move = input.find("PLAYER_MOVED");
-    if (!move) {
+    if (move == std::string::npos) {
         return;
     }
 
@@ -127,15 +125,24 @@ void RType::Client::render() {
         new_x = std::stof(data.substr(0, commaPos));
         new_y = std::stof(data.substr(commaPos + 1));
     }
-    
-    Player player(registry, new_x, new_y);
-    
+
+    static bool player_created = false;
+    if (!player_created) {
+        Player player(registry, new_x, new_y);
+        player_created = true;
+    }
+
     window.clear();
-    draw_system(registry, window, registry.get_components<Position>(), registry.get_components<Drawable>());
+    try {
+        draw_system(registry, window, registry.get_components<Position>(), registry.get_components<Drawable>());
+    } catch (const std::out_of_range& e) {
+        std::cerr << "Error accessing components: " << e.what() << std::endl;
+    }
     window.display();
 }
 
 void RType::Client::run() {
+    send("REQCONNECT");
     while (window.isOpen()) {
         processEvents();
         render();
