@@ -15,6 +15,8 @@ set(SERVER_BINARY "r-type_server")
 # Define the macro for Boost bind global placeholders
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 
+find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
+
 # fetch
 include(FetchContent)
 
@@ -25,6 +27,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(asio)
 add_library(asio INTERFACE)
+add_subdirectory(ECS)
+
+include_directories(
+    ${PROJECT_SOURCE_DIR}/ECS/components
+    ${PROJECT_SOURCE_DIR}/ECS/systems
+    ${PROJECT_SOURCE_DIR}/GameEngine/include/Entity
+    ${PROJECT_SOURCE_DIR}/Server/Network
+)
 
 add_executable(${SERVER_BINARY}
                   Server/main.cpp
@@ -42,4 +52,9 @@ add_executable(${CLIENT_BINARY}
                   )
 
 target_link_libraries(${SERVER_BINARY} asio)
-target_link_libraries(${CLIENT_BINARY} asio)
+target_link_libraries(${CLIENT_BINARY} asio
+    sfml-graphics
+    sfml-window
+    sfml-system
+    sfml-audio
+)

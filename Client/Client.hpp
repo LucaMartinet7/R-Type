@@ -32,12 +32,12 @@ namespace RType {
             std::string exit_message = "DISCONNECTED";
             send(exit_message);
         }
+        void run();
 
     private:
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
         void run_receive();
-        void run();
         void render();
         void processEvents();
 
@@ -48,7 +48,7 @@ namespace RType {
         boost::asio::io_context& io_context_;
         sf::RenderWindow window;
         bool gameStarted;
-        Registry &registry;
+        Registry registry;
         Registry::Entity entity_player;
     };
 }

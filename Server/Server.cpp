@@ -172,13 +172,14 @@ Network::PositionData RType::Server::playerMovedData(const std::string& data, bo
     Network::PositionData pos;
     std::vector<std::string> segments;
     boost::split(segments, data, boost::is_any_of(","));
-    if (segments.size() != 2) {
+    if (segments.size() != 3) {
         std::cerr << "Invalid data format." << std::endl;
         return pos;
     }
-    pos.x = std::stof(segments[0]);
-    pos.y = std::stof(segments[1]);
+    pos.directions = segments[0];
+    pos.x = std::stof(segments[1]);
+    pos.y = std::stof(segments[2]);
     std::cout << "Player moved to (" << pos.x << ", " << pos.y << ")" << std::endl;
-    send_to_client("OK: Player moved to (" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ")", client_endpoint);
+    send_to_client("MOVED_PLAYER;" + std::to_string(pos.x) + "," + std::to_string(pos.y), client_endpoint);
     return pos;
 }
