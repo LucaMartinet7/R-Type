@@ -9,9 +9,9 @@
 #include "systems/PositionSystem.hpp"
 #include "systems/ControlSystem.hpp"
 #include "systems/ProjectileSystem.hpp"
-#include "Entity/Player.hpp"
-#include "Entity/Enemy.hpp"
-#include "Entity/Bullet.hpp"
+#include "Player.hpp"
+#include "Enemy.hpp"
+#include "Bullet.hpp"
 #include "Layers/Menu.hpp"
 #include <iostream>
 
