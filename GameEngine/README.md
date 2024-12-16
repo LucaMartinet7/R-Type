@@ -60,5 +60,3 @@ The **R-Type Game Engine** is a 2D game engine designed to support the developme
 
 - **C++17 or newer.**
 - **SFML 2.5.1 or newer.** (for rendering and input handling)
-
-

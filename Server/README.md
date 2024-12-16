@@ -1,5 +1,3 @@
-### README
-
 # R-Type Server
 
 The **R-Type Server** is a high-performance game server written in C++ for handling multiplayer interactions in the R-Type network game. It uses the Boost.Asio library for asynchronous UDP communication and provides robust packet processing capabilities. This server forms the backbone of the R-Type project, managing client connections, player actions, and game states.

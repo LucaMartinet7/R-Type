@@ -1,6 +1,3 @@
-Here's a draft for a README file for the client module of your project:
-
-```markdown
 # R-Type Client
 
 The R-Type Client is part of a multiplayer game framework that communicates with the server to enable real-time gameplay interactions. It serves as the graphical front-end, handling user inputs, rendering the game window, and exchanging messages with the server over UDP.
