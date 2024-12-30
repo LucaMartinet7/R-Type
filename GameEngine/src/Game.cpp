@@ -15,6 +15,16 @@
 #include "Layers/Menu.hpp"
 #include <iostream>
 
+/*!
+ * @class Game
+ * @brief Manages the main game loop and its systems.
+ * @details This class handles initialization, updating, rendering, and input processing for the R-Type game.
+ */
+
+/*!
+ * @brief Constructs a new Game object.
+ * @details Registers all necessary components, sets up initial entities (player and enemy), and adds systems to the registry.
+ */
 Game::Game()
     : window(sf::VideoMode(800, 600), "Rtype"), gameStarted(false), is_start(true), hasPlayers(true), menu() {
     // Register components
@@ -43,6 +53,10 @@ Game::Game()
     }
 }
 
+/*!
+ * @brief Starts the main game loop.
+ * @details The loop processes events, updates game logic if the game is running, and renders the current state.
+ */
 void Game::run() {
     while (window.isOpen()) {
         processEvents();
@@ -53,6 +67,9 @@ void Game::run() {
     }
 }
 
+/*!
+ * @brief Processes input events such as window close and mouse clicks.
+ */
 void Game::processEvents() {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -64,6 +81,10 @@ void Game::processEvents() {
     }
 }
 
+/*!
+ * @brief Updates game state by running systems and handling collisions.
+ * @details This function updates all systems, checks for collisions, and manages game-over conditions.
+ */
 void Game::update() {
     registry.run_systems();
 
@@ -96,6 +117,10 @@ void Game::update() {
     }
 }
 
+/*!
+ * @brief Renders the current game state.
+ * @details Draws all game entities if the game is running or renders the menu otherwise.
+ */
 void Game::render() {
     window.clear();
 
@@ -108,6 +133,12 @@ void Game::render() {
     window.display();
 }
 
+/*!
+ * @brief Handles player input events such as mouse clicks.
+ * @param button The mouse button that was pressed.
+ * @param isPressed Whether the button is pressed or released.
+ * @details Starts the game if the start button is clicked or shoots a bullet if the game is running.
+ */
 void Game::handlePlayerInput(sf::Mouse::Button button, bool isPressed) {
     if (button == sf::Mouse::Left) {
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -119,11 +150,13 @@ void Game::handlePlayerInput(sf::Mouse::Button button, bool isPressed) {
     }
 }
 
+/*!
+ * @brief Creates a new bullet entity and sets its velocity.
+ * @details Spawns a bullet at the player's position and assigns it a velocity.
+ */
 void Game::shoot() {
     auto& playerPos = registry.get_components<Position>()[controllableEntity];
     Bullet bullet(registry, playerPos->x + 50.0f, playerPos->y + 25.0f, 1.0f);
     auto bulletEntity = bullet.getEntity();
     registry.get_components<Velocity>()[bulletEntity] = Velocity{1.0f, 0.0f};
 }
-
-

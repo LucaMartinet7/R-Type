@@ -15,6 +15,13 @@
 
 using boost::asio::ip::udp;
 
+/*!
+ * @brief Constructs a new Client object.
+ * @param io_context The Boost.Asio IO context used for networking operations.
+ * @param host The hostname or IP address of the server.
+ * @param server_port The port number of the server.
+ * @param client_port The local port number for the client.
+ */
 RType::Client::Client(boost::asio::io_context& io_context, const std::string& host, short server_port, short client_port)
     : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context), window(sf::VideoMode(800, 600), "Rtype"), gameStarted(false)
 {
@@ -26,6 +33,9 @@ RType::Client::Client(boost::asio::io_context& io_context, const std::string& ho
     receive_thread_ = std::thread(&Client::run_receive, this);
 }
 
+/*!
+ * @brief Destroys the Client object and cleans up resources.
+ */
 RType::Client::~Client()
 {
     socket_.close();
@@ -34,6 +44,10 @@ RType::Client::~Client()
     }
 }
 
+/*!
+ * @brief Sends a message to the server asynchronously.
+ * @param message The message to send.
+ */
 void RType::Client::send(const std::string& message)
 {
     socket_.async_send_to(
@@ -43,6 +57,9 @@ void RType::Client::send(const std::string& message)
                     boost::asio::placeholders::bytes_transferred));
 }
 
+/*!
+ * @brief Starts asynchronous reception of messages from the server.
+ */
 void RType::Client::start_receive()
 {
     socket_.async_receive_from(
@@ -52,6 +69,11 @@ void RType::Client::start_receive()
                     boost::asio::placeholders::bytes_transferred));
 }
 
+/*!
+ * @brief Handles the receipt of a message from the server.
+ * @param error The error code, if any occurred.
+ * @param bytes_transferred The number of bytes received.
+ */
 void RType::Client::handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred)
 {
     if (!error || error == boost::asio::error::message_size) {
@@ -62,6 +84,11 @@ void RType::Client::handle_receive(const boost::system::error_code& error, std::
     }
 }
 
+/*!
+ * @brief Handles the completion of sending a message to the server.
+ * @param error The error code, if any occurred.
+ * @param bytes_transferred The number of bytes sent.
+ */
 void RType::Client::handle_send(const boost::system::error_code& error, std::size_t bytes_transferred)
 {
     if (!error) {
@@ -71,11 +98,17 @@ void RType::Client::handle_send(const boost::system::error_code& error, std::siz
     }
 }
 
+/*!
+ * @brief Runs the Boost.Asio IO context for asynchronous operations.
+ */
 void RType::Client::run_receive()
 {
     io_context_.run();
 }
 
+/*!
+ * @brief Processes user input events from the SFML window.
+ */
 void RType::Client::processEvents() {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -102,6 +135,9 @@ void RType::Client::processEvents() {
     }
 }
 
+/*!
+ * @brief Renders the game window and updates the game state.
+ */
 void RType::Client::render() {
     std::string input(recv_buffer_.data());
 
@@ -141,6 +177,11 @@ void RType::Client::render() {
     window.display();
 }
 
+/*!
+ * @brief Main execution loop of the client.
+ * @details Sends an initial connection request, processes events, renders the game,
+ * and sends a disconnect message upon exit.
+ */
 void RType::Client::run() {
     send("REQCONNECT");
     while (window.isOpen()) {

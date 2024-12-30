@@ -1,0 +1,35 @@
+var namespace_network =
+[
+    [ "BossData", "struct_network_1_1_boss_data.html", "struct_network_1_1_boss_data" ],
+    [ "DeathData", "struct_network_1_1_death_data.html", "struct_network_1_1_death_data" ],
+    [ "DisconnectData", "struct_network_1_1_disconnect_data.html", "struct_network_1_1_disconnect_data" ],
+    [ "EntityData", "struct_network_1_1_entity_data.html", "struct_network_1_1_entity_data" ],
+    [ "JoinData", "struct_network_1_1_join_data.html", "struct_network_1_1_join_data" ],
+    [ "Manager", "class_network_1_1_manager.html", "class_network_1_1_manager" ],
+    [ "Packet", "struct_network_1_1_packet.html", "struct_network_1_1_packet" ],
+    [ "PacketHandler", "class_network_1_1_packet_handler.html", "class_network_1_1_packet_handler" ],
+    [ "PlayerPositionData", "struct_network_1_1_player_position_data.html", "struct_network_1_1_player_position_data" ],
+    [ "PositionData", "struct_network_1_1_position_data.html", "struct_network_1_1_position_data" ],
+    [ "ReqConnect", "struct_network_1_1_req_connect.html", "struct_network_1_1_req_connect" ],
+    [ "ScoreData", "struct_network_1_1_score_data.html", "struct_network_1_1_score_data" ],
+    [ "StartData", "struct_network_1_1_start_data.html", "struct_network_1_1_start_data" ],
+    [ "PacketType", "namespace_network.html#adb2459998541714e86871e42d3f702a1", [
+      [ "NONE", "namespace_network.html#adb2459998541714e86871e42d3f702a1ab50339a10e1de285ac99d4c3990b8693", null ],
+      [ "REQCONNECT", "namespace_network.html#adb2459998541714e86871e42d3f702a1a7221d02fe8a41d7cad064564df7e20a1", null ],
+      [ "DISCONNECTED", "namespace_network.html#adb2459998541714e86871e42d3f702a1a99c8ce56e7ab246445d3b134724428f3", null ],
+      [ "GAME_START", "namespace_network.html#adb2459998541714e86871e42d3f702a1a8820bda144613a0e3758d7d4f15abd6a", null ],
+      [ "PLAYER_DEAD", "namespace_network.html#adb2459998541714e86871e42d3f702a1a9223ae958dc19233d08cc7af918d3a7d", null ],
+      [ "PLAYER_JOIN", "namespace_network.html#adb2459998541714e86871e42d3f702a1aed6c6cca94d6d22a6f572b1c8b3f9274", null ],
+      [ "PLAYER_SHOOT", "namespace_network.html#adb2459998541714e86871e42d3f702a1afe4988a800f011ba5a87de48d5b3747a", null ],
+      [ "PLAYER_HIT", "namespace_network.html#adb2459998541714e86871e42d3f702a1ab0fffa9fd055d193a673aff6928ab54d", null ],
+      [ "PLAYER_SCORE", "namespace_network.html#adb2459998541714e86871e42d3f702a1a70a6f913e211275d802bbbf227c62b12", null ],
+      [ "ENEMY_SPAWNED", "namespace_network.html#adb2459998541714e86871e42d3f702a1a10f8567cadb5fe34091b9de9a586a52f", null ],
+      [ "ENEMY_DEAD", "namespace_network.html#adb2459998541714e86871e42d3f702a1af72552676b28d0817b2b6fe0b162f3f0", null ],
+      [ "ENEMY_MOVED", "namespace_network.html#adb2459998541714e86871e42d3f702a1a4701477b59f5cb50cfe272bda6bafee8", null ],
+      [ "ENEMY_SHOOT", "namespace_network.html#adb2459998541714e86871e42d3f702a1acbb06b732fdd7245afe64cf9a045d7b3", null ],
+      [ "ENEMY_LIFE_UPDATE", "namespace_network.html#adb2459998541714e86871e42d3f702a1a84d7a3c39db1ec185e4a92a11baf5005", null ],
+      [ "MAP_UPDATE", "namespace_network.html#adb2459998541714e86871e42d3f702a1acab01ee6aa8566d6dbb5a8f11993b149", null ],
+      [ "GAME_END", "namespace_network.html#adb2459998541714e86871e42d3f702a1aaf8eed899b8468ec048ca80310aec862", null ],
+      [ "PLAYER_MOVED", "namespace_network.html#adb2459998541714e86871e42d3f702a1aeff2093a2805cf7af325370ea8e26961", null ]
+    ] ]
+];

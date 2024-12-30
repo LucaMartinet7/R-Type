@@ -3,8 +3,18 @@
 
 #include <SFML/Graphics.hpp>
 
+/*!
+ * @class Menu
+ * @brief Represents the game menu.
+ * @details Handles rendering of the start menu, game-over screen, and user interaction.
+ */
 class Menu {
 public:
+    /*!
+     * @brief Constructs a new Menu object.
+     * @details Initializes the menu UI components such as the background, start button, and text.
+     * @throws std::runtime_error If the font fails to load.
+     */
     Menu() : gameOver(false) {
         if (!font.loadFromFile("../assets/font.otf")) {
             throw std::runtime_error("Failed to load font");
@@ -47,6 +57,10 @@ public:
         gameOverText.setPosition(400, 300); // Centered in the middle of the screen
     }
 
+    /*!
+     * @brief Renders the menu to the given window.
+     * @param window The SFML render window to draw the menu on.
+     */
     void render(sf::RenderWindow& window) {
         window.draw(background);
         if (gameOver) {
@@ -58,22 +72,31 @@ public:
         }
     }
 
+    /*!
+     * @brief Checks if the start button is clicked.
+     * @param mousePos The position of the mouse click.
+     * @return True if the start button is clicked, false otherwise.
+     */
     bool isStartButtonClicked(const sf::Vector2i& mousePos) const {
         return startButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos));
     }
 
+    /*!
+     * @brief Sets the game-over state.
+     * @param state The new game-over state.
+     */
     void setGameOver(bool state) {
         gameOver = state;
     }
 
 private:
-    sf::Font font;
-    sf::Text title;
-    sf::Text startButtonText;
-    sf::Text gameOverText;
-    sf::RectangleShape startButton;
-    sf::RectangleShape background;
-    bool gameOver;
+    sf::Font font; /*!< The font used for menu text. */
+    sf::Text title; /*!< The title text displayed on the menu. */
+    sf::Text startButtonText; /*!< The text displayed on the start button. */
+    sf::Text gameOverText; /*!< The text displayed during the game-over screen. */
+    sf::RectangleShape startButton; /*!< The start button. */
+    sf::RectangleShape background; /*!< The menu background. */
+    bool gameOver; /*!< Whether the game is over. */
 };
 
 #endif // MENU_HPP

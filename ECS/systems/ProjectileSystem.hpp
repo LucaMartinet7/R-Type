@@ -15,7 +15,26 @@
 #include "Collidable.hpp"
 #include "components/Velocity.hpp"
 
-inline void projectile_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Velocity>& velocities, sparse_array<Projectile>& projectiles, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables) {
+/*!
+ * @brief Handles the movement and collision of projectiles.
+ * @param registry The registry managing entities and their components.
+ * @param positions Sparse array of position components.
+ * @param velocities Sparse array of velocity components.
+ * @param projectiles Sparse array of projectile components.
+ * @param drawables Sparse array of drawable components.
+ * @param collidables Sparse array of collidable components.
+ * @details This system updates the positions of projectiles based on their velocity and speed,
+ * checks for collisions with other entities, and removes entities involved in collisions or
+ * projectiles that go out of bounds.
+ */
+inline void projectile_system(
+    Registry& registry,
+    sparse_array<Position>& positions,
+    sparse_array<Velocity>& velocities,
+    sparse_array<Projectile>& projectiles,
+    sparse_array<Drawable>& drawables,
+    sparse_array<Collidable>& collidables) {
+
     for (size_t i = 0; i < positions.size() && i < velocities.size() && i < projectiles.size() && i < drawables.size() && i < collidables.size(); ++i) {
         auto& pos = positions[i];
         auto& vel = velocities[i];
@@ -26,11 +45,15 @@ inline void projectile_system(Registry& registry, sparse_array<Position>& positi
             pos->x += vel->vx * proj->speed;
             pos->y += vel->vy * proj->speed;
             std::cout << "Projectile " << i << " position: (" << pos->x << ", " << pos->y << ")" << std::endl;
+
+            // Remove projectiles that go out of bounds
             if (pos->x > 800) {
                 std::cout << "Killing entity " << i << std::endl;
                 registry.kill_entity(i);
                 continue;
             }
+
+            // Check for collisions with other entities
             for (size_t j = 0; j < positions.size() && j < drawables.size() && j < collidables.size(); ++j) {
                 if (i == j) continue;
                 auto& otherPos = positions[j];

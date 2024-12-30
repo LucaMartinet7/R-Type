@@ -1,4 +1,4 @@
-# R-Type Project
+## README: R-Type Project
 
 ## Overview
 

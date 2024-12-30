@@ -7,3 +7,7 @@
 
 #include "Packet.hpp"
 
+/*!
+ * @file Packet.cpp
+ * @brief Implementation file for the Packet and Manager structures.
+ */

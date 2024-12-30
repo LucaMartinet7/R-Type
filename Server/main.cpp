@@ -14,6 +14,13 @@
 #include "Network/ThreadSafeQueue.hpp"
 #include "Network/PacketHandler.hpp"
 
+/*!
+ * @brief Parses the command-line arguments to retrieve the port number.
+ * @param ac The argument count.
+ * @param av The argument vector.
+ * @return The parsed port number.
+ * @throws RType::InvalidPortException If the arguments are invalid or the port is invalid.
+ */
 short parsePort(int ac, char **av)
 {
     if (ac != 2) {
@@ -27,6 +34,11 @@ short parsePort(int ac, char **av)
     }
 }
 
+/*!
+ * @brief Runs the server on the specified port.
+ * @param port The UDP port number to listen on.
+ * @throws RType::PermissionDeniedException If the server lacks permissions to bind to the port.
+ */
 void runServer(short port)
 {
     try {
@@ -52,6 +64,12 @@ void runServer(short port)
     }
 }
 
+/*!
+ * @brief The main entry point for the R-Type server.
+ * @param ac The argument count.
+ * @param av The argument vector.
+ * @return 0 on success, -1 on failure.
+ */
 int main(int ac, char **av)
 {
     try {
