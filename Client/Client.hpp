@@ -10,6 +10,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/array.hpp>
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <array>
 #include <thread>
@@ -18,6 +19,13 @@
 #define MAX_LENGTH 1024
 
 namespace RType {
+    enum class SpriteType {
+        Enemy,
+        Player,
+        Missile,
+        Background
+    };
+
     class Client {
     public:
         Client(boost::asio::io_context& io_context, const std::string& host, short server_port, short client_port);
@@ -33,12 +41,20 @@ namespace RType {
     private:
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
-        void run_receive();
+        void run_receive();   
+        void createSprite(const std::string& type, float x, float y);
+        void loadTextures();
+        void drawSprites(sf::RenderWindow& window);
+        void updateSpritePosition(size_t index, float x, float y);
+        void parseMessage(const std::string& input);
+        int main_loop();
 
         boost::asio::ip::udp::socket socket_;
         boost::asio::ip::udp::endpoint server_endpoint_;
         std::array<char, MAX_LENGTH> recv_buffer_;
         std::thread receive_thread_;
         boost::asio::io_context& io_context_;
+        std::vector<sf::Sprite> sprites_;
+        std::unordered_map<SpriteType, sf::Texture> textures_;
     };
 }
