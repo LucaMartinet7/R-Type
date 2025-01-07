@@ -71,9 +71,9 @@ void RType::Client::run_receive()
     io_context_.run();
 }
 
-void RType::Client::createSprite(const std::string& type, float x, float y)
+void RType::Client::createSprite(const std::string& type, int server_id, float x, float y)
 {
-    sf::Sprite sprite;
+    SpriteElement spriteElement;
     SpriteType spriteType;
 
     if (type == "Enemy") {
@@ -88,15 +88,19 @@ void RType::Client::createSprite(const std::string& type, float x, float y)
         return;
     }
 
-    sprite.setTexture(textures_[spriteType]);
-    sprite.setPosition(x, y);
-    sprites_.push_back(sprite);
+    spriteElement.sprite.setTexture(textures_[spriteType]);
+    spriteElement.sprite.setPosition(x, y);
+    spriteElement.id = server_id;
+    sprites_.push_back(spriteElement);
 }
 
-void RType::Client::destroySprite(size_t index)
+void RType::Client::destroySprite(size_t server_id)
 {
-    if (index < sprites_.size()) {
-        sprites_.erase(sprites_.begin() + index);
+    for (auto it = sprites_.begin(); it != sprites_.end(); ++it) {
+        if (server_id == it->id) {
+            sprites_.erase(it);
+            break;
+        }
     }
 }
 
@@ -110,23 +114,27 @@ void RType::Client::loadTextures()
 
 void RType::Client::drawSprites(sf::RenderWindow& window)
 {
-    for (auto& sprite : sprites_) {
-        window.draw(sprite);
+    for (auto& spriteElement : sprites_) {
+        window.draw(spriteElement.sprite);
     }
 }
 
-void RType::Client::updateSpritePosition(size_t index, float x, float y)
+void RType::Client::updateSpritePosition(size_t server_id, float x, float y)
 {
-    if (index < sprites_.size()) {
-        sprites_[index].setPosition(x, y);
+    for (auto& spriteElement : sprites_) {
+        if (server_id == spriteElement.id) {
+            spriteElement.sprite.setPosition(x, y);
+            break;
+        }
     }
 }
 
-void RType::Client::parseMessage(const std::string& input)
+void RType::Client::parseMessage(const std::string& input) // parser that will be adjusted to the server's message
 {
     std::string type;
     std::string data;
     std::size_t index;
+    std::size_t server_id;
     float new_x = 0.0, new_y = 0.0;
 
     size_t move = input.find("PLAYER_MOVED");
@@ -146,7 +154,7 @@ void RType::Client::parseMessage(const std::string& input)
         new_y = std::stof(data.substr(commaPos + 1));
     }
 
-    createSprite(type, new_x, new_y);
+    createSprite(type, server_id, new_x, new_y);
     updateSpritePosition(index, new_x, new_y);
 }
 
@@ -184,3 +192,39 @@ int RType::Client::main_loop() //main loop for client need to add parser for the
 
     return 0;
 }
+
+void RType::Client::processEvents(sf::RenderWindow& window)
+{
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            window.close();
+        }
+        if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::Right) {
+                std::string message = "PLAYER_MOVED;RIGHT";
+                send(message);
+            }
+            if (event.key.code == sf::Keyboard::Left) {
+                std::string message = "PLAYER_MOVED;LEFT";
+                send(message);
+            }
+            if (event.key.code == sf::Keyboard::Up) {
+                std::string message = "PLAYER_MOVED;UP";
+                send(message);
+            }
+            if (event.key.code == sf::Keyboard::Down) {
+                std::string message = "PLAYER_MOVED;DOWN";
+                send(message);
+            }
+            if (event.key.code == sf::Keyboard::Q) {
+                window.close();
+            }
+            if (event.key.code == sf::Keyboard::M) {
+                std::string message = "OPEN_MENU";
+                send(message);
+            }
+        }
+    }
+}
+

@@ -26,6 +26,12 @@ namespace RType {
         Background
     };
 
+    class SpriteElement {
+    public:
+        sf::Sprite sprite;
+        int id;
+    };
+
     class Client {
     public:
         Client(boost::asio::io_context& io_context, const std::string& host, short server_port, short client_port);
@@ -42,12 +48,13 @@ namespace RType {
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
         void run_receive();   
-        void createSprite(const std::string& type, float x, float y);
+        void createSprite(const std::string& type, int server_id, float x, float y);
         void loadTextures();
         void drawSprites(sf::RenderWindow& window);
-        void updateSpritePosition(size_t index, float x, float y);
+        void updateSpritePosition(size_t server_id, float x, float y);
         void parseMessage(const std::string& input);
         void destroySprite(size_t index);
+        void processEvents(sf::RenderWindow& window);
         int main_loop();
 
         boost::asio::ip::udp::socket socket_;
@@ -55,7 +62,7 @@ namespace RType {
         std::array<char, MAX_LENGTH> recv_buffer_;
         std::thread receive_thread_;
         boost::asio::io_context& io_context_;
-        std::vector<sf::Sprite> sprites_;
+        std::vector<SpriteElement> sprites_;
         std::unordered_map<SpriteType, sf::Texture> textures_;
     };
 }
