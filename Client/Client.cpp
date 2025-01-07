@@ -93,6 +93,13 @@ void RType::Client::createSprite(const std::string& type, float x, float y)
     sprites_.push_back(sprite);
 }
 
+void RType::Client::destroySprite(size_t index)
+{
+    if (index < sprites_.size()) {
+        sprites_.erase(sprites_.begin() + index);
+    }
+}
+
 void RType::Client::loadTextures()
 {
     textures_[RType::SpriteType::Enemy].loadFromFile("enemy.png");
@@ -143,7 +150,7 @@ void RType::Client::parseMessage(const std::string& input)
     updateSpritePosition(index, new_x, new_y);
 }
 
-int RType::Client::main_loop()
+int RType::Client::main_loop() //main loop for client need to add parser for the package received (see with Luca)
 {
     boost::asio::io_context io_context;
     RType::Client client(io_context, "localhost", 12345, 12346);

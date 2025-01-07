@@ -47,6 +47,7 @@ namespace RType {
         void drawSprites(sf::RenderWindow& window);
         void updateSpritePosition(size_t index, float x, float y);
         void parseMessage(const std::string& input);
+        void destroySprite(size_t index);
         int main_loop();
 
         boost::asio::ip::udp::socket socket_;
