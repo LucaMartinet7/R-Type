@@ -29,6 +29,9 @@ namespace Network {
         ENEMY_LIFE_UPDATE = 13,
         MAP_UPDATE = 14,
         GAME_END = 15,
-        PLAYER_MOVED = 17,
+        PLAYER_RIGHT = 16,
+        PLAYER_LEFT = 17,
+        PLAYER_UP = 18,
+        PLAYER_DOWN = 19,
     };
 }

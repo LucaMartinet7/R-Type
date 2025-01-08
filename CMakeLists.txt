@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 
 # Set the project name
 project(R-Type)
-project(RType)
 
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -55,6 +54,8 @@ set(BOOST_INCLUDE_LIBRARIES
   utility
 )
 
+find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
+
 # Remove the find_package(Boost 1.83 REQUIRED COMPONENTS ...) line
 
 add_executable(${SERVER_BINARY}
@@ -76,4 +77,4 @@ add_executable(${CLIENT_BINARY}
 
 # Link the Boost libraries provided by FetchContent
 target_link_libraries(${SERVER_BINARY} Boost::asio Boost::system)
-target_link_libraries(${CLIENT_BINARY} Boost::asio Boost::system)
+target_link_libraries(${CLIENT_BINARY} Boost::asio Boost::system sfml-graphics sfml-window sfml-system sfml-audio)
