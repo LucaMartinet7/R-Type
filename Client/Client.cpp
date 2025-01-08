@@ -131,7 +131,7 @@ void RType::Client::updateSpritePosition(size_t server_id, float x, float y)
 
 void RType::Client::parseMessage(const std::string& input) // parser that will be adjusted to the server's message
 {
-    std::string type;
+    std::string type; // these will be put in the class to be usable everywhere when a modification needs to be done to a sprite
     std::string data;
     std::size_t index;
     std::size_t server_id;
@@ -158,37 +158,24 @@ void RType::Client::parseMessage(const std::string& input) // parser that will b
     updateSpritePosition(index, new_x, new_y);
 }
 
-int RType::Client::main_loop() //main loop for client need to add parser for the package received (see with Luca)
+int RType::Client::main_loop()
 {
-    boost::asio::io_context io_context;
-    RType::Client client(io_context, "localhost", 12345, 12346);
-
-    client.loadTextures();
-
     sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type Client");
-
-    std::thread io_thread([&io_context]() {
-        io_context.run();
-    });
+    loadTextures();
 
     while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-            }
-        }
+        processEvents(window);
 
-        std::string input(client.recv_buffer_.data());
-        client.parseMessage(input);
+        std::string input(recv_buffer_.data());
+        parseMessage(input);
+        createSprite("Player", 0, 100, 100); //modify parameters to match the server's message that will be parsed
+        destroySprite(0); //modify parameters to match the server's message that will be parsed
+        updateSpritePosition(0, 100, 100); //modify parameters to match the server's message that will be parsed
 
         window.clear();
-        client.drawSprites(window);
+        drawSprites(window);
         window.display();
     }
-
-    io_context.stop();
-    io_thread.join();
 
     return 0;
 }

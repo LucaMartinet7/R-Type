@@ -38,6 +38,7 @@ namespace RType {
         ~Client();
         void send(const std::string& message);
         void start_receive();
+        int main_loop();
 
         void sendExitPacket() {
             std::string exit_message = "DISCONNECTED";
@@ -55,7 +56,6 @@ namespace RType {
         void parseMessage(const std::string& input);
         void destroySprite(size_t index);
         void processEvents(sf::RenderWindow& window);
-        int main_loop();
 
         boost::asio::ip::udp::socket socket_;
         boost::asio::ip::udp::endpoint server_endpoint_;
