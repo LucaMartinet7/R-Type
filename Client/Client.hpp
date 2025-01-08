@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <SFML/Graphics.hpp>
+#include "Player.hpp"
+#include "Registry.hpp"
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/array.hpp>
@@ -44,11 +47,14 @@ namespace RType {
             std::string exit_message = "DISCONNECTED";
             send(exit_message);
         }
+        void run();
 
     private:
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
         void run_receive();   
+        void render();
+        void processEvents();
         void createSprite(const std::string& type, int server_id, float x, float y);
         void loadTextures();
         void drawSprites(sf::RenderWindow& window);
@@ -62,6 +68,10 @@ namespace RType {
         std::array<char, MAX_LENGTH> recv_buffer_;
         std::thread receive_thread_;
         boost::asio::io_context& io_context_;
+        sf::RenderWindow window;
+        bool gameStarted;
+        Registry registry;
+        Registry::Entity entity_player;
         std::vector<SpriteElement> sprites_;
         std::unordered_map<SpriteType, sf::Texture> textures_;
     };

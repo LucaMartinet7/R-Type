@@ -8,11 +8,19 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Define binary names for game client and server
 set(CLIENT_BINARY "r-type_client")
 set(SERVER_BINARY "r-type_server")
+set(GAME_ENGINE_BINARY "r-type_game_engine")
 
 # Define the macro for Boost bind global placeholders
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
+
+# Find SFML (make sure it's installed on your system)
+find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
+
+# Add ECS
+add_subdirectory(ECS)
 
 # fetch
 include(FetchContent)
@@ -68,6 +76,7 @@ add_executable(${SERVER_BINARY}
                   Server/ClientRegister.hpp
                   )
 
+# Add client executable
 add_executable(${CLIENT_BINARY}
                   Client/main.cpp
                   Client/Client.cpp

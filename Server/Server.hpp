@@ -17,6 +17,7 @@
 #include "Network/ThreadSafeQueue.hpp"
 #include "Network/Packet.hpp"
 #include "ClientRegister.hpp"
+#include <map>
 
 typedef std::map<uint32_t, ClientRegister> ClientList;
 

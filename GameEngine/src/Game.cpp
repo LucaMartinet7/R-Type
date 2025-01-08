@@ -9,9 +9,9 @@
 #include "systems/PositionSystem.hpp"
 #include "systems/ControlSystem.hpp"
 #include "systems/ProjectileSystem.hpp"
-#include "Entity/Player.hpp"
-#include "Entity/Enemy.hpp"
-#include "Entity/Bullet.hpp"
+#include "Player.hpp"
+#include "Enemy.hpp"
+#include "Bullet.hpp"
 #include "Layers/Menu.hpp"
 #include <iostream>
 
@@ -35,7 +35,7 @@ Game::Game()
     // Add systems
     registry.add_system<Position, Velocity>(position_system);
     registry.add_system<Velocity, Controllable, Position, Drawable, Collidable>(control_system);
-    registry.add_system<Position, Projectile, Drawable, Collidable>(projectile_system);
+    registry.add_system<Position, Velocity, Projectile, Drawable, Collidable>(projectile_system);
 
     if (!font.loadFromFile("../assets/font.otf")) {
         std::cerr << "Failed to load font 'assets/font.otf'" << std::endl;
@@ -122,6 +122,8 @@ void Game::handlePlayerInput(sf::Mouse::Button button, bool isPressed) {
 void Game::shoot() {
     auto& playerPos = registry.get_components<Position>()[controllableEntity];
     Bullet bullet(registry, playerPos->x + 50.0f, playerPos->y + 25.0f, 1.0f);
+    auto bulletEntity = bullet.getEntity();
+    registry.get_components<Velocity>()[bulletEntity] = Velocity{1.0f, 0.0f};
 }
 
 
