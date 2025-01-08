@@ -6,7 +6,7 @@
 */
 
 #include <string> 
-#include "PacketType.hpp"
+#include "../Server/Network/Packet.hpp"
 #include "Client.hpp"
 
 using boost::asio::ip::udp;
@@ -73,30 +73,30 @@ void RType::Client::run_receive()
     io_context_.run();
 }
 
-void RType::Client::createSprite(const std::string& type, int server_id, float x, float y)
+void RType::Client::createSprite()
 {
     SpriteElement spriteElement;
     SpriteType spriteType;
 
-    if (type == "Enemy") {
+    if (action == "Enemy") {
         spriteType = SpriteType::Enemy;
-    } else if (type == "Player") {
+    } else if (action == "Player") {
         spriteType = SpriteType::Player;
-    } else if (type == "Missile") {
+    } else if (action == "Missile") {
         spriteType = SpriteType::Missile;
-    } else if (type == "Background") {
+    } else if (action == "Background") {
         spriteType = SpriteType::Background;
     } else {
         return;
     }
 
     spriteElement.sprite.setTexture(textures_[spriteType]);
-    spriteElement.sprite.setPosition(x, y);
+    spriteElement.sprite.setPosition(new_x, new_y);
     spriteElement.id = server_id;
     sprites_.push_back(spriteElement);
 }
 
-void RType::Client::destroySprite(size_t server_id)
+void RType::Client::destroySprite()
 {
     for (auto it = sprites_.begin(); it != sprites_.end(); ++it) {
         if (server_id == it->id) {
@@ -121,24 +121,19 @@ void RType::Client::drawSprites(sf::RenderWindow& window)
     }
 }
 
-void RType::Client::updateSpritePosition(size_t server_id, float x, float y)
+void RType::Client::updateSpritePosition()
 {
     for (auto& spriteElement : sprites_) {
         if (server_id == spriteElement.id) {
-            spriteElement.sprite.setPosition(x, y);
+            spriteElement.sprite.setPosition(new_x, new_y);
             break;
         }
     }
 }
 
-void RType::Client::parseMessage(const std::string& input) // parser that will be adjusted to the server's message
+void RType::Client::parseMessage(const std::string& input)
 {
-    std::string type; // these will be put in the class to be usable everywhere when a modification needs to be done to a sprite
-    std::string data;
-    std::size_t index;
-    std::size_t server_id;
-    float new_x = 0.0, new_y = 0.0;
-
+    
     size_t move = input.find("PLAYER_MOVED");
     if (move == std::string::npos) {
         return;
@@ -146,18 +141,8 @@ void RType::Client::parseMessage(const std::string& input) // parser that will b
 
     size_t delimiterPos = input.find(';');
     if (delimiterPos != std::string::npos) {
-        type = input.substr(0, delimiterPos);
-        data = input.substr(delimiterPos + 1);
+        action = input.substr(0, delimiterPos);
     }
-
-    size_t commaPos = data.find(',');
-    if (commaPos != std::string::npos) {
-        new_x = std::stof(data.substr(0, commaPos));
-        new_y = std::stof(data.substr(commaPos + 1));
-    }
-
-    createSprite(type, server_id, new_x, new_y);
-    updateSpritePosition(index, new_x, new_y);
 }
 
 int RType::Client::main_loop()
@@ -170,9 +155,9 @@ int RType::Client::main_loop()
 
         std::string input(recv_buffer_.data());
         parseMessage(input);
-        createSprite("Player", 0, 100, 100); //modify parameters to match the server's message that will be parsed
-        destroySprite(0); //modify parameters to match the server's message that will be parsed
-        updateSpritePosition(0, 100, 100); //modify parameters to match the server's message that will be parsed
+        createSprite();
+        destroySprite();
+        updateSpritePosition();
 
         window.clear();
         drawSprites(window);
@@ -203,6 +188,7 @@ void RType::Client::processEvents(sf::RenderWindow& window)
                 send(std::to_string(static_cast<std::uint8_t>(Network::PacketType::PLAYER_DOWN)));
             }
             if (event.key.code == sf::Keyboard::Q) {
+                sendExitPacket();
                 window.close();
             }
             if (event.key.code == sf::Keyboard::M) {

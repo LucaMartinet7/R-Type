@@ -49,12 +49,12 @@ namespace RType {
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
         void run_receive();   
-        void createSprite(const std::string& type, int server_id, float x, float y);
+        void createSprite();
         void loadTextures();
         void drawSprites(sf::RenderWindow& window);
-        void updateSpritePosition(size_t server_id, float x, float y);
+        void updateSpritePosition();
         void parseMessage(const std::string& input);
-        void destroySprite(size_t index);
+        void destroySprite();
         void processEvents(sf::RenderWindow& window);
 
         boost::asio::ip::udp::socket socket_;
@@ -64,5 +64,8 @@ namespace RType {
         boost::asio::io_context& io_context_;
         std::vector<SpriteElement> sprites_;
         std::unordered_map<SpriteType, sf::Texture> textures_;
+        std::string action;
+        std::size_t server_id;
+        float new_x = 0.0, new_y = 0.0;
     };
 }
