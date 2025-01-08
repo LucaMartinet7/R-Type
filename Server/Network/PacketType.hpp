@@ -33,5 +33,6 @@ namespace Network {
         PLAYER_LEFT = 17,
         PLAYER_UP = 18,
         PLAYER_DOWN = 19,
+        OPEN_MENU = 20,
     };
 }
