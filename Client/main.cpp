@@ -35,13 +35,6 @@ int main(int ac, char **av)
 
         std::signal(SIGINT, signalHandler);
         client.main_loop();
-
-        //std::string message;
-        //while (std::getline(std::cin, message)) {
-        //    client.send(message);
-        //}
-        client.run();
-        
     } catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
