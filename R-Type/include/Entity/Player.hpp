@@ -2,11 +2,6 @@
 #define PLAYER_HPP
 
 #include "Registry.hpp"
-#include "components/Position.hpp"
-#include "components/Velocity.hpp"
-#include "components/Drawable.hpp"
-#include "components/Controllable.hpp"
-#include "components/Collidable.hpp"
 
 class Player {
 public:

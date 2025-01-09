@@ -1,4 +1,7 @@
-#include "../../include/Entity/Enemy.hpp"
+#include "Enemy.hpp"
+#include "Position.hpp"
+#include "Drawable.hpp"
+#include "Collidable.hpp"
 
 Enemy::Enemy(Registry& registry, float x, float y) : registry(registry) {
     entity = registry.spawn_entity();

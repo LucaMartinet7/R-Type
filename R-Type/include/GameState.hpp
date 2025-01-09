@@ -2,9 +2,9 @@
 #define GAME_STATE_HPP
 
 #include "Registry.hpp"
-#include "Entity/Player.hpp"
-#include "Entity/Enemy.hpp"
-#include "Entity/Bullet.hpp"
+#include "Player.hpp"
+#include "Enemy.hpp"
+#include "Bullet.hpp"
 #include <vector>
 #include <random>
 
@@ -17,6 +17,7 @@ public:
     void spawnPlayer(int playerId, float x, float y);
     void spawnEnemy(float x, float y);
     void shootBullet(int playerId);
+    size_t getPlayerCount() const;
 
 private:
     Registry registry;

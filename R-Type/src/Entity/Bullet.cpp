@@ -1,7 +1,7 @@
-//
-// Created by noe on 08/01/2025.
-//
-#include "../../include/Entity/Bullet.hpp"
+#include "Bullet.hpp"
+#include "Position.hpp"
+#include "Drawable.hpp"
+#include "Projectile.hpp"
 
 Bullet::Bullet(Registry& registry, float x, float y, float speed) : registry(registry) {
     entity = registry.spawn_entity();

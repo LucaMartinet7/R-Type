@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2024
-** CPP-Rtype
-** File description:
-** CollisionSystem
-*/
-
 #ifndef COLLISIONSYSTEM_H
     #define COLLISIONSYSTEM_H
 
@@ -18,12 +11,11 @@
 #include <vector>
 #include <iostream>
 
-
 inline bool check_collision(const sf::RectangleShape& shape1, const sf::RectangleShape& shape2) {
     return shape1.getGlobalBounds().intersects(shape2.getGlobalBounds());
 }
 
-inline std::vector<std::pair<size_t, size_t>> collision_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables, sparse_array<Controllable>& controllables, sparse_array<Projectile>& projectiles, bool is_start) {
+inline std::vector<std::pair<size_t, size_t>> collision_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables, sparse_array<Controllable>& controllables, sparse_array<Projectile>& projectiles) {
     std::vector<std::pair<size_t, size_t>> collisions;
     for (size_t i = 0; i < positions.size() && i < drawables.size() && i < collidables.size(); ++i) {
         auto& pos = positions[i];
@@ -36,10 +28,6 @@ inline std::vector<std::pair<size_t, size_t>> collision_system(Registry& registr
                 auto& otherCollidable = collidables[j];
                 if (otherPos && otherDrawable && otherCollidable && otherCollidable->is_collidable) {
                     if (check_collision(drawable->shape, otherDrawable->shape)) {
-                        // Avoid immediate collision at the start
-                        if (is_start) {
-                            continue;
-                        }
                         collisions.emplace_back(i, j); // Record collision
                         if (controllables[i] || controllables[j]) {
                             registry.kill_entity(controllables[i] ? i : j);

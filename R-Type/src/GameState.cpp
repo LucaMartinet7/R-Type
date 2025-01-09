@@ -1,11 +1,11 @@
 #include "GameState.hpp"
-#include "systems/DrawSystem.hpp"
-#include "components/Position.hpp"
-#include "components/Drawable.hpp"
-#include "components/Controllable.hpp"
-#include "components/Collidable.hpp"
-#include "components/Projectile.hpp"
-#include "systems/ControlSystem.hpp"
+#include "DrawSystem.hpp"
+#include "Position.hpp"
+#include "Drawable.hpp"
+#include "Controllable.hpp"
+#include "Collidable.hpp"
+#include "Projectile.hpp"
+#include "ControlSystem.hpp"
 #include <chrono>
 
 GameState::GameState()
@@ -39,7 +39,7 @@ void GameState::shootBullet(int playerId) {
 }
 
 void GameState::checkCollisions() {
-    auto collisions = collision_system(registry, registry.get_components<Position>(), registry.get_components<Drawable>(), registry.get_components<Collidable>(), registry.get_components<Controllable>(), registry.get_components<Projectile>(), is_start);
+    auto collisions = collision_system(registry, registry.get_components<Position>(), registry.get_components<Drawable>(), registry.get_components<Collidable>(), registry.get_components<Controllable>(), registry.get_components<Projectile>());
     for (const auto& [entity1, entity2] : collisions) {
         if (registry.get_components<Controllable>()[entity1]) {
             registry.kill_entity(entity1);
@@ -61,4 +61,8 @@ void GameState::spawnEnemiesRandomly() {
         spawnEnemy(x, y);
         lastSpawnTime = now;
     }
+}
+
+size_t GameState::getPlayerCount() const {
+    return players.size();
 }

@@ -2,9 +2,6 @@
 #define BULLET_HPP
 
 #include "Registry.hpp"
-#include "components/Position.hpp"
-#include "components/Projectile.hpp"
-#include "components/Drawable.hpp"
 
 class Bullet {
 public:

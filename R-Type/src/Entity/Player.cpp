@@ -1,4 +1,9 @@
-#include "../../include/Entity/Player.hpp"
+#include "Player.hpp"
+#include "Position.hpp"
+#include "Velocity.hpp"
+#include "Drawable.hpp"
+#include "Controllable.hpp"
+#include "Collidable.hpp"
 
 Player::Player(Registry& registry, float x, float y) : registry(registry) {
     entity = registry.spawn_entity();
