@@ -47,7 +47,11 @@ namespace Network {
         static void handleEnemyLifeUpdate(const Network::Packet &packet);
         static void handleMapUpdate(const Network::Packet &packet);
         static void handleGameEnd(const Network::Packet &packet);
-        static void handlePlayerMoved(const Network::Packet &packet);
+        static void handlePlayerRight(const Network::Packet &packet);
+        static void handlePlayerLeft(const Network::Packet &packet);
+        static void handlePlayerUp(const Network::Packet &packet);
+        static void handlePlayerDown(const Network::Packet &packet);
+        static void handleOpenMenu(const Network::Packet &packet);
 
         ThreadSafeQueue<Network::Packet> &m_queue;
         std::thread m_thread;

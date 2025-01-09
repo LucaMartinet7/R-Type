@@ -57,7 +57,11 @@ void PacketHandler::initializeHandlers() {
     m_handlers[Network::PacketType::ENEMY_LIFE_UPDATE] = &PacketHandler::handleEnemyLifeUpdate;
     m_handlers[Network::PacketType::MAP_UPDATE] = &PacketHandler::handleMapUpdate;
     m_handlers[Network::PacketType::GAME_END] = &PacketHandler::handleGameEnd;
-    m_handlers[Network::PacketType::PLAYER_MOVED] = &PacketHandler::handlePlayerMoved;
+    m_handlers[Network::PacketType::PLAYER_RIGHT] = &PacketHandler::handlePlayerRight;
+    m_handlers[Network::PacketType::PLAYER_LEFT] = &PacketHandler::handlePlayerLeft;
+    m_handlers[Network::PacketType::PLAYER_UP] = &PacketHandler::handlePlayerUp;
+    m_handlers[Network::PacketType::PLAYER_DOWN] = &PacketHandler::handlePlayerDown;
+    m_handlers[Network::PacketType::OPEN_MENU] = &PacketHandler::handleOpenMenu;
 }
 
 void PacketHandler::handlePacket(const Network::Packet &packet) {
@@ -149,7 +153,32 @@ void PacketHandler::handleGameEnd(const Network::Packet &packet)
     std::cout << "[PacketHandler] Handeled GAME_END packet." << std::endl;
 }
 
-void PacketHandler::handlePlayerMoved(const Network::Packet &packet)
+void PacketHandler::handlePlayerRight(const Network::Packet &packet)
 {
-    std::cout << "[PacketHandler] Handeled PLAYER_MOVED packet." << std::endl;
+    std::cout << "[PacketHandler] Handeled PLAYER_RIGHT packet." << std::endl;
+    std::cout << static_cast<int>(packet.type) << std::endl;
+}
+
+void PacketHandler::handlePlayerLeft(const Network::Packet &packet)
+{
+    std::cout << "[PacketHandler] Handeled PLAYER_LEFT packet." << std::endl;
+    std::cout << static_cast<int>(packet.type) << std::endl;
+}
+
+void PacketHandler::handlePlayerUp(const Network::Packet &packet)
+{
+    std::cout << "[PacketHandler] Handeled PLAYER_UP packet." << std::endl;
+    std::cout << static_cast<int>(packet.type) << std::endl;
+}
+
+void PacketHandler::handlePlayerDown(const Network::Packet &packet)
+{
+    std::cout << "[PacketHandler] Handeled PLAYER_DOWN packet." << std::endl;
+    std::cout << static_cast<int>(packet.type) << std::endl;
+}
+
+void PacketHandler::handleOpenMenu(const Network::Packet &packet)
+{
+    std::cout << "[PacketHandler] Handeled OPEN_MENU packet." << std::endl;
+    std::cout << static_cast<int>(packet.type) << std::endl;
 }

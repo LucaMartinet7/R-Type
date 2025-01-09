@@ -5,8 +5,7 @@
 ** Client
 */
 
-#include <string> 
-#include "../Server/Network/Packet.hpp"
+#include <string>
 #include "Client.hpp"
 
 using boost::asio::ip::udp;
@@ -149,6 +148,7 @@ int RType::Client::main_loop()
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type Client");
     loadTextures();
+    send(std::to_string(static_cast<std::uint8_t>(Network::PacketType::REQCONNECT)));
 
     while (window.isOpen()) {
         processEvents(window);

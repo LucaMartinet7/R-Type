@@ -74,26 +74,22 @@ void RType::Server::handle_receive(const boost::system::error_code &error, std::
              packet_data = segments[1];
         }
         Network::Packet packet;
-        if (packet_type_str == "REQCONNECT") {
-            packet.data = reqConnectData(remote_endpoint_);
-            packet.type = Network::PacketType::REQCONNECT;
-        } else if (packet_type_str == "DISCONNECTED") {
-            packet.data = disconnectData(remote_endpoint_);
-            packet.type = Network::PacketType::DISCONNECTED;
-        } else if (packet_type_str == "GAME_START") {
-            packet.data = Network::StartData{0};
-            packet.type = Network::PacketType::GAME_START;
-        } else if (packet_type_str == "PLAYER_JOIN") {
-            packet.data = Network::JoinData{0};
-            packet.type = Network::PacketType::PLAYER_JOIN;
-        } else if (packet_type_str == "PLAYER_MOVED") {
-            packet.data = playerMovedData(packet_data, remote_endpoint_);
-            packet.type = Network::PacketType::PLAYER_MOVED;
-        } else {
-            std::cerr << "Unknown packet type: " << packet_type_str << std::endl;
-            send_to_client("KO: Unknown packet type", remote_endpoint_);
-            start_receive();
-            return;
+        packet.type = static_cast<Network::PacketType>(std::stoi(packet_type_str));
+        switch (packet.type) {
+            case Network::PacketType::REQCONNECT:
+                packet.data = reqConnectData(remote_endpoint_);
+                break;
+            case Network::PacketType::DISCONNECTED:
+                packet.data = disconnectData(remote_endpoint_);
+                break;
+            case Network::PacketType::PLAYER_DOWN: break;
+            case Network::PacketType::PLAYER_UP: break;
+            case Network::PacketType::PLAYER_LEFT: break;
+            case Network::PacketType::PLAYER_RIGHT: break;
+            case Network::PacketType::OPEN_MENU: break;
+            default:
+                std::cerr << "Unknown packet type." << std::endl;
+                break;
         }
         m_packetQueue.push(packet);
         start_receive();
@@ -144,7 +140,7 @@ Network::ReqConnect RType::Server::reqConnectData(boost::asio::ip::udp::endpoint
     size_t idClient;
     idClient = createClient(client_endpoint);
     data.id = idClient;
-    send_to_client("Client;" + std::to_string(data.id), client_endpoint);
+    send_to_client("1;" + std::to_string(data.id), client_endpoint);
     return data;
 }
 
@@ -155,32 +151,13 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
         if (it->second.getEndpoint() == client_endpoint) {
             data.id = it->second.getId();
             std::cout << "Client " << data.id << " disconnected." << std::endl;
-            send_to_client("Client " + std::to_string(data.id) + " disconnected.", client_endpoint);
+            send_to_client("2;" + std::to_string(data.id), client_endpoint);
             clients_.erase(it);
             return data;
         }
     }
     data.id = -1;
     std::cerr << "Client not found." << std::endl;
-    send_to_client("KO: Client not Registered", client_endpoint);
+    send_to_client("KO: 2", client_endpoint);
     return data;
-}
-
-Network::PositionData RType::Server::playerMovedData(const std::string& data, boost::asio::ip::udp::endpoint& client_endpoint)
-{
-    Network::PositionData pos;
-    std::vector<std::string> segments;
-    boost::split(segments, data, boost::is_any_of(","));
-    std::cout << "Player moved: " << data << std::endl;
-    if (segments.size() != 3) {
-        std::cerr << "Invalid data format." << std::endl;
-        return pos;
-    }
-    pos.direction = segments[0];
-    pos.x = std::stof(segments[1]);
-    pos.y = std::stof(segments[2]);
-    //add logic to move the character depending on the direction
-    // Broadcast("MOVED_PLAYER;" + pos.direction + "," + std::to_string(pos.x) + "," + std::to_string(pos.y));
-    send_to_client("MOVED_PLAYER;" + std::to_string(pos.x) + "," + std::to_string(pos.y), client_endpoint);
-    return pos;
 }

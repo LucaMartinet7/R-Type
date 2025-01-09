@@ -15,6 +15,7 @@
 #include <array>
 #include <thread>
 #include <csignal>
+#include "../Server/Network/Packet.hpp"
 
 #define MAX_LENGTH 1024
 
@@ -41,14 +42,13 @@ namespace RType {
         int main_loop();
 
         void sendExitPacket() {
-            std::string exit_message = "DISCONNECTED";
-            send(exit_message);
+            send(std::to_string(static_cast<std::uint8_t>(Network::PacketType::DISCONNECTED)));
         }
 
     private:
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
-        void run_receive();   
+        void run_receive();
         void createSprite();
         void loadTextures();
         void drawSprites(sf::RenderWindow& window);

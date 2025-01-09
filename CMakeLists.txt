@@ -82,6 +82,7 @@ add_executable(${CLIENT_BINARY}
                   Client/Client.cpp
                   Client/Client.hpp
                   Server/Errors/Throws.hpp
+                  Server/Network/PacketType.hpp
                   )
 
 # Link the Boost libraries provided by FetchContent
