@@ -134,11 +134,11 @@ std::string RType::Server::createPacket(const Network::PacketType& type, const s
     std::string packet_str;
 
     packet_str.push_back(static_cast<uint8_t>(type));
-    // packet_str.push_back(';');
-    // if (!data.empty())
-    //     packet_str.append(data);
-    // else
-    //     packet_str.push_back(static_cast<uint8_t>(packet.data.index()));
+    packet_str.push_back(static_cast<uint8_t>(';'));
+    if (!data.empty())
+        packet_str.append(data);
+    else
+        packet_str.push_back(static_cast<uint8_t>('0'));
     return packet_str;
 }
 
@@ -164,9 +164,6 @@ Network::ReqConnect RType::Server::reqConnectData(boost::asio::ip::udp::endpoint
     size_t idClient;
     idClient = createClient(client_endpoint);
     data.id = idClient;
-    // std::string message = createPacket(Network::Packet{Network::PacketType::REQCONNECT, data}, "");
-    // std::cout << "[DEBUG] code " << static_cast<int>(message[0]) << "1." << std::endl;
-    // send_to_client("1;" + std::to_string(data.id), client_endpoint);
     send_to_client(createPacket(Network::PacketType::REQCONNECT, ""), client_endpoint);
     return data;
 }
@@ -184,6 +181,6 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
     }
     data.id = -1;
     std::cerr << "Client not found." << std::endl;
-    send_to_client("KO: 2", client_endpoint);
+    send_to_client(createPacket(Network::PacketType::DISCONNECTED, ""), client_endpoint);
     return data;
 }

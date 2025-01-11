@@ -5,8 +5,9 @@
 ** Client
 */
 
-#include <string>
 #include "Client.hpp"
+
+#include <string>
 
 using boost::asio::ip::udp;
 
@@ -24,6 +25,7 @@ RType::Client::Client(boost::asio::io_context& io_context, const std::string& ho
 
 RType::Client::~Client()
 {
+    io_context_.stop();
     socket_.close();
     if (receive_thread_.joinable()) {
         receive_thread_.join();
@@ -52,10 +54,13 @@ void RType::Client::handle_receive(const boost::system::error_code& error, std::
 {
     if (!error || error == boost::asio::error::message_size) {
         std::string received_data(recv_buffer_.data(), bytes_transferred);
-        for (int i = 0; i < bytes_transferred; i++) {
-            std::cout << "[DEBUG] Received: " << static_cast<int>(received_data[i]) << std::endl;
-        }
-        parseMessage(std::string(recv_buffer_.data(), bytes_transferred), bytes_transferred);
+
+        uint8_t packet_type = static_cast<uint8_t>(received_data[0]);
+
+        std::string packet_data = received_data.substr(2);
+        std::cout << "[DEBUG] Received Packet Type: " << static_cast<int>(packet_type) << std::endl;
+        std::cout << "[DEBUG] Received Packet Data: " << packet_data << std::endl;
+        // parseMessage();
         start_receive();
     } else {
         std::cerr << "[DEBUG] Error receiving: " << error.message() << std::endl;
@@ -134,9 +139,34 @@ void RType::Client::updateSpritePosition()
     }
 }
 
-void RType::Client::parseMessage(const std::string& messageRecieved, std::size_t bytes_transferred)
+void RType::Client::parseMessage(uint8_t packet_type, std::string packet_data)
 {
-    // todo
+    // switch (packet_type) {
+    // case Network::PacketType::REQCONNECT:
+    //     std::cout << "[DEBUG] Received REQCONNECT" << std::endl;
+    //     break;
+    // case Network::PacketType::DISCONNECTED:
+    //     std::cout << "[DEBUG] Received DISCONNECTED" << std::endl;
+    //     break;
+    // case Network::PacketType::PLAYER_RIGHT:
+    //     std::cout << "[DEBUG] Received PLAYER_RIGHT" << std::endl;
+    //     break;
+    // case Network::PacketType::PLAYER_LEFT:
+    //     std::cout << "[DEBUG] Received PLAYER_LEFT" << std::endl;
+    //     break;
+    // case Network::PacketType::PLAYER_UP:
+    //     std::cout << "[DEBUG] Received PLAYER_UP" << std::endl;
+    //     break;
+    // case Network::PacketType::PLAYER_DOWN:
+    //     std::cout << "[DEBUG] Received PLAYER_DOWN" << std::endl;
+    //     break;
+    // case Network::PacketType::OPEN_MENU:
+    //     std::cout << "[DEBUG] Received OPEN_MENU" << std::endl;
+    //     break;
+    // default:
+    //     std::cerr << "[DEBUG] Unknown packet type: " << packet_type << std::endl;
+    //     break;
+    // }
 }
 
 int RType::Client::main_loop()
@@ -158,7 +188,7 @@ int RType::Client::main_loop()
         drawSprites(window);
         window.display();
     }
-
+    sendExitPacket();
     return 0;
 }
 

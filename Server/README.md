@@ -41,7 +41,7 @@ The project is organized into several key components to ensure modularity and ma
 
 ## Key Features
 
-1. **Client-Server Communication**: 
+1. **Client-Server Communication**:
    - Handles incoming client requests such as connecting, disconnecting, and game actions.
    - Supports broadcasting messages to all connected clients.
 

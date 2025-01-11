@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "../Server/Network/Packet.hpp"
+
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/array.hpp>
@@ -15,7 +17,7 @@
 #include <array>
 #include <thread>
 #include <csignal>
-#include "../Server/Network/Packet.hpp"
+#include <unordered_map>
 
 #define MAX_LENGTH 1024
 
@@ -54,7 +56,7 @@ namespace RType {
         void loadTextures();
         void drawSprites(sf::RenderWindow& window);
         void updateSpritePosition();
-        void parseMessage(const std::string& messageRecieved, std::size_t bytes_transferred);
+        void parseMessage(uint8_t packet_type, std::string packet_data);
         void destroySprite();
         void processEvents(sf::RenderWindow& window);
 
