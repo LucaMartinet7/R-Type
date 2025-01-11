@@ -156,29 +156,24 @@ void PacketHandler::handleGameEnd(const Network::Packet &packet)
 void PacketHandler::handlePlayerRight(const Network::Packet &packet)
 {
     std::cout << "[PacketHandler] Handeled PLAYER_RIGHT packet." << std::endl;
-    std::cout << static_cast<int>(packet.type) << std::endl;
 }
 
 void PacketHandler::handlePlayerLeft(const Network::Packet &packet)
 {
     std::cout << "[PacketHandler] Handeled PLAYER_LEFT packet." << std::endl;
-    std::cout << static_cast<int>(packet.type) << std::endl;
 }
 
 void PacketHandler::handlePlayerUp(const Network::Packet &packet)
 {
     std::cout << "[PacketHandler] Handeled PLAYER_UP packet." << std::endl;
-    std::cout << static_cast<int>(packet.type) << std::endl;
 }
 
 void PacketHandler::handlePlayerDown(const Network::Packet &packet)
 {
     std::cout << "[PacketHandler] Handeled PLAYER_DOWN packet." << std::endl;
-    std::cout << static_cast<int>(packet.type) << std::endl;
 }
 
 void PacketHandler::handleOpenMenu(const Network::Packet &packet)
 {
     std::cout << "[PacketHandler] Handeled OPEN_MENU packet." << std::endl;
-    std::cout << static_cast<int>(packet.type) << std::endl;
 }

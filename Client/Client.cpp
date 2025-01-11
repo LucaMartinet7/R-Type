@@ -51,19 +51,23 @@ void RType::Client::start_receive()
 void RType::Client::handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred)
 {
     if (!error || error == boost::asio::error::message_size) {
-        std::cout << "Received: " << std::string(recv_buffer_.data(), bytes_transferred) << std::endl;
+        std::string received_data(recv_buffer_.data(), bytes_transferred);
+        for (int i = 0; i < bytes_transferred; i++) {
+            std::cout << "[DEBUG] Received: " << static_cast<int>(received_data[i]) << std::endl;
+        }
+        parseMessage(std::string(recv_buffer_.data(), bytes_transferred), bytes_transferred);
         start_receive();
     } else {
-        std::cerr << "Error receiving: " << error.message() << std::endl;
+        std::cerr << "[DEBUG] Error receiving: " << error.message() << std::endl;
     }
 }
 
 void RType::Client::handle_send(const boost::system::error_code& error, std::size_t bytes_transferred)
 {
     if (!error) {
-        std::cout << "Message sent." << std::endl;
+        std::cout << "[DEBUG] Message sent." << std::endl;
     } else {
-        std::cerr << "Error sending: " << error.message() << std::endl;
+        std::cerr << "[DEBUG] Error sending: " << error.message() << std::endl;
     }
 }
 
@@ -130,31 +134,22 @@ void RType::Client::updateSpritePosition()
     }
 }
 
-void RType::Client::parseMessage(const std::string& input)
+void RType::Client::parseMessage(const std::string& messageRecieved, std::size_t bytes_transferred)
 {
-    
-    size_t move = input.find("PLAYER_MOVED");
-    if (move == std::string::npos) {
-        return;
-    }
-
-    size_t delimiterPos = input.find(';');
-    if (delimiterPos != std::string::npos) {
-        action = input.substr(0, delimiterPos);
-    }
+    // todo
 }
 
 int RType::Client::main_loop()
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type Client");
     loadTextures();
-    send(std::to_string(static_cast<std::uint8_t>(Network::PacketType::REQCONNECT)));
+    send(createPacket(Network::PacketType::REQCONNECT));
 
     while (window.isOpen()) {
         processEvents(window);
-
-        std::string input(recv_buffer_.data());
-        parseMessage(input);
+        //done directly in handle_receive
+        // std::string input(recv_buffer_.data());
+        // parseMessage(input);
         createSprite();
         destroySprite();
         updateSpritePosition();
@@ -167,6 +162,22 @@ int RType::Client::main_loop()
     return 0;
 }
 
+std::string RType::Client::createPacket(Network::PacketType type)
+{
+    Network::Packet packet;
+    packet.type = type;
+    std::string packet_str;
+    packet_str.push_back(static_cast<uint8_t>(type));
+    return packet_str;
+}
+
+std::string deserializePacket(const std::string& packet_str)
+{
+    Network::Packet packet;
+    packet.type = static_cast<Network::PacketType>(packet_str[0]);
+    return packet_str;
+}
+
 void RType::Client::processEvents(sf::RenderWindow& window)
 {
     sf::Event event;
@@ -176,23 +187,28 @@ void RType::Client::processEvents(sf::RenderWindow& window)
         }
         if (event.type == sf::Event::KeyPressed) {
             if (event.key.code == sf::Keyboard::Right) {
-                send(std::to_string(static_cast<std::uint8_t>(Network::PacketType::PLAYER_RIGHT)));
+                std::cout << "[DEBUG] Sending Right: " << std::endl;
+                send(createPacket(Network::PacketType::PLAYER_RIGHT));
             }
             if (event.key.code == sf::Keyboard::Left) {
-                send(std::to_string(static_cast<std::uint8_t>(Network::PacketType::PLAYER_LEFT)));
+                std::cout << "[DEBUG] Sending Left: " << std::endl;
+                send(createPacket(Network::PacketType::PLAYER_LEFT));
             }
             if (event.key.code == sf::Keyboard::Up) {
-                send(std::to_string(static_cast<std::uint8_t>(Network::PacketType::PLAYER_UP)));
+                std::cout << "[DEBUG] Sending Up: " << std::endl;
+                send(createPacket(Network::PacketType::PLAYER_UP));
             }
             if (event.key.code == sf::Keyboard::Down) {
-                send(std::to_string(static_cast<std::uint8_t>(Network::PacketType::PLAYER_DOWN)));
+                std::cout << "[DEBUG] Sending Down: " << std::endl;
+                send(createPacket(Network::PacketType::PLAYER_DOWN));
             }
             if (event.key.code == sf::Keyboard::Q) {
                 sendExitPacket();
                 window.close();
             }
             if (event.key.code == sf::Keyboard::M) {
-                send(std::to_string(static_cast<std::uint8_t>(Network::PacketType::OPEN_MENU)));
+                std::cout << "[DEBUG] Sending M: " << std::endl;
+                send(createPacket(Network::PacketType::OPEN_MENU));
             }
         }
     }

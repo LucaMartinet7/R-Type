@@ -40,9 +40,10 @@ namespace RType {
         void send(const std::string& message);
         void start_receive();
         int main_loop();
+        std::string createPacket(Network::PacketType type);
 
         void sendExitPacket() {
-            send(std::to_string(static_cast<std::uint8_t>(Network::PacketType::DISCONNECTED)));
+            send(createPacket(Network::PacketType::DISCONNECTED));
         }
 
     private:
@@ -53,7 +54,7 @@ namespace RType {
         void loadTextures();
         void drawSprites(sf::RenderWindow& window);
         void updateSpritePosition();
-        void parseMessage(const std::string& input);
+        void parseMessage(const std::string& messageRecieved, std::size_t bytes_transferred);
         void destroySprite();
         void processEvents(sf::RenderWindow& window);
 
