@@ -8,6 +8,7 @@
 #ifndef GAME_STATE_HPP
 #define GAME_STATE_HPP
 
+#include "AGame.hpp"
 #include "Registry.hpp"
 #include "Player.hpp"
 #include "Enemy.hpp"
@@ -16,33 +17,23 @@
 #include <vector>
 #include <random>
 
-class GameState {
+class GameState : public AGame {
 public:
     GameState();
 
-    void update();
-    void handlePlayerMove(int playerId, int actionId);
-    void spawnPlayer(int playerId, float x, float y);
-    void spawnEnemy(float x, float y);
-    void shootBullet(int playerId);
-    size_t getPlayerCount() const;
-
-    void addPlayerAction(int playerId, int actionId);
-    void processPlayerActions();
-    void deletePlayerAction();
-    const std::vector<PlayerAction>& getPlayerActions() const;
-
-    //get_players_position dans Game qui hérite de AGame. TOutes les fonctions pour que server envoie bien au client
-    //process_player_actions dans AGame qui hérite de IGame
-    //add_player_actions ça dans AGame qui hérite de IGame
-    //delete_player_actions dans AGame qui hérite de IGame
+    void update() override;
+    void handlePlayerMove(int playerId, int actionId) override;
+    void spawnPlayer(int playerId, float x, float y) override;
+    void spawnEnemy(float x, float y) override;
+    void shootBullet(int playerId) override;
+    std::pair<float, float> getPlayerPosition(int playerId) const override;
+    size_t getPlayerCount() const override;
 
 private:
     Registry registry;
     std::vector<Player> players;
     std::vector<Enemy> enemies;
     std::vector<Bullet> bullets;
-    std::vector<PlayerAction> playerActions;
     std::mt19937 rng;
     std::uniform_real_distribution<float> distX;
     std::uniform_real_distribution<float> distY;

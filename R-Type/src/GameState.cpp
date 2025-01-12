@@ -17,46 +17,13 @@
 #include <algorithm>
 
 GameState::GameState()
-    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000) {
-    // Initialize players, enemies, and bullets
-}
-
-void GameState::addPlayerAction(int playerId, int actionId) {
-    playerActions.emplace_back(playerId, actionId);
-}
-
-void GameState::processPlayerActions() {
-    for (auto& action : playerActions) {
-        int playerId = action.getId();
-        int actionId = action.getActionId();
-
-        if (actionId > 0 && actionId < 5) { // Change by real action ID defined in server
-            handlePlayerMove(playerId, actionId);
-            action.setProcessed(true);
-        } else if (actionId == 5) { // Change by real action ID defined in server
-            shootBullet(playerId);
-            action.setProcessed(true);
-        }
-        // Handle other actions or ignore unknown action IDs 
-    }
-    deletePlayerAction();
-}
-
-void GameState::deletePlayerAction() { //deletes all process elements from the vector of player actions and resizes vector
-    playerActions.erase(
-        std::remove_if(playerActions.begin(), playerActions.end(),
-            [](const PlayerAction& action) { return action.getProcessed(); }),
-        playerActions.end());
-}
-
-const std::vector<PlayerAction>& GameState::getPlayerActions() const {
-    return playerActions;
-}
+    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000) {}
 
 void GameState::update() {
     registry.run_systems();
     checkCollisions();
     spawnEnemiesRandomly();
+    processPlayerActions(); 
 }
 
 void GameState::handlePlayerMove(int playerId, int actionId) { // move player depending on action done by player
@@ -119,4 +86,13 @@ void GameState::spawnEnemiesRandomly() {
 
 size_t GameState::getPlayerCount() const {
     return players.size();
+}
+
+std::pair<float, float> GameState::getPlayerPosition(int playerId) const {
+    if (playerId < 0 || playerId >= players.size()) {
+        throw std::out_of_range("Invalid player ID");
+    }
+
+    const auto& positionComponent = registry.get_components<Position>()[players[playerId].getEntity()];
+    return {positionComponent->x, positionComponent->y};
 }
