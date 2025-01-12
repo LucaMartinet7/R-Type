@@ -57,6 +57,7 @@ int main(int ac, char **av)
     try {
         short port = parsePort(ac, av);
         runServer(port);
+        //game.update() a call dans une loop;
     } catch (const RType::NtsException& e) {
         std::cerr << "Exception: " << e.what() << " (Type: " << e.getType() << ")" << std::endl;
     } catch (const std::exception& e) {
