@@ -27,6 +27,8 @@ public:
     void spawnEnemy(float x, float y) override;
     void shootBullet(int playerId) override;
     std::pair<float, float> getPlayerPosition(int playerId) const override;
+    std::pair<float, float> getBulletPosition(int bulletId) const override;
+    std::pair<float, float> getEnemyPosition(int enemyId) const override;
     size_t getPlayerCount() const override;
 
 private:

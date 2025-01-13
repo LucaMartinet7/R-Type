@@ -96,3 +96,21 @@ std::pair<float, float> GameState::getPlayerPosition(int playerId) const {
     const auto& positionComponent = registry.get_components<Position>()[players[playerId].getEntity()];
     return {positionComponent->x, positionComponent->y};
 }
+
+std::pair<float, float> GameState::getEnemyPosition(int enemyId) const {
+    if (enemyId < 0 || enemyId >= enemies.size()) {
+        throw std::out_of_range("Invalid enemy ID");
+    }
+
+    const auto& positionComponent = registry.get_components<Position>()[enemies[enemyId].getEntity()];
+    return {positionComponent->x, positionComponent->y};
+}
+
+std::pair<float, float> GameState::getBulletPosition(int bulletId) const {
+    if (bulletId < 0 || bulletId >= bullets.size()) {
+        throw std::out_of_range("Invalid bullet ID");
+    }
+
+    const auto& positionComponent = registry.get_components<Position>()[bullets[bulletId].getEntity()];
+    return {positionComponent->x, positionComponent->y};
+}
