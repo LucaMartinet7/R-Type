@@ -5,15 +5,12 @@
 ** main
 */
 
-#include <boost/asio.hpp>
-#include <iostream>
-#include <string>
 #include "Server.hpp"
-#include "GameState.hpp"
 #include "Errors/Throws.hpp"
 #include "Network/Packet.hpp"
 #include "Network/ThreadSafeQueue.hpp"
 #include "Network/PacketHandler.hpp"
+#include "GameState.hpp"
 
 short parsePort(int ac, char **av)
 {
@@ -33,15 +30,19 @@ void runServer(short port)
     try {
         boost::asio::io_context io_context;
         ThreadSafeQueue<Network::Packet> packetQueue;
-        Network::PacketHandler packetHandler(packetQueue);
-        packetHandler.start();
-
         RType::Server server(io_context, port, packetQueue);
+        GameState game;
+        Network::PacketHandler packetHandler(packetQueue, game, server);
+        packetHandler.start();
 
         std::cout << "Server started" << std::endl;
         std::cout << "Listening on UDP port " << port << std::endl;
 
         io_context.run();
+
+        while (true) {
+            game.update();
+        }
 
         packetHandler.stop();
     } catch (const boost::system::system_error& e) {
@@ -58,7 +59,6 @@ int main(int ac, char **av)
     try {
         short port = parsePort(ac, av);
         runServer(port);
-        //game.update() a call dans une loop; Ne pas oublier créer instance de GameState et modifier gestion packet pour utiliser PlayerActions
     } catch (const RType::NtsException& e) {
         std::cerr << "Exception: " << e.what() << " (Type: " << e.getType() << ")" << std::endl;
     } catch (const std::exception& e) {

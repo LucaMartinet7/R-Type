@@ -53,6 +53,7 @@ namespace RType {
         void handle_game_packet(const Network::Packet& packet, const boost::asio::ip::udp::endpoint& client_endpoint);
         std::string createPacket(const Network::PacketType& type, const std::string& data);
         Network::Packet deserializePacket(const std::string& packet_str);
+        const ClientList& getClients() const { return clients_; }
     private:
         using PacketHandler = std::function<void(const std::vector<std::string>&)>;
         /**

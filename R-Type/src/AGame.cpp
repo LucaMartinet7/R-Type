@@ -7,8 +7,10 @@
 
 #include "AGame.hpp"
 #include <algorithm>
+#include <iostream>
 
 void AGame::addPlayerAction(int playerId, int actionId) {
+    std::cout << "Player " << playerId << " performed action " << actionId << std::endl;
     playerActions.emplace_back(playerId, actionId);
 }
 

@@ -16,6 +16,16 @@ set(GAME_ENGINE_BINARY "r-type_game_engine")
 # Define the macro for Boost bind global placeholders
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 
+include_directories(
+    ${CMAKE_SOURCE_DIR}/R-Type/include
+    ${CMAKE_SOURCE_DIR}/R-Type/include/Entity/
+    ${CMAKE_SOURCE_DIR}/R-Type/src/Entity/
+    ${CMAKE_SOURCE_DIR}/Server/Network
+    ${CMAKE_SOURCE_DIR}/ECS/
+    ${CMAKE_SOURCE_DIR}/ECS/systems/
+    ${CMAKE_SOURCE_DIR}/ECS/components/
+)
+
 # Find SFML (make sure it's installed on your system)
 find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
 
@@ -30,61 +40,38 @@ FetchContent_Declare(
     URL https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.xz
     DOWNLOAD_NAME boost_1_83_0.tar.gz
     DOWNLOAD_NO_PROGRESS TRUE
-    CMAKE_ARGS
-        -DCMAKE_BUILD_TYPE=Release
-        -DCONFIG=Release
-    DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
 
 FetchContent_MakeAvailable(Boost)
 
-set(BOOST_RUNTIME_LINK static)
-set(BOOST_INCLUDE_LIBRARIES
-  asio
-  assert
-  align
-  array
-  bind
-  coroutine
-  config
-  context
-  core
-  chrono
-  date_time
-  exception
-  function
-  filesystem
-  move
-  system
-  smart_ptr
-  throw_exception
-  type_traits
-  utility
-)
-
-find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
-
-# Remove the find_package(Boost 1.83 REQUIRED COMPONENTS ...) line
-
+# Add server executable
 add_executable(${SERVER_BINARY}
-                  Server/main.cpp
-                  Server/Server.cpp
-                  Server/Server.hpp
-                  Server/Errors/Throws.hpp
-                  Server/Network/PacketHandler.cpp
-                  Server/Network/PacketHandler.hpp
-                  Server/ClientRegister.hpp
-                  )
+    Server/main.cpp
+    Server/Server.cpp
+    Server/Server.hpp
+    Server/Errors/Throws.hpp
+    Server/Network/PacketHandler.cpp
+    Server/Network/PacketHandler.hpp
+    Server/ClientRegister.hpp
+    R-Type/src/GameState.cpp
+    R-Type/src/AGame.cpp
+    R-Type/src/PlayerAction.cpp
+    R-Type/src/Entity/Player.cpp
+    R-Type/src/Entity/Enemy.cpp
+    R-Type/src/Entity/Bullet.cpp
+)
 
 # Add client executable
 add_executable(${CLIENT_BINARY}
-                  Client/main.cpp
-                  Client/Client.cpp
-                  Client/Client.hpp
-                  Server/Errors/Throws.hpp
-                  Server/Network/PacketType.hpp
-                  )
+    Client/main.cpp
+    Client/Client.cpp
+    Client/Client.hpp
+    Server/Errors/Throws.hpp
+    Server/Network/PacketType.hpp
+)
 
 # Link the Boost libraries provided by FetchContent
 target_link_libraries(${SERVER_BINARY} Boost::asio Boost::system)
-target_link_libraries(${CLIENT_BINARY} Boost::asio Boost::system sfml-graphics sfml-window sfml-system sfml-audio)
+target_link_libraries(${CLIENT_BINARY} Boost::asio Boost::system)
+target_link_libraries(${SERVER_BINARY} sfml-graphics sfml-window sfml-system sfml-audio)
+target_link_libraries(${CLIENT_BINARY} sfml-graphics sfml-window sfml-system sfml-audio)

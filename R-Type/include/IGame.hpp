@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <utility>
+#include <cstddef>
 #include "PlayerAction.hpp"
 
 class IGame {
