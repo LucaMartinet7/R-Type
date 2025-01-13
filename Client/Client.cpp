@@ -171,7 +171,7 @@ int RType::Client::main_loop()
     send(createPacket(Network::PacketType::REQCONNECT));
 
     while (window.isOpen()) { //received data is modified in handle receive function and parsed here
-        
+        // parseMessage(received_data);
         processEvents(window);
         createSprite();
         destroySprite();
