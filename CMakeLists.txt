@@ -1,103 +1,121 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 
 # Set the project name
 project(R-Type)
 
-# Specify the C++ standard
+# Specify the C++ standard (C++17)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Define binary names for game client and server
 set(CLIENT_BINARY "r-type_client")
 set(SERVER_BINARY "r-type_server")
 set(GAME_ENGINE_BINARY "r-type_game_engine")
 
-# Define the macro for Boost bind global placeholders
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 
-# Find SFML (make sure it's installed on your system)
-find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
-
-# Add ECS
+# ECS Subdirectory
 add_subdirectory(ECS)
 
-# fetch
+# FetchContent setup
+
 include(FetchContent)
 
+# Fetch Boost
+
 FetchContent_Declare(
+    Boost
+    URL https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.xz
+    DOWNLOAD_NAME boost_1_83_0.tar.gz
+    DOWNLOAD_NO_PROGRESS TRUE
+    DOWNLOAD_EXTRACT_TIMESTAMP ON
+)
+
+
+set(BOOST_INCLUDE_LIBRARIES
   asio
-  GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
-  GIT_TAG asio-1-18-0
-)
-FetchContent_MakeAvailable(asio)
-add_library(asio INTERFACE)
-
-# Define game engine sources
-set(SOURCES
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/Game.cpp
-    ${PROJECT_SOURCE_DIR}/GameEngine/src/main.cpp
-)
-
-# Define include directories
-include_directories(
-    ${PROJECT_SOURCE_DIR}/ECS/components
-    ${PROJECT_SOURCE_DIR}/ECS/systems
-    ${PROJECT_SOURCE_DIR}/GameEngine/include/Entity
-    ${PROJECT_SOURCE_DIR}/GameEngine/include/Layer
-    ${PROJECT_SOURCE_DIR}/GameEngine/include/
-    ${PROJECT_SOURCE_DIR}/Server/Network
-)
-
-# Add game engine library
-add_library(GameEngine STATIC ${SOURCES})
-
-# Add ECS library
-target_link_libraries(GameEngine ECSLib)
-
-# Link dependencies to the game engine
-target_link_libraries(GameEngine
-    sfml-graphics
-    sfml-window
-    sfml-system
-    sfml-audio
+  iostreams
+  assert
+  align
+  array
+  bind
+  coroutine
+  config
+  context
+  core
+  chrono
+  date_time
+  exception
+  filesystem
+  function
+  move
+  system
+  smart_ptr
+  throw_exception
+  type_traits
+  utility
 )
 
-# Specify output directories
-set_target_properties(GameEngine PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+
+FetchContent_MakeAvailable(Boost)
+
+# Fetch SFML
+FetchContent_Declare(
+    SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 2.5.1
 )
 
-# Add game engine executable
-add_executable(${GAME_ENGINE_BINARY} ${SOURCES})
-target_link_libraries(${GAME_ENGINE_BINARY} GameEngine)
 
-# Include directories for the game engine
-target_include_directories(GameEngine
-    PUBLIC
-        ${PROJECT_SOURCE_DIR}/include
-)
+set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(SFML_BUILD_AUDIO ON CACHE BOOL "" FORCE)
+set(SFML_BUILD_NETWORK ON CACHE BOOL "" FORCE)
 
-# Add server executable
+
+FetchContent_MakeAvailable(SFML)
+
+# Add the Server executable
 add_executable(${SERVER_BINARY}
-                  Server/main.cpp
-                  Server/Server.cpp
-                  Server/Server.hpp
-                  Server/Errors/Throws.hpp
-                  Server/Network/PacketHandler.cpp
-                  )
+    Server/main.cpp
+    Server/Server.cpp
+    Server/Server.hpp
+    Server/Errors/Throws.hpp
+    Server/Network/PacketHandler.cpp
+    Server/Network/PacketHandler.hpp
+    Server/ClientRegister.hpp
+)
 
-# Add client executable
+target_link_libraries(${SERVER_BINARY}
+    PRIVATE
+        # Boost
+        Boost::asio
+        Boost::system
+        Boost::iostreams
+
+        # SFML (if the server needs SFML functionalities)
+        sfml-system
+        sfml-network
+)
+
+# Add the Client executable
 add_executable(${CLIENT_BINARY}
-                  Client/main.cpp
-                  Client/Client.cpp
-                  Client/Client.hpp
-                  Server/Errors/Throws.hpp
-                  )
+    Client/main.cpp
+    Client/Client.cpp
+    Client/Client.hpp
+    Server/Errors/Throws.hpp
+    Server/Network/PacketType.hpp
+)
 
-# Link game engine and asio to server
-target_link_libraries(${SERVER_BINARY} GameEngine asio)
+target_link_libraries(${CLIENT_BINARY}
+    PRIVATE
+        # Boost
+        Boost::asio
+        Boost::system
+        Boost::iostreams
 
-# Link game engine and asio to client
-target_link_libraries(${CLIENT_BINARY} GameEngine asio)
+        # SFML
+        sfml-graphics
+        sfml-window
+        sfml-system
+        sfml-audio
+)
