@@ -53,13 +53,14 @@ void RType::Client::start_receive()
 void RType::Client::handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred)
 {
     if (!error || error == boost::asio::error::message_size) {
+        mutex_.lock();
         received_data.assign(recv_buffer_.data(), bytes_transferred);
 
-        uint8_t packet_type = static_cast<uint8_t>(received_data[0]);
+        // uint8_t packet_type = static_cast<uint8_t>(received_data[0]);
 
-        std::string packet_data = received_data.substr(2);
-        std::cout << "[DEBUG] Received Packet Type: " << static_cast<int>(packet_type) << std::endl;
-        std::cout << "[DEBUG] Received Packet Data: " << packet_data << std::endl;
+        // std::string packet_data = received_data.substr(2);
+        // std::cout << "[DEBUG] Received Packet Type: " << static_cast<int>(packet_type) << std::endl;
+        // std::cout << "[DEBUG] Received Packet Data: " << packet_data << std::endl;
         start_receive();
     } else {
         std::cerr << "[DEBUG] Error receiving: " << error.message() << std::endl;
@@ -174,6 +175,7 @@ int RType::Client::main_loop()
         createSprite();
         destroySprite();
         updateSpritePosition();
+        mutex_.unlock();
 
         window.clear();
         drawSprites(window);
