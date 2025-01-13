@@ -6,6 +6,7 @@
 */
 
 #include "PacketHandler.hpp"
+#include "AGame.hpp"
 #include <iostream>
 #include <boost/algorithm/string.hpp>
 

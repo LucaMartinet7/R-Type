@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include "Server.hpp"
+#include "GameState.hpp"
 #include "Errors/Throws.hpp"
 #include "Network/Packet.hpp"
 #include "Network/ThreadSafeQueue.hpp"
@@ -57,7 +58,7 @@ int main(int ac, char **av)
     try {
         short port = parsePort(ac, av);
         runServer(port);
-        //game.update() a call dans une loop;
+        //game.update() a call dans une loop; Ne pas oublier créer instance de GameState et modifier gestion packet pour utiliser PlayerActions
     } catch (const RType::NtsException& e) {
         std::cerr << "Exception: " << e.what() << " (Type: " << e.getType() << ")" << std::endl;
     } catch (const std::exception& e) {
