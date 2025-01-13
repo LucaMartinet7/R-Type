@@ -60,7 +60,7 @@ void RType::Client::handle_receive(const boost::system::error_code& error, std::
         std::string packet_data = received_data.substr(2);
         std::cout << "[DEBUG] Received Packet Type: " << static_cast<int>(packet_type) << std::endl;
         std::cout << "[DEBUG] Received Packet Data: " << packet_data << std::endl;
-        // parseMessage();
+        parseMessage(received_data);
         start_receive();
     } else {
         std::cerr << "[DEBUG] Error receiving: " << error.message() << std::endl;
@@ -86,13 +86,13 @@ void RType::Client::createSprite()
     SpriteElement spriteElement;
     SpriteType spriteType;
 
-    if (action == "Enemy") {
+    if (action == 1) { //change by used ID in server to create different types of sprites to be displayed
         spriteType = SpriteType::Enemy;
-    } else if (action == "Player") {
+    } else if (action == 2) {
         spriteType = SpriteType::Player;
-    } else if (action == "Missile") {
+    } else if (action == 3) {
         spriteType = SpriteType::Missile;
-    } else if (action == "Background") {
+    } else if (action == 4) {
         spriteType = SpriteType::Background;
     } else {
         return;
@@ -139,34 +139,28 @@ void RType::Client::updateSpritePosition()
     }
 }
 
-void RType::Client::parseMessage(uint8_t packet_type, std::string packet_data)
+void RType::Client::parseMessage(std::string packet_data) //parse the packet send by server and stores the data in the right variables in Client class
 {
-    // switch (packet_type) {
-    // case Network::PacketType::REQCONNECT:
-    //     std::cout << "[DEBUG] Received REQCONNECT" << std::endl;
-    //     break;
-    // case Network::PacketType::DISCONNECTED:
-    //     std::cout << "[DEBUG] Received DISCONNECTED" << std::endl;
-    //     break;
-    // case Network::PacketType::PLAYER_RIGHT:
-    //     std::cout << "[DEBUG] Received PLAYER_RIGHT" << std::endl;
-    //     break;
-    // case Network::PacketType::PLAYER_LEFT:
-    //     std::cout << "[DEBUG] Received PLAYER_LEFT" << std::endl;
-    //     break;
-    // case Network::PacketType::PLAYER_UP:
-    //     std::cout << "[DEBUG] Received PLAYER_UP" << std::endl;
-    //     break;
-    // case Network::PacketType::PLAYER_DOWN:
-    //     std::cout << "[DEBUG] Received PLAYER_DOWN" << std::endl;
-    //     break;
-    // case Network::PacketType::OPEN_MENU:
-    //     std::cout << "[DEBUG] Received OPEN_MENU" << std::endl;
-    //     break;
-    // default:
-    //     std::cerr << "[DEBUG] Unknown packet type: " << packet_type << std::endl;
-    //     break;
-    // }
+    std::stringstream ss(packet_data);
+    std::string segment;
+    std::vector<std::string> elements;
+
+    while (std::getline(ss, segment, ';'))
+        elements.push_back(segment);
+
+    if (elements.size() != 4) {
+        std::cerr << "[ERROR] Invalid packet format: " << packet_data << std::endl;
+        return;
+    }
+
+    try {
+        action = std::stoul(elements[0]); //stoul converts string to unsigned long
+        server_id = std::stoul(elements[1]);
+        new_x = std::stof(elements[2]);
+        new_y = std::stof(elements[3]);
+    } catch (const std::exception& e) {
+        std::cerr << "[ERROR] Failed to parse packet data: " << e.what() << std::endl;
+    }
 }
 
 int RType::Client::main_loop()
@@ -175,11 +169,8 @@ int RType::Client::main_loop()
     loadTextures();
     send(createPacket(Network::PacketType::REQCONNECT));
 
-    while (window.isOpen()) {
+    while (window.isOpen()) { //Parse Message is done in handle receive
         processEvents(window);
-        //done directly in handle_receive
-        // std::string input(recv_buffer_.data());
-        // parseMessage(input);
         createSprite();
         destroySprite();
         updateSpritePosition();
