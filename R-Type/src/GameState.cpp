@@ -9,7 +9,7 @@
 #include <chrono>
 
 GameState::GameState()
-    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000) {
+    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000), boss(nullptr), currentWave(0), enemiesPerWave(5) {
     // Initialize players, enemies, and bullets
 }
 
@@ -17,6 +17,11 @@ void GameState::update() {
     registry.run_systems();
     checkCollisions();
     spawnEnemiesRandomly();
+
+    // Move boss if it exists
+    if (boss) {
+        boss->move(0.1f, 0.0f); // Boss moves slower
+    }
 }
 
 void GameState::handlePlayerMove(int playerId, float x, float y) {
@@ -34,18 +39,49 @@ void GameState::spawnEnemy(float x, float y) {
 }
 
 void GameState::shootBullet(int playerId) {
-    const auto& position = registry.get_components<Position>()[players[playerId].getEntity()];
-    bullets.emplace_back(registry, position->x + 50.0f, position->y + 25.0f, 1.0f);
+    auto entity = players[playerId].getEntity();
+    if (registry.has_component<Position>(entity)) {
+        const auto& position = registry.get_components<Position>()[entity];
+        bullets.emplace_back(registry, position->x + 50.0f, position->y + 25.0f, 1.0f);
+    } else {
+        std::cerr << "Error: Player " << playerId << " does not have a Position component." << std::endl;
+    }
+}
+
+void GameState::spawnBoss(float x, float y) {
+    boss = std::make_unique<Boss>(registry, x, y);
+}
+
+bool GameState::isBossSpawned() const {
+    return boss != nullptr;
+}
+
+bool GameState::areEnemiesCleared() const {
+    return enemies.empty();
+}
+
+void GameState::startNextWave() {
+    currentWave++;
+    enemiesPerWave += 5; // Increase the number of enemies per wave
+    for (int i = 0; i < enemiesPerWave; ++i) {
+        spawnEnemy(distX(rng), distY(rng));
+    }
 }
 
 void GameState::checkCollisions() {
     auto collisions = collision_system(registry, registry.get_components<Position>(), registry.get_components<Drawable>(), registry.get_components<Collidable>(), registry.get_components<Controllable>(), registry.get_components<Projectile>());
     for (const auto& [entity1, entity2] : collisions) {
-        if (registry.get_components<Controllable>()[entity1]) {
+        if (registry.has_component<Controllable>(entity1)) {
             registry.kill_entity(entity1);
+        } else
+        {
+            std::cerr << "Error: Entity " << entity1 << " does not have a Controllable component." << std::endl;
         }
-        if (registry.get_components<Controllable>()[entity2]) {
+        if (registry.has_component<Controllable>(entity2)) {
             registry.kill_entity(entity2);
+        } else
+        {
+            std::cerr << "Error: Entity " << entity2 << " does not have a Controllable component." << std::endl;
         }
     }
 }
@@ -65,4 +101,9 @@ void GameState::spawnEnemiesRandomly() {
 
 size_t GameState::getPlayerCount() const {
     return players.size();
+}
+
+Registry& GameState::getRegistry()
+{
+    return registry;
 }
