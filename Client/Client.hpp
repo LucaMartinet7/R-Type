@@ -63,6 +63,7 @@ namespace RType {
         boost::asio::ip::udp::socket socket_;
         boost::asio::ip::udp::endpoint server_endpoint_;
         std::array<char, MAX_LENGTH> recv_buffer_;
+        std::string received_data;
         std::thread receive_thread_;
         boost::asio::io_context& io_context_;
         std::vector<SpriteElement> sprites_;
