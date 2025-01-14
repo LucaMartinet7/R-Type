@@ -56,17 +56,23 @@ public:
     template <class Component>
     sparse_array<Component>& get_components() {
         auto typeIndex = std::type_index(typeid(Component));
-        if (_componentArrays.find(typeIndex) == _componentArrays.end()) {
-            throw std::out_of_range("Component array not found");
+        auto it = _componentArrays.find(typeIndex);
+        if (it == _componentArrays.end()) {
+            throw std::out_of_range("get_components(): Component array not found for type " + std::string(typeid(Component).name()));
         }
-        return std::any_cast<sparse_array<Component>&>(_componentArrays.at(typeIndex));
+        try {
+            return std::any_cast<sparse_array<Component>&>(it->second);
+        } catch (const std::bad_any_cast&) {
+            throw std::runtime_error("get_components(): Type mismatch in std::any_cast for " + std::string(typeid(Component).name()));
+        }
     }
+
 
     template <class Component>
     const sparse_array<Component>& get_components() const {
         auto typeIndex = std::type_index(typeid(Component));
         if (_componentArrays.find(typeIndex) == _componentArrays.end()) {
-            throw std::out_of_range("Component array not found");
+            throw std::out_of_range("get_components(): Component array not found");
         }
         return std::any_cast<const sparse_array<Component>&>(_componentArrays.at(typeIndex));
     }
