@@ -1,4 +1,4 @@
-# R-Type Protocol
+## README: R-Type Protocol
 
 ## Def
 This document defines the communication protocol between the server and clients in **R-Type**. The server maintains the game state, sending updates to clients, while clients relay player inputs and react to server commands. The `PacketType` enum categorizes packets for streamlined communication.
