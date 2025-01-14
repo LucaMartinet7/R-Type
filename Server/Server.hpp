@@ -90,6 +90,6 @@ namespace RType {
         std::unordered_map<Network::PacketType, void(*)(const Network::Packet&)> m_handlers;
         ClientList clients_;
         size_t _nbClients;
-        GameState& _game;
+        GameState& m_game;
     };
 }
