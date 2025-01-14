@@ -187,9 +187,9 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
 
 void RType::Server::PacketFactory() //need to do the send for entities and bullets
 {
-    for (int playerId = 0; playerId < _game.getPlayerCount(); ++playerId) { 
+    for (int playerId = 0; playerId < m_game.getPlayerCount(); ++playerId) { 
         try {
-            auto [x, y] = _game.getPlayerPosition(playerId); // Use getter to fetch position
+            auto [x, y] = m_game.getPlayerPosition(playerId); // Use getter to fetch position
             std::string data = std::to_string(playerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data)); //mettre l'action 
         } catch (const std::out_of_range& e) {
