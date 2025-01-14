@@ -156,33 +156,52 @@ void PacketHandler::handleGameEnd(const Network::Packet &packet)
 void PacketHandler::handlePlayerRight(const Network::Packet &packet)
 {
     std::cout << "[PacketHandler] Handeled PLAYER_RIGHT packet." << std::endl;
-    int player;
-    m_game.addPlayerAction(player, 1);
+    handlePlayerAction(packet, 2);
 }
 
 void PacketHandler::handlePlayerLeft(const Network::Packet &packet)
 {
     std::cout << "[PacketHandler] Handeled PLAYER_LEFT packet." << std::endl;
-    int player;
-    m_game.addPlayerAction(player, 2);
+    handlePlayerAction(packet, 1);
 }
 
 void PacketHandler::handlePlayerUp(const Network::Packet &packet)
 {
-    std::cout << "[PacketHandler] Handeled PLAYER_UP packet." << std::endl;
-    const ClientList& clients = m_server.getClients();
-    int player;
-    m_game.addPlayerAction(player, 3);
+    std::cout << "[PacketHandler] Handled PLAYER_UP packet." << std::endl;
+    handlePlayerAction(packet, 3);
 }
 
 void PacketHandler::handlePlayerDown(const Network::Packet &packet)
 {
     std::cout << "[PacketHandler] Handeled PLAYER_DOWN packet." << std::endl;
-    int player;
-    m_game.addPlayerAction(player, 4);
+    handlePlayerAction(packet, 4);
 }
 
 void PacketHandler::handleOpenMenu(const Network::Packet &packet)
 {
     std::cout << "[PacketHandler] Handeled OPEN_MENU packet." << std::endl;
+}
+
+void PacketHandler::handlePlayerAction(const Network::Packet &packet, int action)
+{
+    std::cout << "[PacketHandler] Handling player action: " << action << std::endl;
+
+    const auto& clients = m_server.getClients();
+    const udp::endpoint& clientEndpoint = m_server.getRemoteEndpoint();
+
+    size_t playerId = -1;
+    bool found = false;
+
+    for (const auto& [id, client] : clients) {
+        if (client.getEndpoint() == clientEndpoint) {
+            playerId = id;
+            found = true;
+            break;
+        }
+    }
+    if (found) {
+        m_game.addPlayerAction(playerId, action);
+    } else {
+        std::cerr << "[PacketHandler] Client endpoint not found in client list." << std::endl;
+    }
 }

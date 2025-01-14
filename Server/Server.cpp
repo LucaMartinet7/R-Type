@@ -18,8 +18,8 @@ using boost::asio::ip::udp;
  * @param io_context The io_context object used for asynchronous operations.
  * @param port The port number on which the server will listen for incoming UDP packets.
  */
-RType::Server::Server(boost::asio::io_context &io_context, short port, ThreadSafeQueue<Network::Packet> &packetQueue)
-: socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue), _nbClients(0)
+RType::Server::Server(boost::asio::io_context &io_context, short port, ThreadSafeQueue<Network::Packet> &packetQueue, GameState &game)
+: socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue), _nbClients(0), _game(game)
 {
     start_receive();
 }

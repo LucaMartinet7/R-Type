@@ -17,7 +17,7 @@
 #include "Network/ThreadSafeQueue.hpp"
 #include "Network/Packet.hpp"
 #include "ClientRegister.hpp"
-#include <map>
+#include "GameState.hpp"
 
 typedef std::map<uint32_t, ClientRegister> ClientList;
 
@@ -40,20 +40,23 @@ namespace RType {
          * @param io_context The io_context object used for asynchronous operations.
          * @param port The port number on which the server will listen for incoming UDP packets.
          */
-        Server(boost::asio::io_context& io_context, short port, ThreadSafeQueue<Network::Packet> &packetQueue);
+        Server(boost::asio::io_context& io_context, short port, ThreadSafeQueue<Network::Packet> &packetQueue, GameState& game);
         /**
          * @brief Destroys the Server object.
          */
         ~Server();
         void handle_receive(const boost::system::error_code &error, std::size_t bytes_transferred);
-        void send_to_client(const std::string& message, const boost::asio::ip::udp::endpoint& client_endpoint);
+        void send_to_client(const std::string& message, const udp::endpoint& client_endpoint);
         void Broadcast(const std::string& message);
-        Network::ReqConnect reqConnectData(boost::asio::ip::udp::endpoint& client_endpoint);
-        Network::DisconnectData disconnectData(boost::asio::ip::udp::endpoint& client_endpoint);
-        void handle_game_packet(const Network::Packet& packet, const boost::asio::ip::udp::endpoint& client_endpoint);
+        Network::ReqConnect reqConnectData(udp::endpoint& client_endpoint);
+        Network::DisconnectData disconnectData(udp::endpoint& client_endpoint);
+        void handle_game_packet(const Network::Packet& packet, const udp::endpoint& client_endpoint);
         std::string createPacket(const Network::PacketType& type, const std::string& data);
         Network::Packet deserializePacket(const std::string& packet_str);
         const ClientList& getClients() const { return clients_; }
+        const udp::endpoint& getRemoteEndpoint() const {
+            return remote_endpoint_;
+            }
     private:
         using PacketHandler = std::function<void(const std::vector<std::string>&)>;
         /**
@@ -75,10 +78,10 @@ namespace RType {
          * @param bytes_transferred The number of bytes received.
          */
 
-        uint32_t createClient(boost::asio::ip::udp::endpoint& client_endpoint);
+        uint32_t createClient(udp::endpoint& client_endpoint);
 
-        boost::asio::ip::udp::socket socket_; ///< The UDP socket used for communication.
-        boost::asio::ip::udp::endpoint remote_endpoint_; ///< The remote endpoint from which data is received.
+        udp::socket socket_; ///< The UDP socket used for communication.
+        udp::endpoint remote_endpoint_; ///< The remote endpoint from which data is received.
         std::array<char, MAX_LENGTH> recv_buffer_; ///< Buffer to store received data.
 
         ThreadSafeQueue<Network::Packet> &m_packetQueue;
@@ -86,5 +89,6 @@ namespace RType {
         std::unordered_map<Network::PacketType, void(*)(const Network::Packet&)> m_handlers;
         ClientList clients_;
         size_t _nbClients;
+        GameState& _game;
     };
 }
