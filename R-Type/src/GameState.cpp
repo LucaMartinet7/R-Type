@@ -10,17 +10,25 @@
 
 GameState::GameState()
     : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000), boss(nullptr), currentWave(0), enemiesPerWave(5) {
-    // Initialize players, enemies, and bullets
+    registerComponents();
+}
+
+void GameState::registerComponents() {
+    registry.register_component<Position>();
+    registry.register_component<Velocity>();
+    registry.register_component<Drawable>();
+    registry.register_component<Controllable>();
+    registry.register_component<Collidable>();
+    registry.register_component<Projectile>();
 }
 
 void GameState::update() {
     registry.run_systems();
-    checkCollisions();
+    //checkCollisions();
     spawnEnemiesRandomly();
 
-    // Move boss if it exists
-    if (boss) {
-        boss->move(0.1f, 0.0f); // Boss moves slower
+    if (boss) { // handle the slow movement of the boss
+        boss->move(0.1f, 0.0f);
     }
 }
 

@@ -4,6 +4,7 @@
 GameLoop::GameLoop() {}
 
 void GameLoop::initialize(int numPlayers) {
+  	gameState.registerComponents();
     for (int i = 0; i < numPlayers; ++i) {
         gameState.spawnPlayer(i, 100.0f * (i + 1), 100.0f);
     }
