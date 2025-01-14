@@ -6,7 +6,6 @@
 */
 
 #include "Server.hpp"
-#include "Network/ThreadSafeQueue.hpp"
 
 using boost::asio::ip::udp;
 
@@ -29,6 +28,28 @@ RType::Server::Server(boost::asio::io_context &io_context, short port, ThreadSaf
 RType::Server::~Server()
 {
     socket_.close();
+}
+
+//SEND MESSAGES
+
+void RType::Server::send_to_client(const std::string& message, const udp::endpoint& client_endpoint)
+{
+    socket_.async_send_to(
+        boost::asio::buffer(message), client_endpoint,
+        [](const boost::system::error_code& error, std::size_t bytes_transferred) {
+            if (!error) {
+                std::cout << "[DEBUG] Message sent to client." << std::endl;
+            } else {
+                std::cerr << "[DEBUG] Error sending to client: " << error.message() << std::endl;
+            }
+        });
+}
+
+void RType::Server::Broadcast(const std::string& message)
+{
+    for (const auto& client : clients_) {
+        send_to_client(message, client.second.getEndpoint());
+    }
 }
 
 /**
@@ -62,65 +83,63 @@ void RType::Server::handle_receive(const boost::system::error_code &error, std::
 {
     if (!error || error == boost::asio::error::message_size) {
         std::string received_data(recv_buffer_.data(), bytes_transferred);
-        std::vector<std::string> segments;
-        boost::split(segments, received_data, boost::is_any_of(";"));
+        std::cout << "[DEBUG] Received: " << static_cast<int>(received_data[0]) << std::endl;
 
-        if (segments.empty()) {
-            start_receive();
-            return;
-        }
-        std::string packet_type_str = segments[0];
-        std::string packet_data;
-        if (segments.size() >= 2) {
-             packet_data = segments[1];
-        }
         Network::Packet packet;
-        if (packet_type_str == "REQCONNECT") {
-            packet.data = reqConnectData(remote_endpoint_);
-            packet.type = Network::PacketType::REQCONNECT;
-        } else if (packet_type_str == "DISCONNECTED") {
-            packet.data = disconnectData(remote_endpoint_);
-            packet.type = Network::PacketType::DISCONNECTED;
-        } else if (packet_type_str == "GAME_START") {
-            packet.data = Network::StartData{0};
-            packet.type = Network::PacketType::GAME_START;
-        } else if (packet_type_str == "PLAYER_JOIN") {
-            packet.data = Network::JoinData{0};
-            packet.type = Network::PacketType::PLAYER_JOIN;
-        } else if (packet_type_str == "PLAYER_MOVED") {
-            packet.data = playerMovedData(packet_data, remote_endpoint_);
-            packet.type = Network::PacketType::PLAYER_MOVED;
-        } else {
-            std::cerr << "Unknown packet type: " << packet_type_str << std::endl;
-            send_to_client("KO: Unknown packet type", remote_endpoint_);
-            start_receive();
-            return;
+        packet.type = deserializePacket(received_data).type;
+        switch (packet.type) {
+            case Network::PacketType::REQCONNECT:
+                packet.data = reqConnectData(remote_endpoint_);
+                break;
+            case Network::PacketType::DISCONNECTED:
+                packet.data = disconnectData(remote_endpoint_);
+                break;
+            default:
+                handle_game_packet(packet, remote_endpoint_);
+                break;
         }
         m_packetQueue.push(packet);
         start_receive();
     }
 }
 
-//SEND MESSAGES
-
-void RType::Server::send_to_client(const std::string& message, const udp::endpoint& client_endpoint)
+void RType::Server::handle_game_packet(const Network::Packet& packet, const udp::endpoint& client_endpoint)
 {
-    socket_.async_send_to(
-        boost::asio::buffer(message), client_endpoint,
-        [](const boost::system::error_code& error, std::size_t bytes_transferred) {
-            if (!error) {
-                std::cout << "Message sent to client." << std::endl;
-            } else {
-                std::cerr << "Error sending to client: " << error.message() << std::endl;
-            }
-        });
+    switch (packet.type) {
+        case Network::PacketType::PLAYER_DOWN:
+            break;
+        case Network::PacketType::PLAYER_UP:
+            break;
+        case Network::PacketType::PLAYER_LEFT:
+            break;
+        case Network::PacketType::PLAYER_RIGHT:
+            break;
+        case Network::PacketType::OPEN_MENU:
+            break;
+        default:
+            std::cerr << "[DEBUG] Unknown packet type." << std::endl;
+            break;
+    }
 }
 
-void RType::Server::Broadcast(const std::string& message)
+Network::Packet RType::Server::deserializePacket(const std::string& packet_str)
 {
-    for (const auto& client : clients_) {
-        send_to_client(message, client.second.getEndpoint());
-    }
+    Network::Packet packet;
+    packet.type = static_cast<Network::PacketType>(packet_str[0]);
+    return packet;
+}
+
+std::string RType::Server::createPacket(const Network::PacketType& type, const std::string& data)
+{
+    std::string packet_str;
+
+    packet_str.push_back(static_cast<uint8_t>(type));
+    packet_str.push_back(static_cast<uint8_t>(';'));
+    if (!data.empty())
+        packet_str.append(data);
+    else
+        packet_str.push_back(static_cast<uint8_t>('0'));
+    return packet_str;
 }
 
 //COMMANDS
@@ -145,7 +164,7 @@ Network::ReqConnect RType::Server::reqConnectData(boost::asio::ip::udp::endpoint
     size_t idClient;
     idClient = createClient(client_endpoint);
     data.id = idClient;
-    send_to_client("OK: Client " + std::to_string(data.id) + " connected.", client_endpoint);
+    send_to_client(createPacket(Network::PacketType::REQCONNECT, ""), client_endpoint);
     return data;
 }
 
@@ -155,31 +174,13 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
     for (auto it = clients_.begin(); it != clients_.end(); ++it) {
         if (it->second.getEndpoint() == client_endpoint) {
             data.id = it->second.getId();
-            std::cout << "Client " << data.id << " disconnected." << std::endl;
-            send_to_client("OK: Client " + std::to_string(data.id) + " disconnected.", client_endpoint);
+            std::cout << "[DEBUG] Client " << data.id << " disconnected." << std::endl;
             clients_.erase(it);
             return data;
         }
     }
     data.id = -1;
     std::cerr << "Client not found." << std::endl;
-    send_to_client("KO: Client not Registered", client_endpoint);
+    send_to_client(createPacket(Network::PacketType::DISCONNECTED, ""), client_endpoint);
     return data;
-}
-
-Network::PositionData RType::Server::playerMovedData(const std::string& data, boost::asio::ip::udp::endpoint& client_endpoint)
-{
-    Network::PositionData pos;
-    std::vector<std::string> segments;
-    boost::split(segments, data, boost::is_any_of(","));
-    if (segments.size() != 3) {
-        std::cerr << "Invalid data format." << std::endl;
-        return pos;
-    }
-    pos.directions = segments[0];
-    pos.x = std::stof(segments[1]);
-    pos.y = std::stof(segments[2]);
-    std::cout << "Player moved to (" << pos.x << ", " << pos.y << ")" << std::endl;
-    send_to_client("MOVED_PLAYER;" + std::to_string(pos.x) + "," + std::to_string(pos.y), client_endpoint);
-    return pos;
 }

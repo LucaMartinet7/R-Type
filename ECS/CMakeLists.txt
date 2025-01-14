@@ -22,7 +22,7 @@ set(ECS_SOURCES
     components/Controllable.hpp
     components/Collidable.hpp
     components/Projectile.hpp
-    components/Registry.hpp
+        Registry.hpp
     components/SparseArray.hpp
     components/Entity.hpp
 )
