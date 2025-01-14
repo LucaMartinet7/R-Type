@@ -48,6 +48,7 @@ namespace RType {
         void handle_receive(const boost::system::error_code &error, std::size_t bytes_transferred);
         void send_to_client(const std::string& message, const udp::endpoint& client_endpoint);
         void Broadcast(const std::string& message);
+        void PacketFactory();
         Network::ReqConnect reqConnectData(udp::endpoint& client_endpoint);
         Network::DisconnectData disconnectData(udp::endpoint& client_endpoint);
         void handle_game_packet(const Network::Packet& packet, const udp::endpoint& client_endpoint);

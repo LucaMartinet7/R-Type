@@ -185,10 +185,15 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
     return data;
 }
 
-void RType::Server::PacketFactory() 
+void RType::Server::PacketFactory() //need to do the send for entities and bullets
 {
-    for(auto it = _game.players.begin(); it != _game.players.end(); ++it) {
-        std::string data = std::to_string(it->getEntity()) + ";" + std::to_string(it->getX()) + ";" + std::to_string(it->getY()); // construct string with player data by getting positions with my getter in AGame
-        broadcast(createPacket(Network::PacketType::PLAYER_JOIN, data));
+    for (int playerId = 0; playerId < _game.getPlayerCount(); ++playerId) { 
+        try {
+            auto [x, y] = _game.getPlayerPosition(playerId); // Use getter to fetch position
+            std::string data = std::to_string(playerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+            Broadcast(createPacket(Network::PacketType::CHANGE, data)); //mettre l'action 
+        } catch (const std::out_of_range& e) {
+            std::cerr << "[ERROR] Invalid player ID: " << playerId << " - " << e.what() << std::endl;
+        }
     }
 }
