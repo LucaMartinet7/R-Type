@@ -80,3 +80,11 @@ void GameState::spawnEnemiesRandomly() {
 size_t GameState::getPlayerCount() const {
     return players.size();
 }
+
+size_t GameState::getEnemiesCount() const {
+    return enemies.size();
+}
+
+size_t GameState::getBulletsCount() const {
+    return bullets.size();
+}

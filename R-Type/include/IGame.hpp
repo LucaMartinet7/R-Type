@@ -24,6 +24,8 @@ public:
     virtual void spawnEnemy(float x, float y) = 0;
     virtual void shootBullet(int playerId) = 0;
     virtual size_t getPlayerCount() const = 0;
+    virtual size_t getEnemiesCount() const = 0;
+    virtual size_t getBulletsCount() const = 0;
     virtual std::pair<float, float> getPlayerPosition(int playerId) const = 0;
     virtual std::pair<float, float> getBulletPosition(int bulletId) const = 0;
     virtual std::pair<float, float> getEnemyPosition(int enemyId) const = 0;

@@ -189,11 +189,31 @@ void RType::Server::PacketFactory() //need to do the send for entities and bulle
 {
     for (int playerId = 0; playerId < m_game.getPlayerCount(); ++playerId) { 
         try {
-            auto [x, y] = m_game.getPlayerPosition(playerId); // Use getter to fetch position
+            auto [x, y] = m_game.getPlayerPosition(playerId);
             std::string data = std::to_string(playerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
-            Broadcast(createPacket(Network::PacketType::CHANGE, data)); //mettre l'action 
+            Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid player ID: " << playerId << " - " << e.what() << std::endl;
+        }
+    }
+
+    for (int enemyId = 0; enemyId < m_game.getEnemiesCount(); ++enemyId) { 
+        try {
+            auto [x, y] = m_game.getEnemyPosition(enemyId);
+            std::string data = "Enemy;" + std::to_string(enemyId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+            Broadcast(createPacket(Network::PacketType::CHANGE, data));
+        } catch (const std::out_of_range& e) {
+            std::cerr << "[ERROR] Invalid enemy ID: " << enemyId << " - " << e.what() << std::endl;
+        }
+    }
+
+    for (int bulletId = 0; bulletId < m_game.getBulletsCount(); ++bulletId) { 
+        try {
+            auto [x, y] = m_game.getBulletPosition(bulletId);
+            std::string data = "Bullet;" + std::to_string(bulletId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+            Broadcast(createPacket(Network::PacketType::CHANGE, data));
+        } catch (const std::out_of_range& e) {
+            std::cerr << "[ERROR] Invalid bullet ID: " << bulletId << " - " << e.what() << std::endl;
         }
     }
 }

@@ -27,6 +27,8 @@ public:
     void spawnEnemy(float x, float y) override;
     void shootBullet(int playerId) override;
     size_t getPlayerCount() const override;
+    size_t getEnemiesCount() const override;
+    size_t getBulletsCount() const override;
 
 private:
     std::mt19937 rng;
