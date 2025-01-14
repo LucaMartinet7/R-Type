@@ -26,16 +26,9 @@ public:
     void spawnPlayer(int playerId, float x, float y) override;
     void spawnEnemy(float x, float y) override;
     void shootBullet(int playerId) override;
-    std::pair<float, float> getPlayerPosition(int playerId) const override;
-    std::pair<float, float> getBulletPosition(int bulletId) const override;
-    std::pair<float, float> getEnemyPosition(int enemyId) const override;
     size_t getPlayerCount() const override;
 
 private:
-    Registry registry;
-    std::vector<Player> players;
-    std::vector<Enemy> enemies;
-    std::vector<Bullet> bullets;
     std::mt19937 rng;
     std::uniform_real_distribution<float> distX;
     std::uniform_real_distribution<float> distY;

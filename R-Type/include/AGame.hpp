@@ -9,12 +9,28 @@
 #define AGAME_HPP
 
 #include "IGame.hpp"
-#include <vector>
+#include "Player.hpp"
+#include "Enemy.hpp"
+#include "Bullet.hpp"
+#include "Registry.hpp"
+#include "GameState.hpp"
+#include "DrawSystem.hpp"
+#include "Position.hpp"
+#include "Drawable.hpp"
+#include "Controllable.hpp"
+#include "Collidable.hpp"
+#include "Projectile.hpp"
+#include "ControlSystem.hpp"
 #include "PlayerAction.hpp"
+#include <vector>
 
 class AGame : public IGame {
     protected:
         std::vector<PlayerAction> playerActions; // Shared player action system
+        std::vector<Player> players;
+        std::vector<Enemy> enemies;
+        std::vector<Bullet> bullets;
+        Registry registry;
 
     public:
         virtual ~AGame() = default;
@@ -24,6 +40,11 @@ class AGame : public IGame {
         void processPlayerActions() override;
         void deletePlayerAction() override;
         const std::vector<PlayerAction>& getPlayerActions() const override;
+
+        //Getter functions for player, bullet and enemy positions for server to build package to send to client
+        std::pair<float, float> getPlayerPosition(int playerId) const override;
+        std::pair<float, float> getBulletPosition(int bulletId) const override;
+        std::pair<float, float> getEnemyPosition(int enemyId) const override;
 };
 
 #endif // AGAME_HPP

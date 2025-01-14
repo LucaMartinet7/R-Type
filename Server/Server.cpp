@@ -184,3 +184,11 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
     send_to_client(createPacket(Network::PacketType::DISCONNECTED, ""), client_endpoint);
     return data;
 }
+
+void RType::Server::PacketFactory() 
+{
+    for(auto it = _game.players.begin(); it != _game.players.end(); ++it) {
+        std::string data = std::to_string(it->getEntity()) + ";" + std::to_string(it->getX()) + ";" + std::to_string(it->getY()); // construct string with player data by getting positions with my getter in AGame
+        broadcast(createPacket(Network::PacketType::PLAYER_JOIN, data));
+    }
+}
