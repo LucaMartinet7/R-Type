@@ -8,7 +8,7 @@ PROJECT_NUMBER         =
 PROJECT_BRIEF          =
 PROJECT_LOGO           =
 PROJECT_ICON           =
-
+USE_MDFILE_AS_MAINPAGE = README.md
 # Set this to the folder you want to use for the generated documentation.
 # For example, "docs" or "build/docs".
 OUTPUT_DIRECTORY       = docs
@@ -44,6 +44,7 @@ INPUT                  = ./src \
                         ./Server \
                         ./ECS \
                         ./GameEngine \
+                        ./README.md
 # Add paths to your source/include directories above (adjust as needed).
 # You can add more folders with a backslash line break.
 
