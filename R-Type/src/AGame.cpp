@@ -5,6 +5,7 @@
 ** AGame
 */
 
+#include "GameState.hpp"
 #include "AGame.hpp"
 #include <algorithm>
 #include <iostream>

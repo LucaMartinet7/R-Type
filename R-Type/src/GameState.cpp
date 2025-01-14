@@ -5,6 +5,7 @@
 ** GameState
 */
 
+#include "GameState.hpp"
 #include "AGame.hpp"
 #include <chrono>
 #include <algorithm>
