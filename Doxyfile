@@ -1,5 +1,5 @@
 #--------------------------------------------------------------------------- 
-# Project related configuration options
+# Project related configuration options 
 #---------------------------------------------------------------------------
 
 DOXYFILE_ENCODING      = UTF-8
@@ -9,61 +9,43 @@ PROJECT_BRIEF          =
 PROJECT_LOGO           =
 PROJECT_ICON           =
 
+# Set this to the folder you want to use for the generated documentation.
+# For example, "docs" or "build/docs".
 OUTPUT_DIRECTORY       = docs
-CREATE_SUBDIRS         = NO
+
+CREATE_SUBDIRS         = YES
 CREATE_SUBDIRS_LEVEL   = 8
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
 
 #--------------------------------------------------------------------------- 
-# Build related configuration options
+# Build related configuration options 
 #---------------------------------------------------------------------------
 
+# If you set EXTRACT_ALL = YES, Doxygen will produce documentation for ALL
+# entities (even those without doc comments).
 EXTRACT_ALL            = YES
+
+# You can hide any undocumented namespaces to keep them out of your docs.
+HIDE_UNDOC_NAMESPACES  = NO
+
+# If you only want to document public stuff, keep EXTRACT_PRIVATE = NO.
 EXTRACT_PRIVATE        = NO
-EXTRACT_PRIV_VIRTUAL   = NO
-EXTRACT_PACKAGE        = NO
-EXTRACT_STATIC         = NO
-EXTRACT_LOCAL_CLASSES  = YES
-EXTRACT_LOCAL_METHODS  = NO
-EXTRACT_ANON_NSPACES   = NO
-HIDE_UNDOC_MEMBERS     = NO
-HIDE_UNDOC_CLASSES     = NO
-HIDE_UNDOC_NAMESPACES  = YES
-HIDE_IN_BODY_DOCS      = NO
-INTERNAL_DOCS          = NO
-CASE_SENSE_NAMES       = SYSTEM
-HIDE_SCOPE_NAMES       = NO
-SHOW_INCLUDE_FILES     = YES
-SHOW_GROUPED_MEMB_INC  = NO
-INLINE_INFO            = YES
-SORT_MEMBER_DOCS       = YES
-SORT_BRIEF_DOCS        = NO
-SORT_MEMBERS_CTORS_1ST = NO
-SORT_GROUP_NAMES       = NO
-SORT_BY_SCOPE_NAME     = NO
 
 #--------------------------------------------------------------------------- 
-# Configuration options related to warnings and progress
-#---------------------------------------------------------------------------
-
-QUIET                  = NO
-WARNINGS               = YES
-WARN_IF_UNDOCUMENTED   = YES
-WARN_IF_DOC_ERROR      = YES
-WARN_IF_INCOMPLETE_DOC = YES
-WARN_NO_PARAMDOC       = NO
-WARN_IF_UNDOC_ENUM_VAL = NO
-WARN_AS_ERROR          = NO
-WARN_FORMAT            = "$file:$line: $text"
-WARN_LOGFILE           =
-
-#--------------------------------------------------------------------------- 
-# Configuration options related to the input files
+# Configuration options related to the input files 
 #---------------------------------------------------------------------------
 
 INPUT                  = ./src \
-                        ./include
+                        ./include \
+                        ./assets \
+                        ./Client \
+                        ./Documentation \
+                        ./Server \
+                        ./ECS \
+                        ./GameEngine \
+# Add paths to your source/include directories above (adjust as needed).
+# You can add more folders with a backslash line break.
 
 RECURSIVE              = YES
 
@@ -119,13 +101,8 @@ FILE_PATTERNS          = *.c \
                          *.qsf \
                          *.ice
 
-EXCLUDE                =
-EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       =
-EXCLUDE_SYMBOLS        =
-
 #--------------------------------------------------------------------------- 
-# Configuration options related to source browsing
+# Configuration options related to source browsing 
 #---------------------------------------------------------------------------
 
 SOURCE_BROWSER         = NO
@@ -133,81 +110,40 @@ INLINE_SOURCES         = NO
 STRIP_CODE_COMMENTS    = YES
 
 #--------------------------------------------------------------------------- 
-# Configuration options related to the alphabetical index
+# Configuration options related to the alphabetical index 
 #---------------------------------------------------------------------------
 
 ALPHABETICAL_INDEX     = YES
 DISABLE_INDEX          = YES
 
 #--------------------------------------------------------------------------- 
-# HTML output
+# HTML output 
 #---------------------------------------------------------------------------
 
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
-
-HTML_DYNAMIC_SECTIONS  = NO
-HTML_COLORSTYLE        = AUTO_LIGHT
-HTML_DYNAMIC_MENUS     = YES
-HTML_INDEX_NUM_ENTRIES = 100
 GENERATE_TREEVIEW      = YES
 TREEVIEW_WIDTH         = 250
 SEARCHENGINE           = YES
 
 #--------------------------------------------------------------------------- 
-# LaTeX output
+# LaTeX output 
 #---------------------------------------------------------------------------
 
 GENERATE_LATEX         = NO
 
 #--------------------------------------------------------------------------- 
-# RTF/Man/Docbook/XML/SQLite3/PerlMod output (disabled by default)
+# GraphViz (Dot) configuration 
 #---------------------------------------------------------------------------
 
-GENERATE_RTF           = NO
-GENERATE_MAN           = NO
-GENERATE_DOCBOOK       = NO
-GENERATE_XML           = NO
-GENERATE_SQLITE3       = NO
-GENERATE_PERLMOD       = NO
-
-#--------------------------------------------------------------------------- 
-# Preprocessor related configuration options
-#---------------------------------------------------------------------------
-
-ENABLE_PREPROCESSING   = YES
-MACRO_EXPANSION        = NO
-EXPAND_ONLY_PREDEF     = NO
-SEARCH_INCLUDES        = YES
-INCLUDE_PATH           =
-INCLUDE_FILE_PATTERNS  =
-PREDEFINED             =
-EXPAND_AS_DEFINED      =
-SKIP_FUNCTION_MACROS   = YES
-
-#--------------------------------------------------------------------------- 
-# External references
-#---------------------------------------------------------------------------
-
-TAGFILES               =
-ALLEXTERNALS           = NO
-EXTERNAL_GROUPS        = YES
-EXTERNAL_PAGES         = YES
-HIDE_UNDOC_RELATIONS   = YES
-
-#--------------------------------------------------------------------------- 
-# dot (GraphViz) configuration
-#---------------------------------------------------------------------------
+# IMPORTANT: Install Graphviz so Doxygen can generate graphs.
 
 HAVE_DOT              = YES
-DOT_PATH              =          # If 'dot' is not in PATH, set this to the dot location.
+DOT_PATH              = /usr/bin
 DOT_NUM_THREADS       = 0
-DOT_COMMON_ATTR       = "fontname=Helvetica,fontsize=10"
-DOT_EDGE_ATTR         = "labelfontname=Helvetica,labelfontsize=10"
-DOT_NODE_ATTR         = "shape=box,height=0.2,width=0.4"
 DOT_IMAGE_FORMAT      = png
-INTERACTIVE_SVG       = NO
+INTERACTIVE_SVG       = YES     # Set to YES if you want interactive SVG diagrams.
 DOT_GRAPH_MAX_NODES   = 50
 MAX_DOT_GRAPH_DEPTH   = 0
 DOT_MULTI_TARGETS     = NO
@@ -215,24 +151,25 @@ GENERATE_LEGEND       = YES
 DOT_CLEANUP           = YES
 
 #--------------------------------------------------------------------------- 
-# Graph-related options
+# Graph options 
 #---------------------------------------------------------------------------
 
-CLASS_GRAPH           = YES         # Generate inheritance diagrams for classes
-COLLABORATION_GRAPH   = YES         # Generate collaboration diagrams for classes
+CLASS_GRAPH           = YES
+COLLABORATION_GRAPH   = YES
 GROUP_GRAPHS          = YES
 
-CALL_GRAPH            = YES         # Generate a graphical call graph for functions
-CALLER_GRAPH          = YES         # Generate a graphical caller graph for functions
+CALL_GRAPH            = YES
+CALLER_GRAPH          = YES
 
-INCLUDE_GRAPH         = YES         # Show dependency graphs for files
+# Include dependency graphs for files:
+INCLUDE_GRAPH         = YES
 INCLUDED_BY_GRAPH     = YES
-GRAPHICAL_HIERARCHY   = YES         # Generate a graphical hierarchy of classes
-DIRECTORY_GRAPH       = YES         # Show directory hierarchy
+
+GRAPHICAL_HIERARCHY   = YES
+DIRECTORY_GRAPH       = YES
 DIR_GRAPH_MAX_DEPTH   = 1
 
 #--------------------------------------------------------------------------- 
-# Misc
+# Other options not shown remain at their default values 
+# (or as you initially had them).
 #---------------------------------------------------------------------------
-
-TIMESTAMP             = NO
