@@ -14,6 +14,7 @@
 #include "Enemy.hpp"
 #include "Bullet.hpp"
 #include "PlayerAction.hpp"
+#include "Boss.hpp"
 #include <vector>
 #include <random>
 
@@ -26,15 +27,31 @@ public:
     void spawnPlayer(int playerId, float x, float y) override;
     void spawnEnemy(float x, float y) override;
     void shootBullet(int playerId) override;
+    void spawnBoss(float x, float y);
+    size_t getPlayerCount() const;
+    bool isBossSpawned() const;
+    bool areEnemiesCleared() const;
+    void startNextWave();
+    Registry &getRegistry();
+    void registerComponents();
+
+    int currentWave;
+  
     size_t getPlayerCount() const override;
     size_t getEnemiesCount() const override;
     size_t getBulletsCount() const override;
 
 private:
+    Registry registry;
+    std::vector<Player> players;
+    std::vector<Enemy> enemies;
+    std::vector<Bullet> bullets;
+    std::unique_ptr<Boss> boss;
     std::mt19937 rng;
     std::uniform_real_distribution<float> distX;
     std::uniform_real_distribution<float> distY;
     std::uniform_int_distribution<int> distTime;
+    int enemiesPerWave;
 
     void checkCollisions();
     void spawnEnemiesRandomly();
