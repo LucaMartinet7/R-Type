@@ -1,18 +1,18 @@
-#ifndef PLAYER_HPP
-#define PLAYER_HPP
+#ifndef BOSS_HPP
+    #define BOSS_HPP
 
 #include "Registry.hpp"
 
-class Player {
+class Boss {
 public:
-    Player(Registry& registry, float x, float y);
-    ~Player();
+    Boss(Registry& registry, float x, float y);
+    ~Boss();
     void move(float x, float y);
     Registry::Entity getEntity() const;
-
 private:
     Registry& registry;
     Registry::Entity entity;
+
 };
 
-#endif // PLAYER_HPP
+#endif //BOSS_HPP

@@ -13,3 +13,8 @@ Enemy::Enemy(Registry& registry, float x, float y) : registry(registry) {
 Registry::Entity Enemy::getEntity() const {
     return entity;
 }
+
+Enemy::~Enemy() {
+    if (registry.entity_exists(entity))
+        registry.kill_entity(entity);
+}

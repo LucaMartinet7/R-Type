@@ -10,6 +10,11 @@ Bullet::Bullet(Registry& registry, float x, float y, float speed) : registry(reg
     registry.add_component<Drawable>(entity, {sf::RectangleShape(sf::Vector2f(5.0f, 5.0f))});
 }
 
+Bullet::~Bullet() {
+    if (registry.entity_exists(entity))
+        registry.kill_entity(entity);
+}
+
 Registry::Entity Bullet::getEntity() const {
     return entity;
 }

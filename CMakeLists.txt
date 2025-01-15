@@ -19,7 +19,6 @@ add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 include_directories(
     ${CMAKE_SOURCE_DIR}/R-Type/include
     ${CMAKE_SOURCE_DIR}/R-Type/include/Entity/
-    ${CMAKE_SOURCE_DIR}/R-Type/src/Entity/
     ${CMAKE_SOURCE_DIR}/Server/Network
     ${CMAKE_SOURCE_DIR}/ECS/
     ${CMAKE_SOURCE_DIR}/ECS/systems/
@@ -59,6 +58,7 @@ add_executable(${SERVER_BINARY}
     R-Type/src/Entity/Player.cpp
     R-Type/src/Entity/Enemy.cpp
     R-Type/src/Entity/Bullet.cpp
+    R-Type/src/Entity/Boss.cpp
 )
 
 # Add client executable
