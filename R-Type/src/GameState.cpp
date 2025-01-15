@@ -161,6 +161,7 @@ size_t GameState::getEnemiesCount() const {
 
 size_t GameState::getBulletsCount() const {
     return bullets.size();
+}
 
 Registry& GameState::getRegistry() {
     return registry;

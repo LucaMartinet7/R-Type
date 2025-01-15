@@ -28,7 +28,6 @@ public:
     void spawnEnemy(float x, float y) override;
     void shootBullet(int playerId) override;
     void spawnBoss(float x, float y);
-    size_t getPlayerCount() const;
     bool isBossSpawned() const;
     bool areEnemiesCleared() const;
     void startNextWave();
@@ -40,6 +39,9 @@ public:
     size_t getPlayerCount() const override;
     size_t getEnemiesCount() const override;
     size_t getBulletsCount() const override;
+
+    //noe
+    void handlePlayerMove(int playerId, float x, float y);
 
 private:
     Registry registry;
