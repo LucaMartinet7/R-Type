@@ -22,6 +22,13 @@
 #include "Collidable.hpp"
 #include "Projectile.hpp"
 #include "PlayerAction.hpp"
+#include "Position.hpp"
+#include "Drawable.hpp"
+#include "Collidable.hpp"
+#include "Controllable.hpp"
+#include "Projectile.hpp"
+#include "Velocity.hpp"
+#include "Registry.hpp"
 #include <vector>
 
 class AGame : public IGame {
