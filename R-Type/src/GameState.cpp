@@ -69,11 +69,11 @@ void GameState::shootBullet(int playerId) {
 }
 
 void GameState::spawnBoss(float x, float y) {
-    boss = std::make_unique<Boss>(registry, x, y);
+    bosses.emplace_back(registry, x, y);
 }
 
 bool GameState::isBossSpawned() const {
-    return boss != nullptr;
+    return !bosses.empty();
 }
 
 bool GameState::areEnemiesCleared() const {

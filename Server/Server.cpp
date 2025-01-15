@@ -200,7 +200,7 @@ void RType::Server::PacketFactory() //Send all the data to the client
     for (int enemyId = 0; enemyId < m_game.getEnemiesCount(); ++enemyId) { 
         try {
             auto [x, y] = m_game.getEnemyPosition(enemyId);
-            std::string data = "Enemy;" + std::to_string(enemyId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+            std::string data = std::to_string(enemyId) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid enemy ID: " << enemyId << " - " << e.what() << std::endl;
@@ -210,7 +210,7 @@ void RType::Server::PacketFactory() //Send all the data to the client
     for (int bulletId = 0; bulletId < m_game.getBulletsCount(); ++bulletId) { 
         try {
             auto [x, y] = m_game.getBulletPosition(bulletId);
-            std::string data = "Bullet;" + std::to_string(bulletId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+            std::string data = std::to_string(bulletId) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid bullet ID: " << bulletId << " - " << e.what() << std::endl;
@@ -220,7 +220,7 @@ void RType::Server::PacketFactory() //Send all the data to the client
     for (int bossId = 0; bossId < m_game.getBossCount(); ++bossId) { 
         try {
             auto [x, y] = m_game.getBossPosition(bossId);
-            std::string data = "Boss;" + std::to_string(bossId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+            std::string data = std::to_string(bossId) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid boss ID: " << bossId << " - " << e.what() << std::endl;

@@ -9,6 +9,7 @@
 #define GAME_STATE_HPP
 
 #include "AGame.hpp"
+#include "CollisionSystem.hpp"
 #include "Registry.hpp"
 #include <random>
 
