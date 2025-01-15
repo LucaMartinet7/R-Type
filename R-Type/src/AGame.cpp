@@ -6,6 +6,9 @@
 */
 
 #include "GameState.hpp"
+#include "Network/Packet.hpp"
+#include "Network/PacketType.hpp"
+#include "Server.hpp"
 #include "AGame.hpp"
 #include <algorithm>
 #include <iostream>
@@ -95,7 +98,7 @@ void GameState::spawnEnemy(float x, float y) {
     Registry::Entity lastEnemyId = lastEnemy.getEntity();
 
     std::string data = std::to_string(lastEnemyId) + ";" + std::to_string(x) + ";" + std::to_string(y);
-    RType::Server::Broadcast(RType::Server::createPacket(Network::PacketType::CREATE_ENEMY, data));
+    m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_ENEMY, data));
 }
 
 void GameState::spawnBoss(float x, float y) {
@@ -105,7 +108,7 @@ void GameState::spawnBoss(float x, float y) {
     Registry::Entity lastBossId = lastBoss.getEntity();
 
     std::string data = std::to_string(lastBossId) + ";" + std::to_string(x) + ";" + std::to_string(y);
-    RType::Server::Broadcast(RType::Server::createPacket(Network::PacketType::CREATE_BOSS, data));
+    m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_BOSS, data));
 }
 
 void GameState::spawnPlayer(int playerId, float x, float y) {
@@ -116,7 +119,7 @@ void GameState::spawnPlayer(int playerId, float x, float y) {
         Registry::Entity lastPlayerId = lastPlayer.getEntity();
 
         std::string data = std::to_string(playerId) + ";" + std::to_string(lastPlayerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
-        RType::Server::Broadcast(RType::Server::createPacket(Network::PacketType::CREATE_PLAYER, data));
+        m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_PLAYER, data));
     }
 }
 
@@ -131,9 +134,26 @@ void GameState::spawnBullet(int playerId) {
             Registry::Entity lastBulletId = lastBullet.getEntity();
 
             std::string data = std::to_string(lastBulletId) + ";" + std::to_string(position->x + 50.0f) + ";" + std::to_string(position->y + 25.0f);
-            RType::Server::Broadcast(RType::Server::createPacket(Network::PacketType::CREATE_BULLET, data));
+            m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_BULLET, data));
         } else {
             std::cerr << "Error: Player " << playerId << " does not have a Position component." << std::endl;
         }
     }
+}
+
+// Provide definitions for the pure virtual functions in AGame
+void AGame::spawnPlayer(int playerId, float x, float y) {
+    // Implementation can be empty or provide a default behavior
+}
+
+void AGame::spawnEnemy(float x, float y) {
+    // Implementation can be empty or provide a default behavior
+}
+
+void AGame::spawnBullet(int playerId) {
+    // Implementation can be empty or provide a default behavior
+}
+
+void AGame::spawnBoss(float x, float y) {
+    // Implementation can be empty or provide a default behavior
 }

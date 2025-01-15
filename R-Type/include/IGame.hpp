@@ -12,8 +12,6 @@
 #include <utility>
 #include <cstddef>
 #include "PlayerAction.hpp"
-#include "Server.hpp"
-#include "Packet.hpp"
 
 class IGame {
 public:

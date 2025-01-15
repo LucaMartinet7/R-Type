@@ -31,11 +31,11 @@
 #include "Registry.hpp"
 #include <vector>
 
-class AGame : public IGame {
-    private:
-        RType::Server &m_server;
-        Network::Packet &m_network;
+namespace RType {
+    class Server;
+}
 
+class AGame : public IGame {
     protected:
         std::vector<PlayerAction> playerActions; // Shared player action system
         std::vector<Player> players;
@@ -43,6 +43,7 @@ class AGame : public IGame {
         std::vector<Bullet> bullets;
         std::vector<Boss> bosses;
         Registry registry;
+        RType::Server* m_server;
 
     public:
         virtual ~AGame();
