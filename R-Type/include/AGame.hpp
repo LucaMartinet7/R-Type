@@ -14,6 +14,13 @@
 #include "Bullet.hpp"
 #include "Registry.hpp"
 #include "Boss.hpp"
+#include "Registry.hpp"
+#include "Position.hpp"
+#include "Velocity.hpp"
+#include "Drawable.hpp"
+#include "Controllable.hpp"
+#include "Collidable.hpp"
+#include "Projectile.hpp"
 #include "PlayerAction.hpp"
 #include <vector>
 
