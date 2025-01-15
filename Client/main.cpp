@@ -5,6 +5,8 @@
 ** main
 */
 
+#include <iostream>
+#include <boost/asio.hpp>
 #include "Client.hpp"
 
 RType::Client* global_client = nullptr;
@@ -20,7 +22,7 @@ int main(int ac, char **av)
 {
     if (ac != 4) {
         std::cerr << "Usage: " << av[0] << " <host> <server-port> <client-port>" << std::endl;
-        return 1;
+        return 84;
     }
 
     std::string host = av[1];
@@ -30,17 +32,9 @@ int main(int ac, char **av)
     try {
         boost::asio::io_context io_context;
         RType::Client client(io_context, host, server_port, client_port);
-        global_client = &client;
 
-        // Set up the signal handler
         std::signal(SIGINT, signalHandler);
-
-        //std::string message;
-        //while (std::getline(std::cin, message)) {
-        //    client.send(message);
-        //}
-        client.run();
-        
+        client.main_loop();
     } catch (const std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }

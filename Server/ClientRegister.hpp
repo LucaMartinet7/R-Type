@@ -16,7 +16,7 @@ class ClientRegister {
         ClientRegister(size_t id, udp::endpoint endpoint): _id(id), _endpoint(endpoint) {}
         size_t getId() const { return _id; };
         udp::endpoint getEndpoint() const { return _endpoint; };
-
+        
     private:
         size_t _id;
         udp::endpoint _endpoint;

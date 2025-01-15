@@ -60,6 +60,8 @@ Each packet exchanged between the server and clients consists of:
      - `PLAYER_MOVED` for movement.
      - `PLAYER_SHOOT` for firing.
      - `PLAYER_SCORE` for score updates.
+     - `PLAYER_DEAD` for destruction.
+     - `PLAYER_HIT` for death animation.
    - **Payload**: Relevant player data.
 3. **Enemy Events**
    - **Packet Type**:
@@ -68,8 +70,15 @@ Each packet exchanged between the server and clients consists of:
      - `ENEMY_DEAD` for destruction.
    - **Payload**: Relevant enemy data.
 4. **Game End**
-   - **Packet Type**: `GAME_END`
-   - **Payload**: Game outcome (e.g., victory or defeat).
+   - **Packet Type**:
+      - `GAME_END`
+      - `GAME_START`
+   - **Payload**: Relevant game data.
+5. **Server Checks**
+   - **Packet Type**:
+      - `REQCONNECT` for creation.
+      - `DISCONNECTED` for destruction.
+   - **Payload**: Relevant Server data.
 
 ---
 
@@ -89,19 +98,18 @@ Each packet exchanged between the server and clients consists of:
 
 | **Packet Type**      | **Payload Format**                                         | **Description**                                |
 |-----------------------|-----------------------------------------------------------|------------------------------------------------|
-| `CONNECTED`          | None                                                      | Sent by the server to confirm connection.      |
-| `GAME_START`         | `[LEVEL_ID]`                                              | Start a new game with the specified level.     |
-| `PLAYER_JOIN`        | `[INSTANCE_ID]`                                           | Join the specified game instance.             |
-| `PLAYER_MOVED`       | `[X, Y, DIRECTION]`                                       | Update player position or direction.          |
-| `PLAYER_SHOOT`       | `[PROJECTILE_TYPE, DIRECTION]`                            | Player fires a projectile.                    |
-| `ENEMY_SPAWNED`      | `[TYPE, X, Y]`                                            | Spawn a new enemy at a specific position.      |
-| `MAP_UPDATE`         | `[ENTITY_LIST]`                                           | Full game state update for all entities.       |
-| `GAME_END`           | `[RESULT]`                                                | End of game with the outcome.                 |
+| `REQCONNECT`          | `None`                                                    | Sent by the server to confirm connection.      |
+| `GAME_START`          | `[LEVEL_ID]`                                              | Start a new game with the specified level.     |
+| `PLAYER_JOIN`         | `[INSTANCE_ID]`                                           | Join the specified game instance.              |
+| `PLAYER_MOVED`        | `[X, Y]`                                                  | Update player position or direction.           |
+| `PLAYER_SHOOT`        | `[ID, X, Y]`                                              | Player fires a projectile.                     |
+| `MAP_UPDATE`          | `[All Info]`                                              | Full game state update for all entities.       |
+| `GAME_END`            | `[RESULT]`                                                | End of game with the outcome.                  |
+| `DISCONNECTED`        | `None`
 
 ---
 
 ## Error Handling
-1. Malformed or unauthorized packets result in a `DISCONNECTED` response.
-2. Upon receiving a `DISCONNECTED` packet, clients should terminate the connection and display an error message.
+1. Malformed or unauthorized packets result in a `` response.
 
 ---

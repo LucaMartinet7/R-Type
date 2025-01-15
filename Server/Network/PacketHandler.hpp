@@ -14,45 +14,53 @@
 #include "ThreadSafeQueue.hpp"
 #include "Packet.hpp"
 #include "PacketType.hpp"
-
+#include "GameState.hpp"
+#include "../Server.hpp"
 
 namespace Network {
     class PacketHandler {
     public:
-        PacketHandler(ThreadSafeQueue<Network::Packet> &queue);
+        PacketHandler(ThreadSafeQueue<Network::Packet>& queue, GameState& game, RType::Server& server);
         ~PacketHandler();
 
         void start();
         void stop();
-
-    private:
         void processPackets();
+
         void handlePacket(const Network::Packet &packet);
         void initializeHandlers();
 
-        // Static handler functions for each packet type
-        static void handleNone(const Network::Packet &packet);
-        static void reqConnect(const Network::Packet &packet);
-        static void handleDisconnected(const Network::Packet &packet);
-        static void handleGameStart(const Network::Packet &packet);
-        static void handlePlayerDead(const Network::Packet &packet);
-        static void handlePlayerJoin(const Network::Packet &packet);
-        static void handlePlayerShoot(const Network::Packet &packet);
-        static void handlePlayerHit(const Network::Packet &packet);
-        static void handlePlayerScore(const Network::Packet &packet);
-        static void handleEnemySpawned(const Network::Packet &packet);
-        static void handleEnemyDead(const Network::Packet &packet);
-        static void handleEnemyMoved(const Network::Packet &packet);
-        static void handleEnemyShoot(const Network::Packet &packet);
-        static void handleEnemyLifeUpdate(const Network::Packet &packet);
-        static void handleMapUpdate(const Network::Packet &packet);
-        static void handleGameEnd(const Network::Packet &packet);
-        static void handlePlayerMoved(const Network::Packet &packet);
+        // handler functions for each packet type
+        void handleNone(const Network::Packet &packet);
+        void reqConnect(const Network::Packet &packet);
+        void handleDisconnected(const Network::Packet &packet);
+        void handleGameStart(const Network::Packet &packet);
+        void handlePlayerDead(const Network::Packet &packet);
+        void handlePlayerJoin(const Network::Packet &packet);
+        void handlePlayerShoot(const Network::Packet &packet);
+        void handlePlayerHit(const Network::Packet &packet);
+        void handlePlayerScore(const Network::Packet &packet);
+        void handleEnemySpawned(const Network::Packet &packet);
+        void handleEnemyDead(const Network::Packet &packet);
+        void handleEnemyMoved(const Network::Packet &packet);
+        void handleEnemyShoot(const Network::Packet &packet);
+        void handleEnemyLifeUpdate(const Network::Packet &packet);
+        void handleMapUpdate(const Network::Packet &packet);
+        void handleGameEnd(const Network::Packet &packet);
+        void handlePlayerRight(const Network::Packet &packet);
+        void handlePlayerLeft(const Network::Packet &packet);
+        void handlePlayerUp(const Network::Packet &packet);
+        void handlePlayerDown(const Network::Packet &packet);
+        void handleOpenMenu(const Network::Packet &packet);
+        void handlePlayerAction(const Network::Packet &packet, int action);
 
+    private:
         ThreadSafeQueue<Network::Packet> &m_queue;
+        GameState& m_game;
         std::thread m_thread;
+        RType::Server& m_server;
         std::atomic<bool> m_running{false};
 
-        std::unordered_map<Network::PacketType, void(*)(const Network::Packet&)> m_handlers;
+        std::unordered_map<Network::PacketType, std::function<void(const Network::Packet&)>> m_handlers;
     };
 }
