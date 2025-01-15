@@ -2,6 +2,7 @@
 #define GAME_STATE_HPP
 
 #include "AGame.hpp"
+#include "CollisionSystem.hpp"
 #include "Registry.hpp"
 #include "CollisionSystem.hpp"
 #include <random>
@@ -17,10 +18,6 @@ public:
 
     void update() override;
     void handlePlayerMove(int playerId, int actionId) override;
-    void spawnPlayer(int playerId, float x, float y) override;
-    void spawnEnemy(float x, float y) override;
-    void shootBullet(int playerId) override;
-    void spawnBoss(float x, float y);
     bool isBossSpawned() const;
     bool areEnemiesCleared() const;
     void startNextWave();
@@ -32,6 +29,7 @@ public:
     size_t getPlayerCount() const override;
     size_t getEnemiesCount() const override;
     size_t getBulletsCount() const override;
+    size_t getBossCount() const override;
 
 private:
     std::mt19937 rng;

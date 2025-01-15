@@ -14,6 +14,13 @@
 #include "Bullet.hpp"
 #include "Registry.hpp"
 #include "Boss.hpp"
+#include "Registry.hpp"
+#include "Position.hpp"
+#include "Velocity.hpp"
+#include "Drawable.hpp"
+#include "Controllable.hpp"
+#include "Collidable.hpp"
+#include "Projectile.hpp"
 #include "PlayerAction.hpp"
 #include "Position.hpp"
 #include "Drawable.hpp"
@@ -25,6 +32,10 @@
 #include <vector>
 
 class AGame : public IGame {
+    private:
+        RType::Server &m_server;
+        Network::Packet &m_network;
+
     protected:
         std::vector<PlayerAction> playerActions; // Shared player action system
         std::vector<Player> players;
@@ -46,6 +57,13 @@ class AGame : public IGame {
         std::pair<float, float> getPlayerPosition(int playerId) const override;
         std::pair<float, float> getBulletPosition(int bulletId) const override;
         std::pair<float, float> getEnemyPosition(int enemyId) const override;
+        std::pair<float, float> getBossPosition(int enemyId) const override;
+
+        // Implement entity spawn and delete management functions
+        void spawnEnemy(float x, float y) override;
+        void spawnBoss(float x, float y) override;
+        void spawnPlayer(int playerId, float x, float y) override;
+        void spawnBullet(int playerId) override;
 };
 
 #endif // AGAME_HPP

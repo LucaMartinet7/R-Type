@@ -33,7 +33,7 @@ void AGame::processPlayerActions() {
             handlePlayerMove(playerId, actionId);
             action.setProcessed(true);
         } else if (actionId == 5) { // Change by real action ID defined in server
-            shootBullet(playerId);
+            spawnBullet(playerId);
             action.setProcessed(true);
         }
         // Handle other actions or ignore unknown action IDs 
@@ -77,4 +77,63 @@ std::pair<float, float> AGame::getBulletPosition(int bulletId) const {
 
     const auto& positionComponent = registry.get_components<Position>()[bullets[bulletId].getEntity()];
     return {positionComponent->x, positionComponent->y};
+}
+
+std::pair<float, float> AGame::getBossPosition(int bossId) const {
+    if (bossId < 0 || bossId >= bosses.size()) {
+        throw std::out_of_range("Invalid boss ID");
+    }
+
+    const auto& positionComponent = registry.get_components<Position>()[bosses[bossId].getEntity()];
+    return {positionComponent->x, positionComponent->y};
+}
+
+void GameState::spawnEnemy(float x, float y) {
+    enemies.emplace_back(registry, x, y);
+
+    Enemy& lastEnemy = enemies.back();
+    Registry::Entity lastEnemyId = lastEnemy.getEntity();
+
+    std::string data = std::to_string(lastEnemyId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+    RType::Server::Broadcast(RType::Server::createPacket(Network::PacketType::CREATE_ENEMY, data));
+}
+
+void GameState::spawnBoss(float x, float y) {
+    bosses.emplace_back(registry, x, y);
+
+    Boss& lastBoss = bosses.back();
+    Registry::Entity lastBossId = lastBoss.getEntity();
+
+    std::string data = std::to_string(lastBossId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+    RType::Server::Broadcast(RType::Server::createPacket(Network::PacketType::CREATE_BOSS, data));
+}
+
+void GameState::spawnPlayer(int playerId, float x, float y) {
+    if (playerId >= 0 && playerId < 4) {
+        players.emplace_back(registry, x, y);
+
+        Player& lastPlayer = players.back();
+        Registry::Entity lastPlayerId = lastPlayer.getEntity();
+
+        std::string data = std::to_string(playerId) + ";" + std::to_string(lastPlayerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+        RType::Server::Broadcast(RType::Server::createPacket(Network::PacketType::CREATE_PLAYER, data));
+    }
+}
+
+void GameState::spawnBullet(int playerId) {
+    if (playerId < players.size()) {
+        auto entity = players[playerId].getEntity();
+        if (registry.has_component<Position>(entity)) {
+            const auto& position = registry.get_components<Position>()[entity];
+            bullets.emplace_back(registry, position->x + 50.0f, position->y + 25.0f, 1.0f);
+
+            Bullet& lastBullet = bullets.back();
+            Registry::Entity lastBulletId = lastBullet.getEntity();
+
+            std::string data = std::to_string(lastBulletId) + ";" + std::to_string(position->x + 50.0f) + ";" + std::to_string(position->y + 25.0f);
+            RType::Server::Broadcast(RType::Server::createPacket(Network::PacketType::CREATE_BULLET, data));
+        } else {
+            std::cerr << "Error: Player " << playerId << " does not have a Position component." << std::endl;
+        }
+    }
 }

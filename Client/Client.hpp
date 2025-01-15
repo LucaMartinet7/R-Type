@@ -25,8 +25,9 @@
 namespace RType {
     enum class SpriteType {
         Enemy,
+        Boss,
         Player,
-        Missile,
+        Bullet,
         Background
     };
 
