@@ -219,9 +219,9 @@ void RType::Server::PacketFactory() {
         }
     }
 
-    for (int bossId = 0; bossId < m_game.getBossCount(); ++bossId) { 
+    for (int bossId = 0; bossId < m_game->getBossCount(); ++bossId) { 
         try {
-            auto [x, y] = m_game.getBossPosition(bossId);
+            auto [x, y] = m_game->getBossPosition(bossId);
             std::string data = std::to_string(bossId) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {

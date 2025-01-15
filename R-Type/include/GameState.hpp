@@ -31,6 +31,12 @@ public:
     size_t getBulletsCount() const override;
     size_t getBossCount() const override;
 
+    // Declare the missing methods
+    void spawnEnemy(float x, float y) override;
+    void spawnBoss(float x, float y) override;
+    void spawnPlayer(int playerId, float x, float y) override;
+    void spawnBullet(int playerId) override;
+
 private:
     std::mt19937 rng;
     std::uniform_real_distribution<float> distX;
