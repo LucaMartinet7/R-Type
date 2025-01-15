@@ -87,13 +87,15 @@ void RType::Client::createSprite()
     SpriteElement spriteElement;
     SpriteType spriteType;
 
-    if (action == 1) { //change by used ID in server to create different types of sprites to be displayed
+    if (action == 200) { //change by used ID in server to create different types of sprites to be displayed
         spriteType = SpriteType::Enemy;
-    } else if (action == 2) {
+    } else if (action == 201) {
+        spriteType = SpriteType::Boss;
+    } else if (action == 202) {
         spriteType = SpriteType::Player;
-    } else if (action == 3) {
-        spriteType = SpriteType::Missile;
-    } else if (action == 4) {
+    } else if (action == 203) {
+        spriteType = SpriteType::Bullet;
+    } else if (action == 204) {
         spriteType = SpriteType::Background;
     } else {
         return;
@@ -118,8 +120,9 @@ void RType::Client::destroySprite()
 void RType::Client::loadTextures() //make sure to have the right textures in the right folder
 {
     textures_[RType::SpriteType::Enemy].loadFromFile("enemy.png");
+    textures_[RType::SpriteType::Boss].loadFromFile("boss.png");
     textures_[RType::SpriteType::Player].loadFromFile("player.png");
-    textures_[RType::SpriteType::Missile].loadFromFile("missile.png");
+    textures_[RType::SpriteType::Bullet].loadFromFile("bullet.png");
     textures_[RType::SpriteType::Background].loadFromFile("background.png");
 }
 

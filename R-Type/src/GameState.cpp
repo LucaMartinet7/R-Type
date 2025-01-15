@@ -5,6 +5,7 @@
 ** GameState
 */
 
+#include "Server.hpp"
 #include "GameState.hpp"
 #include "AGame.hpp"
 #include <algorithm>
@@ -44,32 +45,6 @@ void GameState::handlePlayerMove(int playerId, int actionId) {
         y = moveDistance;
     }
     players[playerId].move(x, y);
-}
-
-void GameState::spawnPlayer(int playerId, float x, float y) {
-    if (playerId >= 0 && playerId < 4) {
-        players.emplace_back(registry, x, y);
-    }
-}
-
-void GameState::spawnEnemy(float x, float y) {
-    enemies.emplace_back(registry, x, y);
-}
-
-void GameState::shootBullet(int playerId) {
-    if (playerId < players.size()) {
-        auto entity = players[playerId].getEntity();
-        if (registry.has_component<Position>(entity)) {
-            const auto& position = registry.get_components<Position>()[entity];
-            bullets.emplace_back(registry, position->x + 50.0f, position->y + 25.0f, 1.0f);
-        } else {
-            std::cerr << "Error: Player " << playerId << " does not have a Position component." << std::endl;
-        }
-    }
-}
-
-void GameState::spawnBoss(float x, float y) {
-    bosses.emplace_back(registry, x, y);
 }
 
 bool GameState::isBossSpawned() const {

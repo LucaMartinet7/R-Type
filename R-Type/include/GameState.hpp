@@ -19,10 +19,6 @@ public:
 
     void update() override;
     void handlePlayerMove(int playerId, int actionId) override;
-    void spawnPlayer(int playerId, float x, float y) override;
-    void spawnEnemy(float x, float y) override;
-    void shootBullet(int playerId) override;
-    void spawnBoss(float x, float y);
     bool isBossSpawned() const;
     bool areEnemiesCleared() const;
     void startNextWave();
