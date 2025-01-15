@@ -31,10 +31,10 @@ void runServer(short port)
     try {
         boost::asio::io_context io_context;
         ThreadSafeQueue<Network::Packet> packetQueue;
-
-        RType::Server server(io_context, port, packetQueue);
-
         GameState game;
+
+        RType::Server server(io_context, port, packetQueue, game);
+
         Network::PacketHandler packetHandler(packetQueue, game, server);
         packetHandler.start();
 

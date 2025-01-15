@@ -7,10 +7,11 @@
 
 #include "GameState.hpp"
 #include "AGame.hpp"
+#include <iostream>
 #include <algorithm>
 
 GameState::GameState()
-    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000), boss(nullptr), currentWave(0), enemiesPerWave(5), playerMoved(false) {
+    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000), currentWave(0), enemiesPerWave(5) {
     registerComponents();
 }
 
@@ -26,7 +27,7 @@ void GameState::registerComponents() {
 void GameState::update() {
     registry.run_systems();
     //checkCollisions();
-    processPlayerActions(); 
+    processPlayerActions();
 }
 
 void GameState::handlePlayerMove(int playerId, int actionId) {
@@ -69,11 +70,11 @@ void GameState::shootBullet(int playerId) {
 }
 
 void GameState::spawnBoss(float x, float y) {
-    boss = std::make_unique<Boss>(registry, x, y);
+    bosses.emplace_back(registry, x, y);
 }
 
 bool GameState::isBossSpawned() const {
-    return boss != nullptr;
+    return !bosses.empty();
 }
 
 bool GameState::areEnemiesCleared() const {

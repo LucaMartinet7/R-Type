@@ -10,6 +10,7 @@
 
 #include "AGame.hpp"
 #include "Registry.hpp"
+#include "CollisionSystem.hpp"
 #include <random>
 
 class GameState : public AGame {
