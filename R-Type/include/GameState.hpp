@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2025
-** R-Type [WSL: Ubuntu]
-** File description:
-** GameState
-*/
-
 #ifndef GAME_STATE_HPP
 #define GAME_STATE_HPP
 
@@ -13,9 +6,14 @@
 #include "CollisionSystem.hpp"
 #include <random>
 
+// Forward declaration of RType::Server
+namespace RType {
+    class Server;
+}
+
 class GameState : public AGame {
 public:
-    GameState();
+    GameState(RType::Server* server = nullptr);
 
     void update() override;
     void handlePlayerMove(int playerId, int actionId) override;
@@ -26,7 +24,7 @@ public:
     bool isBossSpawned() const;
     bool areEnemiesCleared() const;
     void startNextWave();
-    Registry &getRegistry();
+    Registry& getRegistry();
     void registerComponents();
 
     int currentWave;
@@ -44,6 +42,7 @@ private:
 
     void checkCollisions();
     void spawnEnemiesRandomly();
+    RType::Server* m_server; // Pointer to RType::Server
 };
 
 #endif // GAME_STATE_HPP

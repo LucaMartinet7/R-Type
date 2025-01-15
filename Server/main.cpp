@@ -26,29 +26,35 @@ short parsePort(int ac, char **av)
     }
 }
 
-void runServer(short port)
-{
+void runServer(short port) {
     try {
         boost::asio::io_context io_context;
         ThreadSafeQueue<Network::Packet> packetQueue;
-        GameState game;
 
-        RType::Server server(io_context, port, packetQueue, game);
+        // Initialize server with nullptr for GameState
+        RType::Server server(io_context, port, packetQueue, nullptr);
+
+        // Initialize GameState and pass the server to it
+        GameState game(&server);
+
+        // Set the GameState in the server
+        server.setGameState(&game);
 
         Network::PacketHandler packetHandler(packetQueue, game, server);
         packetHandler.start();
 
-        std::cout << "Server started" << std::endl;
-        std::cout << "Listening on UDP port " << port << std::endl;
+        std::cout << "Server started\nListening on UDP port " << port << std::endl;
 
+        // Launch server thread
+        std::thread serverThread([&io_context] {
+            io_context.run();
+        });
+
+        // Launch game loop thread
         std::thread gameThread([&game] {
             while (true) {
                 game.update();
             }
-        });
-
-        std::thread serverThread([&io_context] {
-            io_context.run();
         });
 
         if (serverThread.joinable()) {

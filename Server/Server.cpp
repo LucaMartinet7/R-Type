@@ -18,12 +18,15 @@ using boost::asio::ip::udp;
  * @param io_context The io_context object used for asynchronous operations.
  * @param port The port number on which the server will listen for incoming UDP packets.
  */
-RType::Server::Server(boost::asio::io_context &io_context, short port, ThreadSafeQueue<Network::Packet> &packetQueue, GameState &game)
+RType::Server::Server(boost::asio::io_context& io_context, short port, ThreadSafeQueue<Network::Packet>& packetQueue, GameState* game)
 : socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue), _nbClients(0), m_game(game)
 {
     start_receive();
 }
 
+void RType::Server::setGameState(GameState* game) {
+    m_game = game;
+}
 
 RType::Server::~Server()
 {
@@ -185,11 +188,10 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
     return data;
 }
 
-void RType::Server::PacketFactory() //need to do the send for entities and bullets
-{
-    for (int playerId = 0; playerId < m_game.getPlayerCount(); ++playerId) { 
+void RType::Server::PacketFactory() {
+    for (int playerId = 0; playerId < m_game->getPlayerCount(); ++playerId) {
         try {
-            auto [x, y] = m_game.getPlayerPosition(playerId);
+            auto [x, y] = m_game->getPlayerPosition(playerId);
             std::string data = std::to_string(playerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
@@ -197,9 +199,9 @@ void RType::Server::PacketFactory() //need to do the send for entities and bulle
         }
     }
 
-    for (int enemyId = 0; enemyId < m_game.getEnemiesCount(); ++enemyId) { 
+    for (int enemyId = 0; enemyId < m_game->getEnemiesCount(); ++enemyId) {
         try {
-            auto [x, y] = m_game.getEnemyPosition(enemyId);
+            auto [x, y] = m_game->getEnemyPosition(enemyId);
             std::string data = "Enemy;" + std::to_string(enemyId) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
@@ -207,9 +209,9 @@ void RType::Server::PacketFactory() //need to do the send for entities and bulle
         }
     }
 
-    for (int bulletId = 0; bulletId < m_game.getBulletsCount(); ++bulletId) { 
+    for (int bulletId = 0; bulletId < m_game->getBulletsCount(); ++bulletId) {
         try {
-            auto [x, y] = m_game.getBulletPosition(bulletId);
+            auto [x, y] = m_game->getBulletPosition(bulletId);
             std::string data = "Bullet;" + std::to_string(bulletId) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
