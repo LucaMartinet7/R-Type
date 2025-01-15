@@ -32,10 +32,7 @@ void runServer(short port)
         boost::asio::io_context io_context;
         ThreadSafeQueue<Network::Packet> packetQueue;
 
-        RType::Server server([&io_context, port, &packetQueue] () {
-            RType::Server server(io_context, port, packetQueue);
-            oi_context.run();
-        });
+        RType::Server server(io_context, port, packetQueue);
 
         GameState game;
         Network::PacketHandler packetHandler(packetQueue, game, server);
@@ -50,7 +47,9 @@ void runServer(short port)
             }
         });
 
-        io_context.run();
+        std::thread serverThread([&io_context] {
+            io_context.run();
+        });
 
         if (serverThread.joinable()) {
             serverThread.join();
