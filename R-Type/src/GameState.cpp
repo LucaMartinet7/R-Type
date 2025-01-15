@@ -33,7 +33,9 @@ void GameState::update() {
 }
 
 void GameState::handlePlayerMove(int playerId, float x, float y) {
-    players[playerId].move(x, y);
+    if (playerId < players.size()) {
+        players[playerId].move(x, y);
+    }
 }
 
 void GameState::spawnPlayer(int playerId, float x, float y) {
@@ -47,12 +49,14 @@ void GameState::spawnEnemy(float x, float y) {
 }
 
 void GameState::shootBullet(int playerId) {
-    auto entity = players[playerId].getEntity();
-    if (registry.has_component<Position>(entity)) {
-        const auto& position = registry.get_components<Position>()[entity];
-        bullets.emplace_back(registry, position->x + 50.0f, position->y + 25.0f, 1.0f);
-    } else {
-        std::cerr << "Error: Player " << playerId << " does not have a Position component." << std::endl;
+    if (playerId < players.size()) {
+        auto entity = players[playerId].getEntity();
+        if (registry.has_component<Position>(entity)) {
+            const auto& position = registry.get_components<Position>()[entity];
+            bullets.emplace_back(registry, position->x + 50.0f, position->y + 25.0f, 1.0f);
+        } else {
+            std::cerr << "Error: Player " << playerId << " does not have a Position component." << std::endl;
+        }
     }
 }
 
@@ -77,19 +81,39 @@ void GameState::startNextWave() {
 }
 
 void GameState::checkCollisions() {
-    auto collisions = collision_system(registry, registry.get_components<Position>(), registry.get_components<Drawable>(), registry.get_components<Collidable>(), registry.get_components<Controllable>(), registry.get_components<Projectile>());
+    auto collisions = collision_system(
+        registry,
+        registry.get_components<Position>(),
+        registry.get_components<Drawable>(),
+        registry.get_components<Collidable>(),
+        registry.get_components<Controllable>(),
+        registry.get_components<Projectile>()
+    );
+
     for (const auto& [entity1, entity2] : collisions) {
-        if (registry.has_component<Controllable>(entity1)) {
+        bool isProjectile1 = registry.has_component<Projectile>(entity1);
+        bool isProjectile2 = registry.has_component<Projectile>(entity2);
+        bool isPlayer1 = registry.has_component<Controllable>(entity1);
+        bool isPlayer2 = registry.has_component<Controllable>(entity2);
+        bool isEnemy1 = std::find_if(enemies.begin(), enemies.end(),
+            [entity1](auto& e){ return e.getEntity() == entity1; }) != enemies.end();
+        bool isEnemy2      = std::find_if(enemies.begin(), enemies.end(),
+            [entity2](auto& e){ return e.getEntity() == entity2; }) != enemies.end();
+
+        // Projectile <-> Enemy
+        if (isProjectile1 && isEnemy2) {
             registry.kill_entity(entity1);
-        } else
-        {
-            std::cerr << "Error: Entity " << entity1 << " does not have a Controllable component." << std::endl;
-        }
-        if (registry.has_component<Controllable>(entity2)) {
             registry.kill_entity(entity2);
-        } else
-        {
-            std::cerr << "Error: Entity " << entity2 << " does not have a Controllable component." << std::endl;
+        } else if (isProjectile2 && isEnemy1) {
+            registry.kill_entity(entity1);
+            registry.kill_entity(entity2);
+        }
+
+        // Player <-> Enemy
+        if (isPlayer1 && isEnemy2) {
+            registry.kill_entity(entity1);
+        } else if (isPlayer2 && isEnemy1) {
+            registry.kill_entity(entity2);
         }
     }
 }

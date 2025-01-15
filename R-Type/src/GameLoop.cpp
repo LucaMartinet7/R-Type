@@ -12,8 +12,7 @@ void GameLoop::initialize(int numPlayers) {
 }
 
 void GameLoop::start() {
-    std::thread gameThread(&GameLoop::run, this);
-    gameThread.detach();
+    run();
 }
 
 void GameLoop::run() {

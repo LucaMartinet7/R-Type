@@ -9,11 +9,12 @@
     #define PROJECTILESYSTEM_H
 
 #include "Registry.hpp"
-#include "components/Position.hpp"
-#include "components/Projectile.hpp"
+#include "Position.hpp"
+#include "Projectile.hpp"
 #include "Drawable.hpp"
 #include "Collidable.hpp"
-#include "components/Velocity.hpp"
+#include "Velocity.hpp"
+#include <iostream>
 
 inline void projectile_system(Registry& registry, sparse_array<Position>& positions, sparse_array<Velocity>& velocities, sparse_array<Projectile>& projectiles, sparse_array<Drawable>& drawables, sparse_array<Collidable>& collidables) {
     for (size_t i = 0; i < positions.size() && i < velocities.size() && i < projectiles.size() && i < drawables.size() && i < collidables.size(); ++i) {
