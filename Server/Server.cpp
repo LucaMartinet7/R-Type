@@ -185,7 +185,7 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
     return data;
 }
 
-void RType::Server::PacketFactory() //need to do the send for entities and bullets
+void RType::Server::PacketFactory() //Send all the data to the client
 {
     for (int playerId = 0; playerId < m_game.getPlayerCount(); ++playerId) { 
         try {
@@ -214,6 +214,16 @@ void RType::Server::PacketFactory() //need to do the send for entities and bulle
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid bullet ID: " << bulletId << " - " << e.what() << std::endl;
+        }
+    }
+
+    for (int bossId = 0; bossId < m_game.getBossCount(); ++bossId) { 
+        try {
+            auto [x, y] = m_game.getBossPosition(bossId);
+            std::string data = "Boss;" + std::to_string(bossId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+            Broadcast(createPacket(Network::PacketType::CHANGE, data));
+        } catch (const std::out_of_range& e) {
+            std::cerr << "[ERROR] Invalid boss ID: " << bossId << " - " << e.what() << std::endl;
         }
     }
 }
