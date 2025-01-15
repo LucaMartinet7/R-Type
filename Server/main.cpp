@@ -11,6 +11,7 @@
 #include "Network/ThreadSafeQueue.hpp"
 #include "Network/PacketHandler.hpp"
 #include "GameState.hpp"
+#include <thread>
 
 short parsePort(int ac, char **av)
 {
@@ -30,18 +31,33 @@ void runServer(short port)
     try {
         boost::asio::io_context io_context;
         ThreadSafeQueue<Network::Packet> packetQueue;
+
+        RType::Server server([&io_context, port, &packetQueue] () {
+            RType::Server server(io_context, port, packetQueue);
+            oi_context.run();
+        });
+
         GameState game;
-        RType::Server server(io_context, port, packetQueue, game);
         Network::PacketHandler packetHandler(packetQueue, game, server);
         packetHandler.start();
 
         std::cout << "Server started" << std::endl;
         std::cout << "Listening on UDP port " << port << std::endl;
 
+        std::thread gameThread([&game] {
+            while (true) {
+                game.update();
+            }
+        });
+
         io_context.run();
 
-        while (true) {
-            game.update();
+        if (serverThread.joinable()) {
+            serverThread.join();
+        }
+
+        if (gameThread.joinable()) {
+            gameThread.join();
         }
 
         packetHandler.stop();
