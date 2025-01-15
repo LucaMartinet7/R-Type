@@ -7,11 +7,10 @@
 
 #include "GameState.hpp"
 #include "AGame.hpp"
-#include <chrono>
 #include <algorithm>
 
 GameState::GameState()
-    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000), boss(nullptr), currentWave(0), enemiesPerWave(5) {
+    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000), boss(nullptr), currentWave(0), enemiesPerWave(5), playerMoved(false) {
     registerComponents();
 }
 
@@ -27,12 +26,11 @@ void GameState::registerComponents() {
 void GameState::update() {
     registry.run_systems();
     //checkCollisions();
-    spawnEnemiesRandomly();
     processPlayerActions(); 
 }
 
-void GameState::handlePlayerMove(int playerId, int actionId) { // move player depending on action done by player
-    float moveDistance = 10.0f; // Change this value for different movement speeds
+void GameState::handlePlayerMove(int playerId, int actionId) {
+    float moveDistance = 1.0f;
     float x = 0.0f;
     float y = 0.0f;
 
@@ -45,16 +43,7 @@ void GameState::handlePlayerMove(int playerId, int actionId) { // move player de
     } else if (actionId == 4) { // Down
         y = moveDistance;
     }
-
-    if (boss) { // handle the slow movement of the boss
-        boss->move(0.1f, 0.0f);
-    }
-}
-
-void GameState::handlePlayerMove(int playerId, float x, float y) {
-    if (playerId < players.size()) {
-        players[playerId].move(x, y);
-    }
+    players[playerId].move(x, y);
 }
 
 void GameState::spawnPlayer(int playerId, float x, float y) {
@@ -116,7 +105,7 @@ void GameState::checkCollisions() {
         bool isPlayer2 = registry.has_component<Controllable>(entity2);
         bool isEnemy1 = std::find_if(enemies.begin(), enemies.end(),
             [entity1](auto& e){ return e.getEntity() == entity1; }) != enemies.end();
-        bool isEnemy2      = std::find_if(enemies.begin(), enemies.end(),
+        bool isEnemy2 = std::find_if(enemies.begin(), enemies.end(),
             [entity2](auto& e){ return e.getEntity() == entity2; }) != enemies.end();
 
         // Projectile <-> Enemy
@@ -137,23 +126,22 @@ void GameState::checkCollisions() {
     }
 }
 
-void GameState::spawnEnemiesRandomly() {
-    static auto lastSpawnTime = std::chrono::steady_clock::now();
-    auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastSpawnTime).count();
-
-    if (elapsed > distTime(rng)) {
-        float x = distX(rng);
-        float y = distY(rng);
-        spawnEnemy(x, y);
-        lastSpawnTime = now;
-    }
-}
+// void GameState::spawnEnemiesRandomly() {
+//     static auto lastSpawnTime = std::chrono::steady_clock::now();
+//     auto now = std::chrono::steady_clock::now();
+//     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastSpawnTime).count();
+//
+//     if (elapsed > distTime(rng)) {
+//         float x = distX(rng);
+//         float y = distY(rng);
+//         spawnEnemy(x, y);
+//         lastSpawnTime = now;
+//     }
+// }
 
 size_t GameState::getPlayerCount() const {
     return players.size();
 }
-
 
 size_t GameState::getEnemiesCount() const {
     return enemies.size();

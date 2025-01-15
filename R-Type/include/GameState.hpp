@@ -10,12 +10,6 @@
 
 #include "AGame.hpp"
 #include "Registry.hpp"
-#include "Player.hpp"
-#include "Enemy.hpp"
-#include "Bullet.hpp"
-#include "PlayerAction.hpp"
-#include "Boss.hpp"
-#include <vector>
 #include <random>
 
 class GameState : public AGame {
@@ -35,20 +29,12 @@ public:
     void registerComponents();
 
     int currentWave;
-  
+
     size_t getPlayerCount() const override;
     size_t getEnemiesCount() const override;
     size_t getBulletsCount() const override;
 
-    //noe
-    void handlePlayerMove(int playerId, float x, float y);
-
 private:
-    Registry registry;
-    std::vector<Player> players;
-    std::vector<Enemy> enemies;
-    std::vector<Bullet> bullets;
-    std::unique_ptr<Boss> boss;
     std::mt19937 rng;
     std::uniform_real_distribution<float> distX;
     std::uniform_real_distribution<float> distY;
