@@ -6,6 +6,7 @@
 class Boss {
 public:
     Boss(Registry& registry, float x, float y);
+    ~Boss();
     void move(float x, float y);
     Registry::Entity getEntity() const;
 private:

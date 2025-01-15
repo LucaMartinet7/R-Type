@@ -13,6 +13,11 @@ Boss::Boss(Registry& registry, float x, float y) : registry(registry) {
     registry.add_component<Collidable>(entity, {true});
 }
 
+Boss::~Boss() {
+    if (registry.entity_exists(entity))
+        registry.kill_entity(entity);
+}
+
 void Boss::move(float x, float y) {
     if (registry.has_component<Position>(entity)) {
         auto& pos = registry.get_components<Position>()[entity];

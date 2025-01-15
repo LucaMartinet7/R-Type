@@ -13,14 +13,7 @@
 #include "Enemy.hpp"
 #include "Bullet.hpp"
 #include "Registry.hpp"
-#include "GameState.hpp"
-#include "DrawSystem.hpp"
-#include "Position.hpp"
-#include "Drawable.hpp"
-#include "Controllable.hpp"
-#include "Collidable.hpp"
-#include "Projectile.hpp"
-#include "ControlSystem.hpp"
+#include "Boss.hpp"
 #include "PlayerAction.hpp"
 #include <vector>
 
@@ -30,10 +23,11 @@ class AGame : public IGame {
         std::vector<Player> players;
         std::vector<Enemy> enemies;
         std::vector<Bullet> bullets;
+        std::vector<Boss> bosses;
         Registry registry;
 
     public:
-        virtual ~AGame() = default;
+        virtual ~AGame();
 
         // Implement player action management functions
         void addPlayerAction(int playerId, int actionId) override;

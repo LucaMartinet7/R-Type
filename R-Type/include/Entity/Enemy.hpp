@@ -6,6 +6,7 @@
 class Enemy {
 public:
     Enemy(Registry& registry, float x, float y);
+    ~Enemy();
     Registry::Entity getEntity() const;
 
 private:

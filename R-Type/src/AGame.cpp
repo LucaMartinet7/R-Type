@@ -10,6 +10,15 @@
 #include <algorithm>
 #include <iostream>
 
+
+AGame::~AGame()
+{
+    playerActions.clear();
+    players.clear();
+    enemies.clear();
+    bullets.clear();
+}
+
 void AGame::addPlayerAction(int playerId, int actionId) {
     std::cout << "Player " << playerId << " performed action " << actionId << std::endl;
     playerActions.emplace_back(playerId, actionId);

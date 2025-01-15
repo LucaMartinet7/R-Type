@@ -6,6 +6,7 @@
 class Bullet {
 public:
     Bullet(Registry& registry, float x, float y, float speed);
+    ~Bullet();
     Registry::Entity getEntity() const;
 
 private:

@@ -6,6 +6,7 @@
 class Player {
 public:
     Player(Registry& registry, float x, float y);
+    ~Player();
     void move(float x, float y);
     Registry::Entity getEntity() const;
 

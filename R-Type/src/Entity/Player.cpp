@@ -15,6 +15,11 @@ Player::Player(Registry& registry, float x, float y) : registry(registry) {
     registry.add_component<Collidable>(entity, {true});
 }
 
+Player::~Player() {
+	if (registry.entity_exists(entity))
+		registry.kill_entity(entity);
+}
+
 void Player::move(float x, float y) {
   	if (registry.has_component<Position>(entity)) {
     	auto& pos = registry.get_components<Position>()[entity];
