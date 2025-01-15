@@ -78,3 +78,12 @@ std::pair<float, float> AGame::getBulletPosition(int bulletId) const {
     const auto& positionComponent = registry.get_components<Position>()[bullets[bulletId].getEntity()];
     return {positionComponent->x, positionComponent->y};
 }
+
+std::pair<float, float> AGame::getBossPosition(int bossId) const {
+    if (bossId < 0 || bossId >= bosses.size()) {
+        throw std::out_of_range("Invalid boss ID");
+    }
+
+    const auto& positionComponent = registry.get_components<Position>()[bosses[bossId].getEntity()];
+    return {positionComponent->x, positionComponent->y};
+}

@@ -33,6 +33,7 @@ public:
     size_t getPlayerCount() const override;
     size_t getEnemiesCount() const override;
     size_t getBulletsCount() const override;
+    size_t getBossCount() const override;
 
 private:
     std::mt19937 rng;

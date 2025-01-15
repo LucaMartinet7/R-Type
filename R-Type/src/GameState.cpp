@@ -10,7 +10,7 @@
 #include <algorithm>
 
 GameState::GameState()
-    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000), boss(nullptr), currentWave(0), enemiesPerWave(5), playerMoved(false) {
+    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000), currentWave(0), enemiesPerWave(5) {
     registerComponents();
 }
 
@@ -153,4 +153,8 @@ size_t GameState::getBulletsCount() const {
 
 Registry& GameState::getRegistry() {
     return registry;
+}
+
+size_t GameState::getBossCount() const {
+    return bosses.size();
 }

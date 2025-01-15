@@ -46,6 +46,7 @@ class AGame : public IGame {
         std::pair<float, float> getPlayerPosition(int playerId) const override;
         std::pair<float, float> getBulletPosition(int bulletId) const override;
         std::pair<float, float> getEnemyPosition(int enemyId) const override;
+        std::pair<float, float> getBossPosition(int enemyId) const override;
 };
 
 #endif // AGAME_HPP

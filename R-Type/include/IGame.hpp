@@ -26,9 +26,11 @@ public:
     virtual size_t getPlayerCount() const = 0;
     virtual size_t getEnemiesCount() const = 0;
     virtual size_t getBulletsCount() const = 0;
+    virtual size_t getBossCount() const = 0;
     virtual std::pair<float, float> getPlayerPosition(int playerId) const = 0;
     virtual std::pair<float, float> getBulletPosition(int bulletId) const = 0;
     virtual std::pair<float, float> getEnemyPosition(int enemyId) const = 0;
+    virtual std::pair<float, float> getBossPosition(int enemyId) const = 0;
 
     // Functions for managing player actions
     virtual void addPlayerAction(int playerId, int actionId) = 0;
