@@ -236,7 +236,7 @@ void RType::Client::processEvents(sf::RenderWindow& window)
         if (event.type == sf::Event::MouseButtonPressed) {
             sf::Vector2i mousePos = sf::Mouse::getPosition(window);
             if (!sprites_.empty()) {
-                if (sprites_.front().id == -101) {
+                if (sprites_.back().id == -101) {
                     send(createPacket(Network::PacketType::GAME_START));
                     sprites_.clear();
                 } else {

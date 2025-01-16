@@ -123,6 +123,12 @@ void RType::Server::handle_game_packet(const Network::Packet& packet, const udp:
             break;
         case Network::PacketType::OPEN_MENU:
             break;
+        case Network::PacketType::MOUSE_CLICK:
+            break;
+        case Network::PacketType::GAME_END:
+            break;
+        case Network::PacketType::GAME_START:
+            break;
         default:
             std::cerr << "[DEBUG] Unknown packet type." << std::endl;
             break;
