@@ -119,11 +119,13 @@ void RType::Client::destroySprite()
 
 void RType::Client::loadTextures() //make sure to have the right textures in the right folder
 {
-    textures_[RType::SpriteType::Enemy].loadFromFile("enemy.png");
-    textures_[RType::SpriteType::Boss].loadFromFile("boss.png");
-    textures_[RType::SpriteType::Player].loadFromFile("player.png");
-    textures_[RType::SpriteType::Bullet].loadFromFile("bullet.png");
-    textures_[RType::SpriteType::Background].loadFromFile("background.png");
+    textures_[RType::SpriteType::Enemy].loadFromFile("../assets/enemy.png");
+    textures_[RType::SpriteType::Boss].loadFromFile("../assets/boss.png");
+    textures_[RType::SpriteType::Player].loadFromFile("../assets/player.png");
+    textures_[RType::SpriteType::Bullet].loadFromFile("../assets/bullet.png");
+    textures_[RType::SpriteType::Background].loadFromFile("../assets/background.png");
+    textures_[RType::SpriteType::Lobby_background].loadFromFile("../assets/lobby_background.png");
+    textures_[RType::SpriteType::Start_button].loadFromFile("../assets/start_button.png");
 }
 
 void RType::Client::drawSprites(sf::RenderWindow& window)
@@ -272,26 +274,14 @@ void RType::Client::initLobbySprites(sf::RenderWindow& window)
 {
     sprites_.clear();
     
-    sf::Texture backgroundTexture;
-    sf::Texture buttonTexture;
-
-    if (!backgroundTexture.loadFromFile("lobby_background.png")) {
-        std::cerr << "[ERROR] Failed to load lobby background texture." << std::endl;
-        return;
-    }
-    if (!buttonTexture.loadFromFile("start_button.png")) {
-        std::cerr << "[ERROR] Failed to load button texture." << std::endl;
-        return;
-    }
-
     SpriteElement backgroundElement;
-    backgroundElement.sprite.setTexture(backgroundTexture);
+    backgroundElement.sprite.setTexture(textures_[SpriteType::Lobby_background]);
     backgroundElement.sprite.setPosition(0, 0);
     backgroundElement.id = -100;
 
     SpriteElement buttonElement;
-    buttonElement.sprite.setTexture(buttonTexture);
-    buttonElement.sprite.setPosition(window.getSize().x / 2 - buttonTexture.getSize().x / 2, window.getSize().y / 2 - buttonTexture.getSize().y / 2);
+    buttonElement.sprite.setTexture(textures_[SpriteType::Start_button]);
+    buttonElement.sprite.setPosition(window.getSize().x / 2 - textures_[SpriteType::Start_button].getSize().x / 2, window.getSize().y / 2 - textures_[SpriteType::Start_button].getSize().y / 2);
     buttonElement.id = -101;
 
     sprites_.push_back(backgroundElement);

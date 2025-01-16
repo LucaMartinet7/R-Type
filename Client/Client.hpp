@@ -28,7 +28,9 @@ namespace RType {
         Boss,
         Player,
         Bullet,
-        Background
+        Background,
+        Lobby_background,
+        Start_button
     };
 
     class SpriteElement {
