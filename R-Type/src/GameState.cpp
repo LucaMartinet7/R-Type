@@ -1,21 +1,21 @@
-/*
-** EPITECH PROJECT, 2025
-** R-Type [WSL: Ubuntu]
-** File description:
-** GameState
-*/
-
 #include "Server.hpp"
 #include "GameState.hpp"
-#include "Server.hpp"
 #include "AGame.hpp"
-#include <iostream>
+#include "CollisionSystem.hpp"
 #include <algorithm>
+#include <iostream>
+#include <thread>
+#include <chrono>
 
 GameState::GameState(RType::Server* server)
     : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f),
-      distTime(1000, 5000), currentWave(0), enemiesPerWave(5), m_server(server) {
+      distTime(1000, 5000), currentWave(0), enemiesPerWave(5) {}
+
+void GameState::initializeplayers(int numPlayers) {
     registerComponents();
+    for (int i = 0; i < numPlayers; ++i) {
+        spawnPlayer(i, 100.0f * (i + 1.0f), 100.0f);
+    }
 }
 
 void GameState::registerComponents() {
@@ -29,8 +29,30 @@ void GameState::registerComponents() {
 
 void GameState::update() {
     registry.run_systems();
-    //checkCollisions();
     processPlayerActions();
+}
+
+void GameState::run(int numPlayers) {
+    initializeplayers(numPlayers);
+    while (true) {
+        // Update game state
+        update();
+
+        // Check if all enemies are cleared and start the next wave or spawn the boss
+        // if (areEnemiesCleared()) {
+        //     if (isBossSpawned()) {
+        //         std::cout << "Boss defeated! Game over." << std::endl;
+        //         break;
+        //     } else if (currentWave >= 3) {
+        //         spawnBoss(400.0f, 300.0f); // Spawn boss at the center of the screen
+        //     } else {
+        //         startNextWave();
+        //     }
+        // }
+
+        // Sleep for a short duration to simulate frame time
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+    }
 }
 
 void GameState::handlePlayerMove(int playerId, int actionId) {
@@ -103,19 +125,6 @@ void GameState::checkCollisions() {
         }
     }
 }
-
-// void GameState::spawnEnemiesRandomly() {
-//     static auto lastSpawnTime = std::chrono::steady_clock::now();
-//     auto now = std::chrono::steady_clock::now();
-//     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastSpawnTime).count();
-//
-//     if (elapsed > distTime(rng)) {
-//         float x = distX(rng);
-//         float y = distY(rng);
-//         spawnEnemy(x, y);
-//         lastSpawnTime = now;
-//     }
-// }
 
 size_t GameState::getPlayerCount() const {
     return players.size();

@@ -90,7 +90,11 @@ void PacketHandler::handleDisconnected(const Network::Packet &packet)
 
 void PacketHandler::handleGameStart(const Network::Packet &packet)
 {
-    std::cout << "[PacketHandler] Handeled GAME_START packet." << std::endl;
+    std::cout << "[PacketHandler] Handled GAME_START packet." << std::endl;
+    std::thread gameThread([this] {
+        m_game.run(4);
+    });
+    gameThread.detach();
 }
 
 void PacketHandler::handlePlayerDead(const Network::Packet &packet)

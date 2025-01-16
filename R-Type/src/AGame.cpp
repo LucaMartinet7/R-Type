@@ -119,7 +119,8 @@ void AGame::spawnPlayer(int playerId, float x, float y) {
         Registry::Entity lastPlayerId = lastPlayer.getEntity();
 
         std::string data = std::to_string(playerId) + ";" + std::to_string(lastPlayerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
-        m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_PLAYER, data));
+        std::cout << "Player " << playerId << " spawned at " << x << ", " << y << std::endl;
+        // m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_PLAYER, data));
     }
 }
 

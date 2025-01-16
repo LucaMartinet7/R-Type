@@ -50,19 +50,10 @@ void runServer(short port) {
             io_context.run();
         });
 
-        // Launch game loop thread
-        std::thread gameThread([&game] {
-            while (true) {
-                game.update();
-            }
-        });
+
 
         if (serverThread.joinable()) {
             serverThread.join();
-        }
-
-        if (gameThread.joinable()) {
-            gameThread.join();
         }
 
         packetHandler.stop();

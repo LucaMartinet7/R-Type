@@ -2,20 +2,14 @@
 #define GAME_STATE_HPP
 
 #include "AGame.hpp"
-#include "CollisionSystem.hpp"
 #include "Registry.hpp"
-#include "CollisionSystem.hpp"
 #include <random>
-
-// Forward declaration of RType::Server
-namespace RType {
-    class Server;
-}
 
 class GameState : public AGame {
 public:
-    GameState(RType::Server* server = nullptr);
+    GameState(RType::Server* server);
 
+    void initializeplayers(int numPlayers);
     void update() override;
     void handlePlayerMove(int playerId, int actionId) override;
     bool isBossSpawned() const;
@@ -23,6 +17,7 @@ public:
     void startNextWave();
     Registry& getRegistry();
     void registerComponents();
+    void run(int numPlayers);
 
     int currentWave;
 
