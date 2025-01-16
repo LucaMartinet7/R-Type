@@ -173,6 +173,8 @@ int RType::Client::main_loop()
     loadTextures();
     send(createPacket(Network::PacketType::REQCONNECT));
 
+    initLobbySprites(window);
+
     while (window.isOpen()) { //received data is modified in handle receive function and parsed here
         processEvents(window);
         createSprite();
@@ -197,6 +199,17 @@ std::string RType::Client::createPacket(Network::PacketType type)
     return packet_str;
 }
 
+std::string RType::Client::createMousePacket(Network::PacketType type, int x = 0, int y = 0)
+{
+    Network::Packet packet;
+    packet.type = type;
+
+    std::ostringstream packet_str;
+    packet_str << static_cast<uint8_t>(type) << ";" << x << ";" << y;
+
+    return packet_str.str();
+}
+
 std::string deserializePacket(const std::string& packet_str)
 {
     Network::Packet packet;
@@ -210,6 +223,17 @@ void RType::Client::processEvents(sf::RenderWindow& window)
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             window.close();
+        }
+        if (event.type == sf::Event::MouseButtonPressed) {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            if (!sprites_.empty()) {
+                if (sprites_.front().id == -101) {
+                    send(createPacket(Network::PacketType::GAME_START));
+                    sprites_.clear();
+                } else {
+                    send(createMousePacket(Network::PacketType::MOUSE_CLICK, mousePos.x, mousePos.y));
+                }
+            }
         }
         if (event.type == sf::Event::KeyPressed) {
             if (event.key.code == sf::Keyboard::Right) {
@@ -236,7 +260,40 @@ void RType::Client::processEvents(sf::RenderWindow& window)
                 std::cout << "[DEBUG] Sending M: " << std::endl;
                 send(createPacket(Network::PacketType::OPEN_MENU));
             }
+            if (event.key.code == sf::Keyboard::Escape) {
+                initLobbySprites(window);
+                send(createPacket(Network::PacketType::GAME_END));
+            }
         }
     }
 }
 
+void RType::Client::initLobbySprites(sf::RenderWindow& window)
+{
+    sprites_.clear();
+    
+    sf::Texture backgroundTexture;
+    sf::Texture buttonTexture;
+
+    if (!backgroundTexture.loadFromFile("lobby_background.png")) {
+        std::cerr << "[ERROR] Failed to load lobby background texture." << std::endl;
+        return;
+    }
+    if (!buttonTexture.loadFromFile("start_button.png")) {
+        std::cerr << "[ERROR] Failed to load button texture." << std::endl;
+        return;
+    }
+
+    SpriteElement backgroundElement;
+    backgroundElement.sprite.setTexture(backgroundTexture);
+    backgroundElement.sprite.setPosition(0, 0);
+    backgroundElement.id = -100;
+
+    SpriteElement buttonElement;
+    buttonElement.sprite.setTexture(buttonTexture);
+    buttonElement.sprite.setPosition(window.getSize().x / 2 - buttonTexture.getSize().x / 2, window.getSize().y / 2 - buttonTexture.getSize().y / 2);
+    buttonElement.id = -101;
+
+    sprites_.push_back(backgroundElement);
+    sprites_.push_back(buttonElement);
+}

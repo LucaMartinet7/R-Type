@@ -61,6 +61,8 @@ namespace RType {
         void parseMessage(std::string packet_data);
         void destroySprite();
         void processEvents(sf::RenderWindow& window);
+        void initLobbySprites(sf::RenderWindow& window);
+        std::string createMousePacket(Network::PacketType type, int x = 0, int y = 0);
 
         boost::asio::ip::udp::socket socket_;
         boost::asio::ip::udp::endpoint server_endpoint_;
