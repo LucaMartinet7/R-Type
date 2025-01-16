@@ -20,6 +20,7 @@ public:
     // Pure virtual functions to be implemented by noe in GameState class
     virtual void update() = 0;
     virtual void handlePlayerMove(int playerId, int actionId) = 0;
+    virtual void killEntity(int entityId) = 0;
     virtual void spawnPlayer(int playerId, float x, float y) = 0;
     virtual void spawnEnemy(float x, float y) = 0;
     virtual void spawnBullet(int playerId) = 0;

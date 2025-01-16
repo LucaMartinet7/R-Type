@@ -65,6 +65,7 @@ class AGame : public IGame {
         void spawnBoss(float x, float y) override;
         void spawnPlayer(int playerId, float x, float y) override;
         void spawnBullet(int playerId) override;
+        void killEntity(int entityId) override;
 };
 
 #endif // AGAME_HPP

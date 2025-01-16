@@ -91,7 +91,7 @@ std::pair<float, float> AGame::getBossPosition(int bossId) const {
     return {positionComponent->x, positionComponent->y};
 }
 
-void GameState::spawnEnemy(float x, float y) {
+void AGame::spawnEnemy(float x, float y) {
     enemies.emplace_back(registry, x, y);
 
     Enemy& lastEnemy = enemies.back();
@@ -101,7 +101,7 @@ void GameState::spawnEnemy(float x, float y) {
     m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_ENEMY, data));
 }
 
-void GameState::spawnBoss(float x, float y) {
+void AGame::spawnBoss(float x, float y) {
     bosses.emplace_back(registry, x, y);
 
     Boss& lastBoss = bosses.back();
@@ -111,7 +111,7 @@ void GameState::spawnBoss(float x, float y) {
     m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_BOSS, data));
 }
 
-void GameState::spawnPlayer(int playerId, float x, float y) {
+void AGame::spawnPlayer(int playerId, float x, float y) {
     if (playerId >= 0 && playerId < 4) {
         players.emplace_back(registry, x, y);
 
@@ -123,7 +123,7 @@ void GameState::spawnPlayer(int playerId, float x, float y) {
     }
 }
 
-void GameState::spawnBullet(int playerId) {
+void AGame::spawnBullet(int playerId) {
     if (playerId < players.size()) {
         auto entity = players[playerId].getEntity();
         if (registry.has_component<Position>(entity)) {
@@ -141,19 +141,8 @@ void GameState::spawnBullet(int playerId) {
     }
 }
 
-// Provide definitions for the pure virtual functions in AGame
-void AGame::spawnPlayer(int playerId, float x, float y) {
-    // Implementation can be empty or provide a default behavior
-}
-
-void AGame::spawnEnemy(float x, float y) {
-    // Implementation can be empty or provide a default behavior
-}
-
-void AGame::spawnBullet(int playerId) {
-    // Implementation can be empty or provide a default behavior
-}
-
-void AGame::spawnBoss(float x, float y) {
-    // Implementation can be empty or provide a default behavior
+void AGame::killEntity(int entityId) {
+    registry.kill_entity(entityId); //Noe check if it's good or if I need to loop on a vector and look for the entity that has the matching id to delete the right one
+    std::string data = std::to_string(entityId) + ";0;0";
+    m_server->Broadcast(m_server->createPacket(Network::PacketType::DELETE, data));
 }
