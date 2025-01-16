@@ -199,7 +199,7 @@ std::string RType::Client::createPacket(Network::PacketType type)
     return packet_str;
 }
 
-std::string RType::Client::createMousePacket(Network::PacketType type, int x = 0, int y = 0)
+std::string RType::Client::createMousePacket(Network::PacketType type, int x, int y)
 {
     Network::Packet packet;
     packet.type = type;
