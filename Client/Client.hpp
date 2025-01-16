@@ -75,8 +75,8 @@ namespace RType {
         boost::asio::io_context& io_context_;
         std::vector<SpriteElement> sprites_;
         std::unordered_map<SpriteType, sf::Texture> textures_;
-        std::size_t action;
-        std::size_t server_id;
+        int action;
+        int server_id;
         float new_x = 0.0, new_y = 0.0;
     };
 }

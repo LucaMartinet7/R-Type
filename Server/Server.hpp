@@ -45,6 +45,9 @@ namespace RType {
         const udp::endpoint& getRemoteEndpoint() const {
             return remote_endpoint_;
             }
+        ClientList clients_;
+        uint32_t _nbClients;
+        std::mutex clients_mutex_;
     private:
         using PacketHandler = std::function<void(const std::vector<std::string>&)>;
         void start_receive();
@@ -56,8 +59,6 @@ namespace RType {
         ThreadSafeQueue<Network::Packet>& m_packetQueue;
         std::unordered_map<std::string, std::function<void(const std::vector<std::string>&)>> packet_handlers_;
         std::unordered_map<Network::PacketType, void(*)(const Network::Packet&)> m_handlers;
-        ClientList clients_;
-        uint32_t _nbClients;
         GameState* m_game;
     };
 }

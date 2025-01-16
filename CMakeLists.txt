@@ -24,6 +24,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/ECS/
     ${CMAKE_SOURCE_DIR}/ECS/systems/
     ${CMAKE_SOURCE_DIR}/ECS/components/
+    ${CMAKE_SOURCE_DIR}/Server/Errors/
 )
 
 # Find SFML (make sure it's installed on your system)
@@ -49,10 +50,7 @@ add_executable(${SERVER_BINARY}
     Server/main.cpp
     Server/Server.cpp
     Server/Server.hpp
-    Server/Errors/Throws.hpp
     Server/Network/PacketHandler.cpp
-    Server/Network/PacketHandler.hpp
-    Server/ClientRegister.hpp
     R-Type/src/GameState.cpp
     R-Type/src/AGame.cpp
     R-Type/src/PlayerAction.cpp
@@ -66,9 +64,6 @@ add_executable(${SERVER_BINARY}
 add_executable(${CLIENT_BINARY}
     Client/main.cpp
     Client/Client.cpp
-    Client/Client.hpp
-    Server/Errors/Throws.hpp
-    Server/Network/PacketType.hpp
 )
 
 # Link the Boost libraries provided by FetchContent

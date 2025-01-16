@@ -192,13 +192,19 @@ void PacketHandler::handlePlayerAction(const Network::Packet &packet, int action
     size_t playerId = -1;
     bool found = false;
 
-    for (const auto& [id, client] : clients) {
-        if (client.getEndpoint() == clientEndpoint) {
-            playerId = id;
-            found = true;
-            break;
+    // Lock clients access to ensure thread safety
+    {
+        std::lock_guard<std::mutex> lock(m_server.clients_mutex_);
+
+        for (const auto& [id, client] : clients) {
+            if (client.getEndpoint() == clientEndpoint) {
+                playerId = id;
+                found = true;
+                break;
+            }
         }
     }
+
     if (found) {
         m_game.addPlayerAction(playerId, action);
     } else {

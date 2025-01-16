@@ -19,7 +19,7 @@ using boost::asio::ip::udp;
  * @param port The port number on which the server will listen for incoming UDP packets.
  */
 RType::Server::Server(boost::asio::io_context& io_context, short port, ThreadSafeQueue<Network::Packet>& packetQueue, GameState* game)
-: socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue), _nbClients(0), m_game(game)
+: socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue), m_game(game), _nbClients(0)
 {
     start_receive();
 }
@@ -50,8 +50,12 @@ void RType::Server::send_to_client(const std::string& message, const udp::endpoi
 
 void RType::Server::Broadcast(const std::string& message)
 {
-    for (const auto& client : clients_) {
-        send_to_client(message, client.second.getEndpoint());
+    {
+        std::lock_guard<std::mutex> lock(clients_mutex_);
+
+        for (const auto& client : clients_) {
+            send_to_client(message, client.second.getEndpoint());
+        }
     }
 }
 
@@ -135,13 +139,14 @@ Network::Packet RType::Server::deserializePacket(const std::string& packet_str)
 std::string RType::Server::createPacket(const Network::PacketType& type, const std::string& data)
 {
     std::string packet_str;
+    std::string packet_data = data.empty() ? "-1;-1;-1" : data;
 
     packet_str.push_back(static_cast<uint8_t>(type));
     packet_str.push_back(static_cast<uint8_t>(';'));
-    if (!data.empty())
-        packet_str.append(data);
-    else
-        packet_str.push_back(static_cast<uint8_t>('0'));
+    for (char c : packet_data) {
+        packet_str.push_back(static_cast<uint8_t>(c));
+    }
+    // std::cout << "[DEBUG] Packet created: " << packet_str << std::endl;
     return packet_str;
 }
 
@@ -150,14 +155,17 @@ std::string RType::Server::createPacket(const Network::PacketType& type, const s
 uint32_t RType::Server::createClient(boost::asio::ip::udp::endpoint& client_endpoint)
 {
     uint32_t nb = this->_nbClients;
+    {
+        std::lock_guard<std::mutex> lock(clients_mutex_);
 
-    for (const auto& client : clients_) {
-        if (client.second.getEndpoint() == client_endpoint)
-            return client.first;
+        for (const auto& client : clients_) {
+            if (client.second.getEndpoint() == client_endpoint)
+                return client.first;
+        }
+        ClientRegister newClient(nb, client_endpoint);
+        clients_.insert(std::make_pair(nb, newClient));
+        this->_nbClients++;
     }
-    ClientRegister newClient(nb, client_endpoint);
-    clients_.insert(std::make_pair(nb, newClient));
-    this->_nbClients++;
     return nb;
 }
 
@@ -174,12 +182,16 @@ Network::ReqConnect RType::Server::reqConnectData(boost::asio::ip::udp::endpoint
 Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endpoint& client_endpoint)
 {
     Network::DisconnectData data;
-    for (auto it = clients_.begin(); it != clients_.end(); ++it) {
-        if (it->second.getEndpoint() == client_endpoint) {
-            data.id = it->second.getId();
-            std::cout << "[DEBUG] Client " << data.id << " disconnected." << std::endl;
-            clients_.erase(it);
-            return data;
+    {
+        std::lock_guard<std::mutex> lock(clients_mutex_);
+
+        for (auto it = clients_.begin(); it != clients_.end(); ++it) {
+            if (it->second.getEndpoint() == client_endpoint) {
+                data.id = it->second.getId();
+                std::cout << "[DEBUG] Client " << data.id << " disconnected." << std::endl;
+                clients_.erase(it);
+                return data;
+            }
         }
     }
     data.id = -1;

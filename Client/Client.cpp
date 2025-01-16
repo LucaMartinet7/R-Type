@@ -55,12 +55,6 @@ void RType::Client::handle_receive(const boost::system::error_code& error, std::
     if (!error || error == boost::asio::error::message_size) {
         mutex_.lock();
         received_data.assign(recv_buffer_.data(), bytes_transferred);
-
-        // uint8_t packet_type = static_cast<uint8_t>(received_data[0]);
-
-        // std::string packet_data = received_data.substr(2);
-        // std::cout << "[DEBUG] Received Packet Type: " << static_cast<int>(packet_type) << std::endl;
-        // std::cout << "[DEBUG] Received Packet Data: " << packet_data << std::endl;
         parseMessage(received_data);
         start_receive();
     } else {
@@ -145,29 +139,42 @@ void RType::Client::updateSpritePosition()
     }
 }
 
-void RType::Client::parseMessage(std::string packet_data) //parse the packet send by server and stores the data in the right variables in Client class
+void RType::Client::parseMessage(std::string packet_data)
 {
-    std::stringstream ss(packet_data);
-    std::string segment;
-    std::vector<std::string> elements;
-
-    while (std::getline(ss, segment, ';'))
-        elements.push_back(segment);
-
-    if (elements.size() != 4) {
-        std::cerr << "[ERROR] Invalid packet format: " << packet_data << std::endl;
+    if (packet_data.empty()) {
+        std::cerr << "[ERROR] Empty packet data." << std::endl;
         return;
     }
+    uint8_t packet_type = static_cast<uint8_t>(packet_data[0]);
+    std::string packet_inside = packet_data.substr(2);
+    std::cout << "[DEBUG] Received Packet Type: " << static_cast<int>(packet_type) << std::endl;
+    std::cout << "[DEBUG] Received Packet Data: " << packet_inside << std::endl;
 
+    std::vector<std::string> elements;
+    std::stringstream ss(packet_inside);
+    std::string segment;
+    while (std::getline(ss, segment, ';')) {
+        elements.push_back(segment);
+    }
+    if (elements.size() != 3) {
+        std::cerr << "[ERROR] Invalid packet format: " << packet_inside << std::endl;
+        return;
+    }
     try {
-        action = std::stoul(elements[0]); //stoul converts string to unsigned long
-        server_id = std::stoul(elements[1]);
-        new_x = std::stof(elements[2]);
-        new_y = std::stof(elements[3]);
+        action = static_cast<int>(packet_type);
+        server_id = std::stoi(elements[0]);
+        new_x = std::stof(elements[1]);
+        new_y = std::stof(elements[2]);
+
+        std::cout << "[DEBUG] Action: " << action << std::endl;
+        std::cout << "[DEBUG] Server ID: " << server_id << std::endl;
+        std::cout << "[DEBUG] New X: " << new_x << std::endl;
+        std::cout << "[DEBUG] New Y: " << new_y << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "[ERROR] Failed to parse packet data: " << e.what() << std::endl;
     }
 }
+
 
 int RType::Client::main_loop()
 {
