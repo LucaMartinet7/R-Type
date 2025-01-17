@@ -13,6 +13,10 @@
 #include <algorithm>
 #include <iostream>
 
+AGame::AGame()
+{
+    registerComponents();
+}
 
 AGame::~AGame()
 {
@@ -20,6 +24,16 @@ AGame::~AGame()
     players.clear();
     enemies.clear();
     bullets.clear();
+}
+
+void AGame::registerComponents()
+{
+    registry.register_component<Position>();
+    registry.register_component<Velocity>();
+    registry.register_component<Drawable>();
+    registry.register_component<Controllable>();
+    registry.register_component<Collidable>();
+    registry.register_component<Projectile>();
 }
 
 void AGame::addPlayerAction(int playerId, int actionId) {

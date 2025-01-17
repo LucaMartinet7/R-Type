@@ -16,7 +16,6 @@ public:
     bool areEnemiesCleared() const;
     void startNextWave();
     Registry& getRegistry();
-    void registerComponents();
     void run(int numPlayers);
 
     int currentWave;

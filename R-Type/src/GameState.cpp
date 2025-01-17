@@ -8,25 +8,14 @@
 #include <chrono>
 
 GameState::GameState(RType::Server* server)
-    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f),
-      distTime(1000, 5000), currentWave(0), enemiesPerWave(5) {}
+    : AGame(), rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f),
+      distTime(1000, 5000), currentWave(0), enemiesPerWave(5), m_server(server) {}
 
 void GameState::initializeplayers(int numPlayers) {
-    registerComponents();
     for (int i = 0; i < numPlayers; ++i) {
         spawnPlayer(i, 100.0f * (i + 1.0f), 100.0f);
     }
 }
-
-void GameState::registerComponents() {
-    registry.register_component<Position>();
-    registry.register_component<Velocity>();
-    registry.register_component<Drawable>();
-    registry.register_component<Controllable>();
-    registry.register_component<Collidable>();
-    registry.register_component<Projectile>();
-}
-
 void GameState::update() {
     registry.run_systems();
     processPlayerActions();

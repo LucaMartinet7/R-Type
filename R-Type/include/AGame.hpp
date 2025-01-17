@@ -46,6 +46,7 @@ class AGame : public IGame {
         RType::Server* m_server;
 
     public:
+        AGame();
         virtual ~AGame();
 
         // Implement player action management functions
@@ -66,6 +67,8 @@ class AGame : public IGame {
         void spawnPlayer(int playerId, float x, float y) override;
         void spawnBullet(int playerId) override;
         void killEntity(int entityId) override;
+
+        void registerComponents();
 };
 
 #endif // AGAME_HPP
