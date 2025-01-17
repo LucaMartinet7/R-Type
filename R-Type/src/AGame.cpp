@@ -156,8 +156,47 @@ void AGame::spawnBullet(int playerId) {
     }
 }
 
+void AGame::killPlayers(int entityId) {
+    for (auto& player : players) {
+        if (player.getEntity() == entityId) {
+            registry.kill_entity(player.getEntity());
+            break;
+        }
+    }
+}
+
+void AGame::killEnemies(int entityId) {
+    for (auto& enemy : enemies) {
+        if (enemy.getEntity() == entityId) {
+            registry.kill_entity(enemy.getEntity());
+            break;
+        }
+    }
+}
+
+void AGame::killBullets(int entityId) {
+    for (auto& bullet : bullets) {
+        if (bullet.getEntity() == entityId) {
+            registry.kill_entity(bullet.getEntity());
+            break;
+        }
+    }
+}
+
+void AGame::killBosses(int entityId) {
+    for (auto& boss : bosses) {
+        if (boss.getEntity() == entityId) {
+            registry.kill_entity(boss.getEntity());
+            break;
+        }
+    }
+}
+
 void AGame::killEntity(int entityId) {
-    registry.kill_entity(entityId); //Noe check if it's good or if I need to loop on a vector and look for the entity that has the matching id to delete the right one
+    killPlayers(entityId);
+    killEnemies(entityId);
+    killBullets(entityId);
+    killBosses(entityId);
     std::string data = std::to_string(entityId) + ";0;0";
     m_server->Broadcast(m_server->createPacket(Network::PacketType::DELETE, data));
 }
