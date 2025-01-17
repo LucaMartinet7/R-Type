@@ -19,7 +19,7 @@ using boost::asio::ip::udp;
  * @param port The port number on which the server will listen for incoming UDP packets.
  */
 RType::Server::Server(boost::asio::io_context& io_context, short port, ThreadSafeQueue<Network::Packet>& packetQueue, GameState* game)
-: socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue), m_game(game), _nbClients(0)
+: socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue), m_game(game), _nbClients(0), m_running(false)
 {
     start_receive();
 }
@@ -94,44 +94,8 @@ void RType::Server::handle_receive(const boost::system::error_code &error, std::
 
         Network::Packet packet;
         packet.type = deserializePacket(received_data).type;
-        switch (packet.type) {
-            case Network::PacketType::REQCONNECT:
-                packet.data = reqConnectData(remote_endpoint_);
-                break;
-            case Network::PacketType::DISCONNECTED:
-                packet.data = disconnectData(remote_endpoint_);
-                break;
-            default:
-                handle_game_packet(packet, remote_endpoint_);
-                break;
-        }
         m_packetQueue.push(packet);
         start_receive();
-    }
-}
-
-void RType::Server::handle_game_packet(const Network::Packet& packet, const udp::endpoint& client_endpoint)
-{
-    switch (packet.type) {
-        case Network::PacketType::PLAYER_DOWN:
-            break;
-        case Network::PacketType::PLAYER_UP:
-            break;
-        case Network::PacketType::PLAYER_LEFT:
-            break;
-        case Network::PacketType::PLAYER_RIGHT:
-            break;
-        case Network::PacketType::OPEN_MENU:
-            break;
-        case Network::PacketType::MOUSE_CLICK:
-            break;
-        case Network::PacketType::GAME_END:
-            break;
-        case Network::PacketType::GAME_START:
-            break;
-        default:
-            std::cerr << "[DEBUG] Unknown packet type." << std::endl;
-            break;
     }
 }
 
@@ -152,7 +116,6 @@ std::string RType::Server::createPacket(const Network::PacketType& type, const s
     for (char c : packet_data) {
         packet_str.push_back(static_cast<uint8_t>(c));
     }
-    // std::cout << "[DEBUG] Packet created: " << packet_str << std::endl;
     return packet_str;
 }
 
