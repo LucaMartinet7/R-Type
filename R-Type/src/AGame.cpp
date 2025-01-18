@@ -92,7 +92,8 @@ std::pair<float, float> AGame::getBulletPosition(int bulletId) const {
         throw std::out_of_range("Invalid bullet ID");
     }
 
-    const auto& positionComponent = registry.get_components<Position>()[bullets[bulletId].getEntity()];
+    const auto& bullet = bullets[bulletId];
+    const auto& positionComponent = bullet.getRegistry().get_components<Position>()[bullets[bulletId].getEntity()];
     return {positionComponent->x, positionComponent->y};
 }
 
@@ -157,37 +158,49 @@ void AGame::spawnBullet(int playerId) {
 }
 
 void AGame::killPlayers(int entityId) {
-    for (auto& player : players) {
-        if (player.getEntity() == entityId) {
-            registry.kill_entity(player.getEntity());
+    for (auto it = players.begin(); it != players.end();) {
+        if (it->getEntity() == entityId) {
+            registry.kill_entity(it->getEntity());
+            it = players.erase(it);
             break;
+        } else {
+            ++it;
         }
     }
 }
 
 void AGame::killEnemies(int entityId) {
-    for (auto& enemy : enemies) {
-        if (enemy.getEntity() == entityId) {
-            registry.kill_entity(enemy.getEntity());
+    for (auto it = enemies.begin(); it != enemies.end();) {
+        if (it->getEntity() == entityId) {
+            registry.kill_entity(it->getEntity());
+            it = enemies.erase(it);
             break;
+        } else {
+            ++it;
         }
     }
 }
 
 void AGame::killBullets(int entityId) {
-    for (auto& bullet : bullets) {
-        if (bullet.getEntity() == entityId) {
-            registry.kill_entity(bullet.getEntity());
+    for (auto it = bullets.begin(); it != bullets.end();) {
+        if (it->getEntity() == entityId) {
+            registry.kill_entity(it->getEntity());
+            it = bullets.erase(it);
             break;
+        } else {
+            ++it;
         }
     }
 }
 
 void AGame::killBosses(int entityId) {
-    for (auto& boss : bosses) {
-        if (boss.getEntity() == entityId) {
-            registry.kill_entity(boss.getEntity());
+    for (auto it = bosses.begin(); it != bosses.end();) {
+        if (it->getEntity() == entityId) {
+            registry.kill_entity(it->getEntity());
+            it = bosses.erase(it);
             break;
+        } else {
+            ++it;
         }
     }
 }
