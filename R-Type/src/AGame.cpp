@@ -74,7 +74,7 @@ std::pair<float, float> AGame::getPlayerPosition(int playerId) const {
         throw std::out_of_range("Invalid player ID");
     }
 
-    const auto& positionComponent = registry.get_components<Position>()[players[playerId].getEntity()];
+    const auto& positionComponent = players[playerId].getRegistry().get_components<Position>()[players[playerId].getEntity()];
     return {positionComponent->x, positionComponent->y};
 }
 
@@ -83,7 +83,7 @@ std::pair<float, float> AGame::getEnemyPosition(int enemyId) const {
         throw std::out_of_range("Invalid enemy ID");
     }
 
-    const auto& positionComponent = registry.get_components<Position>()[enemies[enemyId].getEntity()];
+    const auto& positionComponent = enemies[enemyId].getRegistry().get_components<Position>()[enemies[enemyId].getEntity()];
     return {positionComponent->x, positionComponent->y};
 }
 
@@ -92,8 +92,7 @@ std::pair<float, float> AGame::getBulletPosition(int bulletId) const {
         throw std::out_of_range("Invalid bullet ID");
     }
 
-    const auto& bullet = bullets[bulletId];
-    const auto& positionComponent = bullet.getRegistry().get_components<Position>()[bullets[bulletId].getEntity()];
+    const auto& positionComponent = bullets[bulletId].getRegistry().get_components<Position>()[bullets[bulletId].getEntity()];
     return {positionComponent->x, positionComponent->y};
 }
 
@@ -102,7 +101,7 @@ std::pair<float, float> AGame::getBossPosition(int bossId) const {
         throw std::out_of_range("Invalid boss ID");
     }
 
-    const auto& positionComponent = registry.get_components<Position>()[bosses[bossId].getEntity()];
+    const auto& positionComponent = bosses[bossId].getRegistry().get_components<Position>()[bosses[bossId].getEntity()];
     return {positionComponent->x, positionComponent->y};
 }
 
@@ -142,8 +141,8 @@ void AGame::spawnPlayer(int playerId, float x, float y) {
 void AGame::spawnBullet(int playerId) {
     if (playerId < players.size()) {
         auto entity = players[playerId].getEntity();
-        if (registry.has_component<Position>(entity)) {
-            const auto& position = registry.get_components<Position>()[entity];
+        if (players[playerId].getRegistry().has_component<Position>(entity)) {
+            const auto& position = players[playerId].getRegistry().get_components<Position>()[entity];
             bullets.emplace_back(registry, position->x + 50.0f, position->y + 25.0f, 1.0f);
 
             Bullet& lastBullet = bullets.back();

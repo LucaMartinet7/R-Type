@@ -15,7 +15,6 @@ public:
     bool isBossSpawned() const;
     bool areEnemiesCleared() const;
     void startNextWave();
-    Registry& getRegistry();
     void run(int numPlayers);
 
     int currentWave;
@@ -24,6 +23,7 @@ public:
     size_t getEnemiesCount() const override;
     size_t getBulletsCount() const override;
     size_t getBossCount() const override;
+
 private:
     std::mt19937 rng;
     std::uniform_real_distribution<float> distX;
@@ -31,6 +31,8 @@ private:
     std::uniform_int_distribution<int> distTime;
     int enemiesPerWave;
 
+    void checkAndKillEntities(Registry::Entity entity1, Registry::Entity entity2);
+    const Registry& getEntityRegistry(Registry::Entity entity);
     void checkCollisions();
     void spawnEnemiesRandomly();
     RType::Server* m_server; // Pointer to RType::Server
