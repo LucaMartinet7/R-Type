@@ -5,8 +5,6 @@
 ** main
 */
 
-#include <iostream>
-#include <boost/asio.hpp>
 #include "Client.hpp"
 
 RType::Client* global_client = nullptr;

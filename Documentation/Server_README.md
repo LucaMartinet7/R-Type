@@ -73,7 +73,7 @@ The server uses a **reactor pattern** for asynchronous event handling, ensuring 
 ### Packet Types
 Supported packet types include:
 - `REQCONNECT` - Client connection requests.
-- `PLAYER_MOVED` - Updates player positions.
+- `PLAYER_UP/RIGHT/LEFT/DOWN` - Updates player positions.
 - `GAME_START`, `GAME_END` - Start and end game events.
 - `DISCONNECTED` - Client disconnection notifications.
 

@@ -1,33 +1,61 @@
-/*
-** EPITECH PROJECT, 2025
-** R-Type [WSL: Ubuntu]
-** File description:
-** GameState
-*/
-
+#include "Server.hpp"
 #include "GameState.hpp"
-#include "DrawSystem.hpp"
-#include "Position.hpp"
-#include "Drawable.hpp"
-#include "Controllable.hpp"
-#include "Collidable.hpp"
-#include "Projectile.hpp"
-#include "ControlSystem.hpp"
-#include <chrono>
+#include "AGame.hpp"
+#include "CollisionSystem.hpp"
 #include <algorithm>
+#include <iostream>
+#include <thread>
 
-GameState::GameState()
-    : rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f), distTime(1000, 5000) {}
+GameState::GameState(RType::Server* server)
+    : AGame(server), rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f),
+      distTime(1000, 5000), currentWave(0), enemiesPerWave(5), m_server(server), nextEnemyId(0), nextBossId(0) {}
+
+void GameState::initializeplayers(int numPlayers) {
+    for (int i = 0; i < numPlayers; ++i) {
+        spawnPlayer(i, 100.0f * (i + 1.0f), 100.0f);
+    }
+}
 
 void GameState::update() {
     registry.run_systems();
-    checkCollisions();
-    spawnEnemiesRandomly();
-    processPlayerActions(); 
+    processPlayerActions();
+
+    if (areEnemiesCleared()) {
+        if (currentWave >= 3 && !isBossSpawned()) {
+            spawnBoss(nextBossId++, 400.0f, 300.0f);
+        } else {
+            startNextWave();
+        }
+    } else {
+        spawnEnemiesRandomly();
+    }
 }
 
-void GameState::handlePlayerMove(int playerId, int actionId) { // move player depending on action done by player
-    float moveDistance = 10.0f; // Change this value for different movement speeds
+void GameState::run(int numPlayers) {
+    initializeplayers(numPlayers);
+    while (true) {
+        // Update game state
+        update();
+
+        // Check if all enemies are cleared and start the next wave or spawn the boss
+        // if (areEnemiesCleared()) {
+        //     if (isBossSpawned()) {
+        //         std::cout << "Boss defeated! Game over." << std::endl;
+        //         break;
+        //     } else if (currentWave >= 3) {
+        //         spawnBoss(400.0f, 300.0f); // Spawn boss at the center of the screen
+        //     } else {
+        //         startNextWave();
+        //     }
+        // }
+
+        // Sleep for a short duration to simulate frame time
+        // std::this_thread::sleep_for(std::chrono::milliseconds(16));
+    }
+}
+
+void GameState::handlePlayerMove(int playerId, int actionId) {
+    float moveDistance = 1.0f;
     float x = 0.0f;
     float y = 0.0f;
 
@@ -40,46 +68,106 @@ void GameState::handlePlayerMove(int playerId, int actionId) { // move player de
     } else if (actionId == 4) { // Down
         y = moveDistance;
     }
-
     players[playerId].move(x, y);
 }
 
-void GameState::spawnPlayer(int playerId, float x, float y) {
-    if (playerId >= 0 && playerId < 4) {
-        players.emplace_back(registry, x, y);
+bool GameState::isBossSpawned() const {
+    return !bosses.empty();
+}
+
+bool GameState::areEnemiesCleared() const {
+    return enemies.empty();
+}
+
+void GameState::startNextWave() {
+    currentWave++;
+    enemiesPerWave += 5; // Increase the number of enemies per wave
+    for (int i = 0; i < enemiesPerWave; ++i) {
+        spawnEnemy(i, distX(rng), distY(rng));
     }
 }
 
-void GameState::spawnEnemy(float x, float y) {
-    enemies.emplace_back(registry, x, y);
+const Registry& GameState::getEntityRegistry(Registry::Entity entity) { // Check entity type and get the corresponding registry
+    auto playerIt = std::find_if(players.begin(), players.end(), [entity](const auto& p) { return p.getEntity() == entity; });
+    if (playerIt != players.end()) return playerIt->getRegistry();
+
+    auto enemyIt = std::find_if(enemies.begin(), enemies.end(), [entity](const auto& e) { return e.getEntity() == entity; });
+    if (enemyIt != enemies.end()) return enemyIt->getRegistry();
+
+    auto bulletIt = std::find_if(bullets.begin(), bullets.end(), [entity](const auto& b) { return b.getEntity() == entity; });
+    if (bulletIt != bullets.end()) return bulletIt->getRegistry();
+
+    auto bossIt = std::find_if(bosses.begin(), bosses.end(), [entity](const auto& b) { return b.getEntity() == entity; });
+    if (bossIt != bosses.end()) return bossIt->getRegistry();
+
+    std::cerr << "Error: Entity not found in any registry.";
+    throw std::runtime_error("Entity not found in any registry."); //avoid compilation warning even though it will never be reached
 }
 
-void GameState::shootBullet(int playerId) {
-    const auto& position = registry.get_components<Position>()[players[playerId].getEntity()];
-    bullets.emplace_back(registry, position->x + 50.0f, position->y + 25.0f, 1.0f);
+void GameState::checkAndKillEntities(Registry::Entity entity1, Registry::Entity entity2) { //New collision function to replace the one right under
+    // Get registries for both entities using the function above
+    const Registry& registry1 = getEntityRegistry(entity1);
+    const Registry& registry2 = getEntityRegistry(entity2);
+
+    if (registry1.has_component<Position>(entity1) && registry2.has_component<Position>(entity2)) {
+        const auto& pos1 = registry1.get_components<Position>()[entity1];
+        const auto& pos2 = registry2.get_components<Position>()[entity2];
+
+        float distance = std::sqrt(std::pow(pos2->x - pos1->x, 2) + std::pow(pos2->y - pos1->y, 2));
+        float collisionThreshold = 30.0f;
+
+        if (distance < collisionThreshold) {
+            killEntity(entity1);
+            killEntity(entity2);
+        }
+    }
 }
+
 
 void GameState::checkCollisions() {
-    auto collisions = collision_system(registry, registry.get_components<Position>(), registry.get_components<Drawable>(), registry.get_components<Collidable>(), registry.get_components<Controllable>(), registry.get_components<Projectile>());
-    for (const auto& [entity1, entity2] : collisions) {
-        if (registry.get_components<Controllable>()[entity1]) {
+    for (const auto& [entity1, entity2] : collision_system(
+        registry,
+        registry.get_components<Position>(),
+        registry.get_components<Drawable>(),
+        registry.get_components<Collidable>(),
+        registry.get_components<Controllable>(),
+        registry.get_components<Projectile>()
+    )) {
+        bool isProjectile1 = registry.has_component<Projectile>(entity1);
+        bool isProjectile2 = registry.has_component<Projectile>(entity2);
+        bool isPlayer1 = registry.has_component<Controllable>(entity1);
+        bool isPlayer2 = registry.has_component<Controllable>(entity2);
+        bool isEnemy1 = std::find_if(enemies.begin(), enemies.end(),
+            [entity1](auto& e){ return e.getEntity() == entity1; }) != enemies.end();
+        bool isEnemy2 = std::find_if(enemies.begin(), enemies.end(),
+            [entity2](auto& e){ return e.getEntity() == entity2; }) != enemies.end();
+
+        // Projectile <-> Enemy
+        if (isProjectile1 && isEnemy2) {
             registry.kill_entity(entity1);
+            registry.kill_entity(entity2);
+        } else if (isProjectile2 && isEnemy1) {
+            registry.kill_entity(entity1);
+            registry.kill_entity(entity2);
         }
-        if (registry.get_components<Controllable>()[entity2]) {
+
+        // Player <-> Enemy
+        if (isPlayer1 && isEnemy2) {
+            registry.kill_entity(entity1);
+        } else if (isPlayer2 && isEnemy1) {
             registry.kill_entity(entity2);
         }
     }
 }
 
 void GameState::spawnEnemiesRandomly() {
-    static auto lastSpawnTime = std::chrono::steady_clock::now();
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastSpawnTime).count();
 
     if (elapsed > distTime(rng)) {
         float x = distX(rng);
         float y = distY(rng);
-        spawnEnemy(x, y);
+        spawnEnemy(nextEnemyId++, x, y);
         lastSpawnTime = now;
     }
 }
@@ -88,29 +176,14 @@ size_t GameState::getPlayerCount() const {
     return players.size();
 }
 
-std::pair<float, float> GameState::getPlayerPosition(int playerId) const {
-    if (playerId < 0 || playerId >= players.size()) {
-        throw std::out_of_range("Invalid player ID");
-    }
-
-    const auto& positionComponent = registry.get_components<Position>()[players[playerId].getEntity()];
-    return {positionComponent->x, positionComponent->y};
+size_t GameState::getEnemiesCount() const {
+    return enemies.size();
 }
 
-std::pair<float, float> GameState::getEnemyPosition(int enemyId) const {
-    if (enemyId < 0 || enemyId >= enemies.size()) {
-        throw std::out_of_range("Invalid enemy ID");
-    }
-
-    const auto& positionComponent = registry.get_components<Position>()[enemies[enemyId].getEntity()];
-    return {positionComponent->x, positionComponent->y};
+size_t GameState::getBulletsCount() const {
+    return bullets.size();
 }
 
-std::pair<float, float> GameState::getBulletPosition(int bulletId) const {
-    if (bulletId < 0 || bulletId >= bullets.size()) {
-        throw std::out_of_range("Invalid bullet ID");
-    }
-
-    const auto& positionComponent = registry.get_components<Position>()[bullets[bulletId].getEntity()];
-    return {positionComponent->x, positionComponent->y};
+size_t GameState::getBossCount() const {
+    return bosses.size();
 }
