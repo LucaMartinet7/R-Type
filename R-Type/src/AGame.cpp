@@ -107,23 +107,17 @@ std::pair<float, float> AGame::getBossPosition(int bossId) const {
     return {positionComponent->x, positionComponent->y};
 }
 
-void AGame::spawnEnemy(float x, float y) {
+void AGame::spawnEnemy(int enemyId, float x, float y) {
     enemies.emplace_back(registry, x, y);
 
-    Enemy& lastEnemy = enemies.back();
-    Registry::Entity lastEnemyId = lastEnemy.getEntity();
-
-    std::string data = std::to_string(lastEnemyId + 500) + ";" + std::to_string(x) + ";" + std::to_string(y);
+    std::string data = std::to_string(enemyId + 500) + ";" + std::to_string(x) + ";" + std::to_string(y);
     m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_ENEMY, data));
 }
 
-void AGame::spawnBoss(float x, float y) {
+void AGame::spawnBoss(int bossId, float x, float y) {
     bosses.emplace_back(registry, x, y);
 
-    Boss& lastBoss = bosses.back();
-    Registry::Entity lastBossId = lastBoss.getEntity();
-
-    std::string data = std::to_string(lastBossId + 900) + ";" + std::to_string(x) + ";" + std::to_string(y);
+    std::string data = std::to_string(bossId + 900) + ";" + std::to_string(x) + ";" + std::to_string(y);
     m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_BOSS, data));
 }
 
@@ -144,10 +138,7 @@ void AGame::spawnBullet(int playerId) {
             const auto& position = players[playerId].getRegistry().get_components<Position>()[entity];
             bullets.emplace_back(registry, position->x + 50.0f, position->y + 25.0f, 1.0f);
 
-            Bullet& lastBullet = bullets.back();
-            Registry::Entity lastBulletId = lastBullet.getEntity();
-
-            std::string data = std::to_string(lastBulletId + 200) + ";" + std::to_string(position->x + 50.0f) + ";" + std::to_string(position->y + 25.0f);
+            std::string data = std::to_string((bullets.size() - 1) + 200) + ";" + std::to_string(position->x + 50.0f) + ";" + std::to_string(position->y + 25.0f);
             m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_BULLET, data));
         } else {
             std::cerr << "Error: Player " << playerId << " does not have a Position component." << std::endl;
