@@ -4,6 +4,8 @@
 #include "AGame.hpp"
 #include "Registry.hpp"
 #include <random>
+#include <memory> 
+#include <chrono>
 
 class GameState : public AGame {
 public:
@@ -30,6 +32,7 @@ private:
     std::uniform_real_distribution<float> distY;
     std::uniform_int_distribution<int> distTime;
     int enemiesPerWave;
+    std::chrono::steady_clock::time_point lastSpawnTime; 
 
     void checkAndKillEntities(Registry::Entity entity1, Registry::Entity entity2);
     const Registry& getEntityRegistry(Registry::Entity entity);

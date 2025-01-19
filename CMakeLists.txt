@@ -6,11 +6,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CLIENT_BINARY "r-type_client")
+set(SERVER_BINARY "r-type_server")
+set(GAME_ENGINE_BINARY "r-type_game_engine")
+
 # If you need to define Boost placeholders globally
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 
-# Optional: Global includes for entire project
-# (You can remove or use target_include_directories in subdirs instead.)
 include_directories(
     ${CMAKE_SOURCE_DIR}/R-Type/include
     ${CMAKE_SOURCE_DIR}/R-Type/include/Entity
@@ -51,6 +53,7 @@ set(BOOST_INCLUDE_LIBRARIES
     asio
     filesystem
     system
+    iostreams
 )
 FetchContent_MakeAvailable(Boost)
 
@@ -61,6 +64,8 @@ target_link_libraries(Boost INTERFACE
     Boost::asio
     Boost::filesystem
     Boost::system
+    Boost::date_time
+    Boost::iostreams
 )
 
 # ------------------------------------------------
@@ -88,6 +93,12 @@ target_link_libraries(SFML INTERFACE
     sfml-network
 )
 
+if(UNIX)
+    find_package(X11 REQUIRED)
+    include_directories(${X11_INCLUDE_DIR})
+    target_link_libraries(SFML INTERFACE ${X11_LIBRARIES})
+endif()
+
 # ------------------------------------------------
 # Add executables for client/server "main.cpp"
 # ------------------------------------------------
@@ -95,7 +106,8 @@ target_link_libraries(SFML INTERFACE
 # Client main
 add_executable(r-type_client Client/main.cpp)
 target_link_libraries(r-type_client
-    R-Type       # The "core" game logic library
+    ClientLib
+    R-Type
     Boost::Boost
     SFML::SFML
 )
@@ -103,6 +115,7 @@ target_link_libraries(r-type_client
 # Server main
 add_executable(r-type_server Server/main.cpp)
 target_link_libraries(r-type_server
+    ServerLib
     R-Type
     Boost::Boost
     SFML::SFML
