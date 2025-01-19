@@ -20,6 +20,7 @@ void GameState::initializeplayers(int numPlayers) {
 void GameState::update() {
     registry.run_systems();
     processPlayerActions();
+    m_server->PacketFactory();
 }
 
 void GameState::run(int numPlayers) {
@@ -59,6 +60,7 @@ void GameState::handlePlayerMove(int playerId, int actionId) {
     } else if (actionId == 4) { // Down
         y = moveDistance;
     }
+    std::cout << "111111Player " << playerId << " moved." << std::endl;
     players[playerId].move(x, y);
 }
 
