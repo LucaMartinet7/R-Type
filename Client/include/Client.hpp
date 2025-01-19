@@ -24,6 +24,7 @@
 #include <unordered_map>
 
 #define MAX_LENGTH 1024
+#define BASE_AUDIO 50
 
 namespace RType {
     enum class SpriteType {
