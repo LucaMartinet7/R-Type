@@ -7,7 +7,7 @@
 
 #include "PlayerAction.hpp"
 
-PlayerAction::PlayerAction(int id, int action_id)
+PlayerAction::PlayerAction(int player_id, int action_id)
     : player_id(player_id), action_id(action_id), processed(false) {}
 
 PlayerAction::~PlayerAction() {}

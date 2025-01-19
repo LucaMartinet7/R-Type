@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2025
+** R-Type [WSL: Ubuntu]
+** File description:
+** Player
+*/
+
 #include "Player.hpp"
 #include "Position.hpp"
 #include "Velocity.hpp"
@@ -6,13 +13,13 @@
 #include "Collidable.hpp"
 #include <iostream>
 
-Player::Player(Registry& registry, float x, float y) : registry(registry) {
-    entity = registry.spawn_entity();
-    registry.add_component<Position>(entity, {x, y});
-    registry.add_component<Velocity>(entity, {0.0f, 0.0f});
-    registry.add_component<Drawable>(entity, {sf::RectangleShape(sf::Vector2f(50.0f, 50.0f))});
-    registry.add_component<Controllable>(entity, {});
-    registry.add_component<Collidable>(entity, {true});
+Player::Player(Registry registry, float x, float y) : registry(registry) {
+    entity = this->registry.spawn_entity();
+    this->registry.add_component<Position>(entity, {x, y});
+    this->registry.add_component<Velocity>(entity, {0.0f, 0.0f});
+    this->registry.add_component<Drawable>(entity, {sf::RectangleShape(sf::Vector2f(50.0f, 50.0f))});
+    this->registry.add_component<Controllable>(entity, {});
+    this->registry.add_component<Collidable>(entity, {true});
 }
 
 Player::~Player() {
@@ -32,4 +39,12 @@ void Player::move(float x, float y) {
 
 Registry::Entity Player::getEntity() const {
     return entity;
+}
+
+const Registry& Player::getRegistry() const {
+    return registry;
+}
+
+void Player::setRegistry(const Registry& newRegistry) {
+    registry = newRegistry;
 }
