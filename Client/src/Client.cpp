@@ -81,15 +81,15 @@ void RType::Client::createSprite()
     SpriteElement spriteElement;
     SpriteType spriteType;
 
-    if (action == 200) { //change by used ID in server to create different types of sprites to be displayed
+    if (action == 22) { //change by used ID in server to create different types of sprites to be displayed
         spriteType = SpriteType::Enemy;
-    } else if (action == 201) {
+    } else if (action == 23) {
         spriteType = SpriteType::Boss;
-    } else if (action == 202) {
+    } else if (action == 24) {
         spriteType = SpriteType::Player;
-    } else if (action == 203) {
+    } else if (action == 25) {
         spriteType = SpriteType::Bullet;
-    } else if (action == 204) {
+    } else if (action == 26) {
         spriteType = SpriteType::Background;
     } else {
         return;
@@ -103,7 +103,7 @@ void RType::Client::createSprite()
 
 void RType::Client::destroySprite()
 {
-    if (action == 300) {
+    if (action == 28) {
         for (auto it = sprites_.begin(); it != sprites_.end(); ++it) {
             if (server_id == it->id) {
                 sprites_.erase(it);
@@ -133,7 +133,7 @@ void RType::Client::drawSprites(sf::RenderWindow& window)
 
 void RType::Client::updateSpritePosition()
 {
-    if (action == 500) {
+    if (action == 29) {
         for (auto& spriteElement : sprites_) {
             if (server_id == spriteElement.id) {
                 spriteElement.sprite.setPosition(new_x, new_y);
