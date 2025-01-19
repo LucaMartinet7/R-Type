@@ -9,6 +9,7 @@ add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 
 # (Optional) Include directories if needed
 include_directories(
+    ${CMAKE_SOURCE_DIR}/Server/include
     ${CMAKE_SOURCE_DIR}/R-Type/include
     ${CMAKE_SOURCE_DIR}/R-Type/include/Entity
     ${CMAKE_SOURCE_DIR}/ECS

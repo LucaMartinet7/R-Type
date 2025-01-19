@@ -18,8 +18,8 @@ include_directories(
 
 # The Client library sources
 set(CLIENT_SOURCES
-    Client.cpp
-    Client.hpp
+    src/Client.cpp
+    include/Client.hpp
 )
 
 add_library(ClientLib ${CLIENT_SOURCES})

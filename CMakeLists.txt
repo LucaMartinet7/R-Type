@@ -15,8 +15,10 @@ add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 include_directories(
     ${CMAKE_SOURCE_DIR}/R-Type/include
     ${CMAKE_SOURCE_DIR}/R-Type/include/Entity
-    ${CMAKE_SOURCE_DIR}/Server/Network
+    ${CMAKE_SOURCE_DIR}/Network
+    ${CMAKE_SOURCE_DIR}/Network/include
     ${CMAKE_SOURCE_DIR}/Server/
+    ${CMAKE_SOURCE_DIR}/Server/include/
     ${CMAKE_SOURCE_DIR}/ECS/
     ${CMAKE_SOURCE_DIR}/ECS/systems/
     ${CMAKE_SOURCE_DIR}/ECS/components/
@@ -27,6 +29,7 @@ include_directories(
 
 # --- Subdirectories ---
 add_subdirectory(ECS)
+add_subdirectory(Network)
 add_subdirectory(Client)
 add_subdirectory(Server)
 add_subdirectory(R-Type)
@@ -91,7 +94,6 @@ target_link_libraries(SFML INTERFACE
     sfml-window
     sfml-graphics
     sfml-audio
-    sfml-network
 )
 
 if(UNIX)
