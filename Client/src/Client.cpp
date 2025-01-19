@@ -12,7 +12,7 @@
 using boost::asio::ip::udp;
 
 RType::Client::Client(boost::asio::io_context& io_context, const std::string& host, short server_port, short client_port)
-    : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context), window(sf::VideoMode(1280, 720), "R-Type Client")
+    : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context), window(sf::VideoMode(1280, 720), "R-Type Client"), send_timer_(io_context) // Initialize send_timer_
 {
     udp::resolver resolver(io_context);
     udp::resolver::query query(udp::v4(), host, std::to_string(server_port));
@@ -20,6 +20,7 @@ RType::Client::Client(boost::asio::io_context& io_context, const std::string& ho
     std::cout << "Connected to " << host << ":" << server_port << " from client port " << client_port << std::endl;
 
     start_receive();
+    start_send_timer(); // Start the send timer
     receive_thread_ = std::thread(&Client::run_receive, this);
 }
 
@@ -220,7 +221,7 @@ int RType::Client::main_loop()
     send(createPacket(Network::PacketType::REQCONNECT));
     LoadSound();
 
-    while (this->window.isOpen()) { //received data is modified in handle receive function and parsed here
+    while (this->window.isOpen()) {
         processEvents(this->window);
         createSprite();
         destroySprite();
@@ -274,10 +275,10 @@ void RType::Client::processEvents(sf::RenderWindow& window)
             sf::Vector2i mousePos = sf::Mouse::getPosition(window);
             if (!sprites_.empty()) {
                 if (sprites_.back().id == -101) {
-                    send(createPacket(Network::PacketType::GAME_START));
+                    send_queue_.push(createPacket(Network::PacketType::GAME_START));
                     sprites_.clear();
                 } else {
-                    send(createMousePacket(Network::PacketType::PLAYER_SHOOT, mousePos.x, mousePos.y));
+                    send_queue_.push(createMousePacket(Network::PacketType::PLAYER_SHOOT, mousePos.x, mousePos.y));
                     sound_shoot_.play();
                 }
             }
@@ -285,19 +286,19 @@ void RType::Client::processEvents(sf::RenderWindow& window)
         if (event.type == sf::Event::KeyPressed) {
             if (event.key.code == sf::Keyboard::Right) {
                 std::cout << "[DEBUG] Sending Right: " << std::endl;
-                send(createPacket(Network::PacketType::PLAYER_RIGHT));
+                send_queue_.push(createPacket(Network::PacketType::PLAYER_RIGHT));
             }
             if (event.key.code == sf::Keyboard::Left) {
                 std::cout << "[DEBUG] Sending Left: " << std::endl;
-                send(createPacket(Network::PacketType::PLAYER_LEFT));
+                send_queue_.push(createPacket(Network::PacketType::PLAYER_LEFT));
             }
             if (event.key.code == sf::Keyboard::Up) {
                 std::cout << "[DEBUG] Sending Up: " << std::endl;
-                send(createPacket(Network::PacketType::PLAYER_UP));
+                send_queue_.push(createPacket(Network::PacketType::PLAYER_UP));
             }
             if (event.key.code == sf::Keyboard::Down) {
                 std::cout << "[DEBUG] Sending Down: " << std::endl;
-                send(createPacket(Network::PacketType::PLAYER_DOWN));
+                send_queue_.push(createPacket(Network::PacketType::PLAYER_DOWN));
             }
             if (event.key.code == sf::Keyboard::Q) {
                 sendExitPacket();
@@ -305,15 +306,15 @@ void RType::Client::processEvents(sf::RenderWindow& window)
             }
             if (event.key.code == sf::Keyboard::M) {
                 std::cout << "[DEBUG] Sending M: " << std::endl;
-                send(createPacket(Network::PacketType::OPEN_MENU));
+                send_queue_.push(createPacket(Network::PacketType::OPEN_MENU));
             }
             if (event.key.code == sf::Keyboard::Space) {
                 std::cout << "[DEBUG] Sending Space: " << std::endl;
-                send(createPacket(Network::PacketType::PLAYER_SHOOT));
+                send_queue_.push(createPacket(Network::PacketType::PLAYER_SHOOT));
             }
             if (event.key.code == sf::Keyboard::Escape) {
                 initLobbySprites(window);
-                send(createPacket(Network::PacketType::GAME_END));
+                send_queue_.push(createPacket(Network::PacketType::GAME_END));
             }
             if (event.key.code == sf::Keyboard::Num1) {
                 float newVolume = sound_background_.getVolume() - 5;
@@ -345,4 +346,22 @@ void RType::Client::initLobbySprites(sf::RenderWindow& window)
 
     sprites_.push_back(backgroundElement);
     sprites_.push_back(buttonElement);
+}
+
+void RType::Client::start_send_timer() {
+    send_timer_.expires_after(std::chrono::milliseconds(1));
+    send_timer_.async_wait(boost::bind(&Client::handle_send_timer, this, boost::asio::placeholders::error));
+}
+
+void RType::Client::handle_send_timer(const boost::system::error_code& error) {
+    if (!error) {
+        if (!send_queue_.empty()) {
+            std::string message = send_queue_.front();
+            send_queue_.pop();
+            send(message);
+        }
+        start_send_timer();
+    } else {
+        std::cerr << "[DEBUG] Timer error: " << error.message() << std::endl;
+    }
 }

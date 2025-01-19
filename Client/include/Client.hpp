@@ -22,6 +22,8 @@
 #include <mutex>
 #include <csignal>
 #include <unordered_map>
+#include <boost/asio/steady_timer.hpp>
+#include <queue>
 
 #define MAX_LENGTH 1024
 #define BASE_AUDIO 50
@@ -70,6 +72,8 @@ namespace RType {
         void resetValues();
         void LoadSound();
         std::string createMousePacket(Network::PacketType type, int x = 0, int y = 0);
+        void start_send_timer();
+        void handle_send_timer(const boost::system::error_code& error);
 
         sf::RenderWindow window;
         boost::asio::ip::udp::socket socket_;
@@ -88,5 +92,7 @@ namespace RType {
         sf::Sound sound_background_;
         sf::SoundBuffer buffer_shoot_;
         sf::Sound sound_shoot_;
+        boost::asio::steady_timer send_timer_;
+        std::queue<std::string> send_queue_;
     };
 }
