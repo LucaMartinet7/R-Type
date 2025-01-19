@@ -12,6 +12,7 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/algorithm/string.hpp>
 #include <iostream>
+#include <queue>
 #include <map>
 
 #include "Network/ThreadSafeQueue.hpp"
@@ -61,6 +62,8 @@ namespace RType {
         std::unordered_map<std::string, std::function<void(const std::vector<std::string>&)>> packet_handlers_;
         std::unordered_map<Network::PacketType, void(*)(const Network::Packet&)> m_handlers;
         GameState* m_game;
+
+        std::queue<uint32_t> available_ids_;
     };
 }
 

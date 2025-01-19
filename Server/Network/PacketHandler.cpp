@@ -97,13 +97,16 @@ void PacketHandler::handleDisconnected(const Network::Packet &packet)
 
 void PacketHandler::handleGameStart(const Network::Packet &packet)
 {
+    int numPlayers;
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         std::cout << "[PacketHandler] Handled GAME_START packet." << std::endl;
         m_server.m_running = true;
+        const auto& clients = m_server.getClients();
+        numPlayers = clients.size();
     }
-    std::thread gameThread([this] {
-        m_game.run(4);
+    std::thread gameThread([this, numPlayers] {
+        m_game.run(numPlayers);
     });
     gameThread.detach();
 }
