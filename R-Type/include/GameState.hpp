@@ -39,6 +39,8 @@ private:
     void checkCollisions();
     void spawnEnemiesRandomly();
     RType::Server* m_server; // Pointer to RType::Server
+    int nextEnemyId;
+    int nextBossId;
 };
 
 #endif // GAME_STATE_HPP
