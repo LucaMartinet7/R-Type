@@ -43,9 +43,7 @@ set(FETCHCONTENT_BASE_DIR "${CMAKE_CURRENT_BINARY_DIR}/3rdparty"
     FORCE
 )
 
-# ------------------------------------------------
 # Fetch Boost
-# ------------------------------------------------
 FetchContent_Declare(
     Boost
     URL https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.zip
@@ -72,9 +70,7 @@ target_link_libraries(Boost INTERFACE
     Boost::iostreams
 )
 
-# ------------------------------------------------
 # Fetch SFML
-# ------------------------------------------------
 FetchContent_Declare(
     SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -83,7 +79,6 @@ FetchContent_Declare(
 # SFML build options
 set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_AUDIO ON CACHE BOOL "" FORCE)
-set(SFML_BUILD_NETWORK ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(SFML)
 
 # Create a meta-target called SFML::SFML bundling sfml libs
@@ -96,16 +91,8 @@ target_link_libraries(SFML INTERFACE
     sfml-audio
 )
 
-if(UNIX)
-    find_package(X11 REQUIRED)
-    include_directories(${X11_INCLUDE_DIR})
-    target_link_libraries(SFML INTERFACE ${X11_LIBRARIES})
-endif()
 
-# ------------------------------------------------
 # Add executables for client/server "main.cpp"
-# ------------------------------------------------
-
 # Client main
 add_executable(r-type_client Client/main.cpp)
 target_link_libraries(r-type_client
