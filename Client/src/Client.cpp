@@ -195,7 +195,8 @@ int RType::Client::main_loop()
     loadTextures();
     send(createPacket(Network::PacketType::REQCONNECT));
 
-    initLobbySprites(window);
+    if (action == 31)
+        initLobbySprites(window);
 
     while (window.isOpen()) { //received data is modified in handle receive function and parsed here
         processEvents(window);

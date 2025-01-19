@@ -49,9 +49,11 @@ void AGame::processPlayerActions() {
         if (actionId > 0 && actionId < 5) { // Change by real action ID defined in server
             handlePlayerMove(playerId, actionId);
             action.setProcessed(true);
+            m_server->PacketFactory();
         } else if (actionId == 5) { // Change by real action ID defined in server
             spawnBullet(playerId);
             action.setProcessed(true);
+            m_server->PacketFactory();
         }
         // Handle other actions or ignore unknown action IDs
     }
