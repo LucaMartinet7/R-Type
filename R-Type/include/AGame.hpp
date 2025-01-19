@@ -46,7 +46,7 @@ class AGame : public IGame {
         RType::Server* m_server;
 
     public:
-        AGame();
+        AGame(RType::Server* server);
         virtual ~AGame();
 
         // Implement player action management functions

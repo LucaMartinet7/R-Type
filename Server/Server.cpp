@@ -52,7 +52,7 @@ void RType::Server::Broadcast(const std::string& message)
 {
     {
         std::lock_guard<std::mutex> lock(clients_mutex_);
-
+        
         for (const auto& client : clients_) {
             send_to_client(message, client.second.getEndpoint());
         }

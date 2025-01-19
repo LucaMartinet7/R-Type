@@ -8,7 +8,7 @@
 #include <chrono>
 
 GameState::GameState(RType::Server* server)
-    : AGame(), rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f),
+    : AGame(server), rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f),
       distTime(1000, 5000), currentWave(0), enemiesPerWave(5), m_server(server) {}
 
 void GameState::initializeplayers(int numPlayers) {

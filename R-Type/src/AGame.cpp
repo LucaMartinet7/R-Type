@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <iostream>
 
-AGame::AGame()
+AGame::AGame(RType::Server* server) : m_server(server)
 {
     registerComponents();
 }
@@ -132,9 +132,9 @@ void AGame::spawnPlayer(int playerId, float x, float y) {
         Player& lastPlayer = players.back();
         Registry::Entity lastPlayerId = lastPlayer.getEntity();
 
-        std::string data = std::to_string(playerId) + ";" + std::to_string(lastPlayerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+        std::string data = std::to_string(lastPlayerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
         std::cout << "Player " << playerId << " spawned at " << x << ", " << y << std::endl;
-        // m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_PLAYER, data));
+        m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_PLAYER, data));
     }
 }
 
