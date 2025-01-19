@@ -43,7 +43,7 @@ void RType::Server::send_to_client(const std::string& message, const udp::endpoi
             if (!error) {
                 std::cout << "[DEBUG] Message sent to client." << std::endl;
             } else {
-                std::cerr << "[DEBUG] Error sending to client: " << error.message() << std::endl;
+                std::cerr << "[ERROR] Error sending to client: " << error.message() << std::endl;
             }
         });
 }
@@ -52,7 +52,7 @@ void RType::Server::Broadcast(const std::string& message)
 {
     {
         std::lock_guard<std::mutex> lock(clients_mutex_);
-        
+
         for (const auto& client : clients_) {
             send_to_client(message, client.second.getEndpoint());
         }
@@ -163,7 +163,6 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
                 data.id = it->second.getId();
                 std::cout << "[DEBUG] Client " << data.id << " disconnected." << std::endl;
 
-                // Return the client ID to the pool
                 available_ids_.push(data.id);
 
                 clients_.erase(it);
@@ -172,10 +171,12 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
         }
     }
     data.id = -1;
-    std::cerr << "Client not found." << std::endl;
+    std::cerr << "[ERROR] Client not found." << std::endl;
     send_to_client(createPacket(Network::PacketType::NONE, ""), client_endpoint);
     return data;
 }
+
+//factory sending
 
 void RType::Server::PacketFactory() {
     for (int playerId = 0; playerId < m_game->getPlayerCount(); ++playerId) {

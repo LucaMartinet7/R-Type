@@ -15,7 +15,7 @@
 #include "Packet.hpp"
 #include "PacketType.hpp"
 #include "GameState.hpp"
-#include "../Server.hpp"
+#include "Server.hpp"
 
 namespace Network {
     class PacketHandler {

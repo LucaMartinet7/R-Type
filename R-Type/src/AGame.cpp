@@ -6,8 +6,8 @@
 */
 
 #include "GameState.hpp"
-#include "Network/Packet.hpp"
-#include "Network/PacketType.hpp"
+#include "Packet.hpp"
+#include "PacketType.hpp"
 #include "Server.hpp"
 #include "AGame.hpp"
 #include <algorithm>

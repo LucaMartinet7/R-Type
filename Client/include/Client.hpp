@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "../Server/Network/Packet.hpp"
+#include "Packet.hpp"
 
 #include <boost/asio.hpp>
 #include <boost/bind/bind.hpp>

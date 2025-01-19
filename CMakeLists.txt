@@ -11,7 +11,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Define binary names for game client and server
 set(CLIENT_BINARY "r-type_client")
 set(SERVER_BINARY "r-type_server")
-set(GAME_ENGINE_BINARY "r-type_game_engine")
 
 # Define the macro for Boost bind global placeholders
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
@@ -19,12 +18,14 @@ add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 include_directories(
     ${CMAKE_SOURCE_DIR}/R-Type/include
     ${CMAKE_SOURCE_DIR}/R-Type/include/Entity/
-    ${CMAKE_SOURCE_DIR}/Server/Network
-    ${CMAKE_SOURCE_DIR}/Server/
+    ${CMAKE_SOURCE_DIR}/Network/include
+    ${CMAKE_SOURCE_DIR}/Server/include
     ${CMAKE_SOURCE_DIR}/ECS/
     ${CMAKE_SOURCE_DIR}/ECS/systems/
     ${CMAKE_SOURCE_DIR}/ECS/components/
     ${CMAKE_SOURCE_DIR}/Server/Errors/
+    ${CMAKE_SOURCE_DIR}/Client/include/
+
 )
 
 # Find SFML (make sure it's installed on your system)
@@ -48,9 +49,8 @@ FetchContent_MakeAvailable(Boost)
 # Add server executable
 add_executable(${SERVER_BINARY}
     Server/main.cpp
-    Server/Server.cpp
-    Server/Server.hpp
-    Server/Network/PacketHandler.cpp
+    Server/src/Server.cpp
+    Network/src/PacketHandler.cpp
     R-Type/src/GameState.cpp
     R-Type/src/AGame.cpp
     R-Type/src/PlayerAction.cpp
@@ -63,7 +63,7 @@ add_executable(${SERVER_BINARY}
 # Add client executable
 add_executable(${CLIENT_BINARY}
     Client/main.cpp
-    Client/Client.cpp
+    Client/src/Client.cpp
 )
 
 # Link the Boost libraries provided by FetchContent

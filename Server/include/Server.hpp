@@ -12,11 +12,12 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/algorithm/string.hpp>
 #include <iostream>
+#include <thread>
 #include <queue>
 #include <map>
 
-#include "Network/ThreadSafeQueue.hpp"
-#include "Network/Packet.hpp"
+#include "ThreadSafeQueue.hpp"
+#include "Packet.hpp"
 #include "ClientRegister.hpp"
 #include "GameState.hpp"
 
