@@ -103,10 +103,12 @@ void RType::Client::createSprite()
 
 void RType::Client::destroySprite()
 {
-    for (auto it = sprites_.begin(); it != sprites_.end(); ++it) {
-        if (server_id == it->id) {
-            sprites_.erase(it);
-            break;
+    if (action == 300) {
+        for (auto it = sprites_.begin(); it != sprites_.end(); ++it) {
+            if (server_id == it->id) {
+                sprites_.erase(it);
+                break;
+            }
         }
     }
 }
@@ -131,10 +133,12 @@ void RType::Client::drawSprites(sf::RenderWindow& window)
 
 void RType::Client::updateSpritePosition()
 {
-    for (auto& spriteElement : sprites_) {
-        if (server_id == spriteElement.id) {
-            spriteElement.sprite.setPosition(new_x, new_y);
-            break;
+    if (action == 500) {
+        for (auto& spriteElement : sprites_) {
+            if (server_id == spriteElement.id) {
+                spriteElement.sprite.setPosition(new_x, new_y);
+                break;
+            }
         }
     }
 }
@@ -175,10 +179,17 @@ void RType::Client::parseMessage(std::string packet_data)
     }
 }
 
+void RType::Client::resetValues()
+{
+    action = 0;
+    server_id = 0;
+    new_x = 0.0;
+    new_y = 0.0;
+}
 
 int RType::Client::main_loop()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type Client");
+    sf::RenderWindow window(sf::VideoMode(1440, 720), "R-Type Client");
     loadTextures();
     send(createPacket(Network::PacketType::REQCONNECT));
 
@@ -189,8 +200,9 @@ int RType::Client::main_loop()
         createSprite();
         destroySprite();
         updateSpritePosition();
+        resetValues();
         mutex_.unlock();
-
+        
         window.clear();
         drawSprites(window);
         window.display();

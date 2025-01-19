@@ -64,6 +64,7 @@ namespace RType {
         void destroySprite();
         void processEvents(sf::RenderWindow& window);
         void initLobbySprites(sf::RenderWindow& window);
+        void resetValues();
         std::string createMousePacket(Network::PacketType type, int x = 0, int y = 0);
 
         boost::asio::ip::udp::socket socket_;
