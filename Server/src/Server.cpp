@@ -24,15 +24,14 @@ RType::Server::Server(boost::asio::io_context& io_context, short port, ThreadSaf
     start_receive();
 }
 
-void RType::Server::setGameState(GameState* game) {
-    m_game = game;
-}
-
 RType::Server::~Server()
 {
     socket_.close();
 }
 
+void RType::Server::setGameState(GameState* game) {
+    m_game = game;
+}
 //SEND MESSAGES
 
 void RType::Server::send_to_client(const std::string& message, const udp::endpoint& client_endpoint)
@@ -110,6 +109,7 @@ std::string RType::Server::createPacket(const Network::PacketType& type, const s
 {
     std::string packet_str;
     std::string packet_data = data.empty() ? "-1;-1;-1" : data;
+    std::cout << "[DEBUG] Creating packet with type: " << static_cast<int>(type) << " and data: " << packet_data << std::endl;
 
     packet_str.push_back(static_cast<uint8_t>(type));
     packet_str.push_back(static_cast<uint8_t>(';'));
