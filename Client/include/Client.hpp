@@ -29,7 +29,6 @@ namespace RType {
         Player,
         Bullet,
         Background,
-        Lobby_background,
         Start_button
     };
 

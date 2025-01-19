@@ -12,7 +12,7 @@
 using boost::asio::ip::udp;
 
 RType::Client::Client(boost::asio::io_context& io_context, const std::string& host, short server_port, short client_port)
-    : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context), window(sf::VideoMode(1440, 720), "R-Type Client")
+    : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context), window(sf::VideoMode(1280, 720), "R-Type Client")
 {
     udp::resolver resolver(io_context);
     udp::resolver::query query(udp::v4(), host, std::to_string(server_port));
@@ -132,7 +132,6 @@ void RType::Client::loadTextures() //make sure to have the right textures in the
     textures_[RType::SpriteType::Player].loadFromFile("../assets/player.png");
     textures_[RType::SpriteType::Bullet].loadFromFile("../assets/bullet.png");
     textures_[RType::SpriteType::Background].loadFromFile("../assets/background.png");
-    textures_[RType::SpriteType::Lobby_background].loadFromFile("../assets/lobby_background.png");
     textures_[RType::SpriteType::Start_button].loadFromFile("../assets/start_button.png");
 }
 
@@ -307,7 +306,7 @@ void RType::Client::initLobbySprites(sf::RenderWindow& window)
     sprites_.clear();
     
     SpriteElement backgroundElement;
-    backgroundElement.sprite.setTexture(textures_[SpriteType::Lobby_background]);
+    backgroundElement.sprite.setTexture(textures_[SpriteType::Background]);
     backgroundElement.sprite.setPosition(0, 0);
     backgroundElement.id = -100;
 
