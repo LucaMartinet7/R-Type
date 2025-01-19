@@ -15,9 +15,11 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/R-Type/include
     ${CMAKE_SOURCE_DIR}/R-Type/include/Entity
     ${CMAKE_SOURCE_DIR}/Server/Network
-    ${CMAKE_SOURCE_DIR}/ECS
-    ${CMAKE_SOURCE_DIR}/ECS/systems
-    ${CMAKE_SOURCE_DIR}/ECS/components
+    ${CMAKE_SOURCE_DIR}/Server/
+    ${CMAKE_SOURCE_DIR}/ECS/
+    ${CMAKE_SOURCE_DIR}/ECS/systems/
+    ${CMAKE_SOURCE_DIR}/ECS/components/
+    ${CMAKE_SOURCE_DIR}/Server/Errors/
 )
 
 # --- Subdirectories ---

@@ -75,81 +75,108 @@ void PacketHandler::handlePacket(const Network::Packet &packet) {
 
 void PacketHandler::handleNone(const Network::Packet &packet)
 {
-    std::cout << "[PacketHandler] Handeled NONE packet." << std::endl;
+    std::lock_guard<std::mutex> lock(m_mutex);
+    std::cout << "[PacketHandler] Handled NONE packet." << std::endl;
 }
 
 void PacketHandler::reqConnect(const Network::Packet &packet)
 {
-    std::cout << "[PacketHandler] Handeled CONNECTED packet." << std::endl;
+    std::lock_guard<std::mutex> lock(m_mutex);
+    std::cout << "[PacketHandler] Handled CONNECTED packet." << std::endl;
+    auto endpoint = m_server.getRemoteEndpoint();
+    m_server.reqConnectData(endpoint);
 }
 
 void PacketHandler::handleDisconnected(const Network::Packet &packet)
 {
-    std::cout << "[PacketHandler] Handeled DISCONNECTED packet." << std::endl;
+    std::lock_guard<std::mutex> lock(m_mutex);
+    std::cout << "[PacketHandler] Handled DISCONNECTED packet." << std::endl;
+    auto endpoint = m_server.getRemoteEndpoint();
+    m_server.disconnectData(endpoint);
 }
 
 void PacketHandler::handleGameStart(const Network::Packet &packet)
 {
-    std::cout << "[PacketHandler] Handeled GAME_START packet." << std::endl;
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        std::cout << "[PacketHandler] Handled GAME_START packet." << std::endl;
+        m_server.m_running = true;
+    }
+    std::thread gameThread([this] {
+        m_game.run(4);
+    });
+    gameThread.detach();
 }
 
 void PacketHandler::handlePlayerDead(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled PLAYER_DEAD packet." << std::endl;
 }
 
 void PacketHandler::handlePlayerJoin(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled PLAYER_JOIN packet." << std::endl;
 }
 
 void PacketHandler::handlePlayerShoot(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled PLAYER_SHOOT packet." << std::endl;
 }
 
 void PacketHandler::handlePlayerHit(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled PLAYER_HIT packet." << std::endl;
 }
 
 void PacketHandler::handlePlayerScore(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled PLAYER_SCORE packet." << std::endl;
 }
 
 void PacketHandler::handleEnemySpawned(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled ENEMY_SPAWNED packet." << std::endl;
 }
 
 void PacketHandler::handleEnemyDead(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled ENEMY_DEAD packet." << std::endl;
 }
 
 void PacketHandler::handleEnemyMoved(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled ENEMY_MOVED packet." << std::endl;
 }
 
 void PacketHandler::handleEnemyShoot(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled ENEMY_SHOOT packet." << std::endl;
 }
 
 void PacketHandler::handleEnemyLifeUpdate(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled ENEMY_LIFE_UPDATE packet." << std::endl;
 }
 
 void PacketHandler::handleMapUpdate(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled MAP_UPDATE packet." << std::endl;
 }
 
 void PacketHandler::handleGameEnd(const Network::Packet &packet)
 {
+    std::lock_guard<std::mutex> lock(m_mutex);
     std::cout << "[PacketHandler] Handeled GAME_END packet." << std::endl;
 }
 
@@ -184,19 +211,28 @@ void PacketHandler::handleOpenMenu(const Network::Packet &packet)
 
 void PacketHandler::handlePlayerAction(const Network::Packet &packet, int action)
 {
+    {
+        std::lock_guard<std::mutex> lock(m_server.clients_mutex_);
+        if (!m_server.m_running) {
+            std::cout << "[PacketHandler] game is not running, cannot move." << std::endl;
+            return;
+        }
+    }
     std::cout << "[PacketHandler] Handling player action: " << action << std::endl;
-
     const auto& clients = m_server.getClients();
     const udp::endpoint& clientEndpoint = m_server.getRemoteEndpoint();
 
     size_t playerId = -1;
     bool found = false;
+    {
+        std::lock_guard<std::mutex> lock(m_server.clients_mutex_);
 
-    for (const auto& [id, client] : clients) {
-        if (client.getEndpoint() == clientEndpoint) {
-            playerId = id;
-            found = true;
-            break;
+        for (const auto& [id, client] : clients) {
+            if (client.getEndpoint() == clientEndpoint) {
+                playerId = id;
+                found = true;
+                break;
+            }
         }
     }
     if (found) {

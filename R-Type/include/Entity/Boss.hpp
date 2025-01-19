@@ -5,14 +5,18 @@
 
 class Boss {
 public:
-    Boss(Registry& registry, float x, float y);
+    Boss(Registry registry, float x, float y);
     ~Boss();
+
     void move(float x, float y);
     Registry::Entity getEntity() const;
-private:
-    Registry& registry;
-    Registry::Entity entity;
 
+    const Registry& getRegistry() const;
+    void setRegistry(const Registry& newRegistry);
+
+private:
+    Registry registry;
+    Registry::Entity entity;
 };
 
 #endif //BOSS_HPP

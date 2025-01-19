@@ -55,12 +55,6 @@ void RType::Client::handle_receive(const boost::system::error_code& error, std::
     if (!error || error == boost::asio::error::message_size) {
         mutex_.lock();
         received_data.assign(recv_buffer_.data(), bytes_transferred);
-
-        // uint8_t packet_type = static_cast<uint8_t>(received_data[0]);
-
-        // std::string packet_data = received_data.substr(2);
-        // std::cout << "[DEBUG] Received Packet Type: " << static_cast<int>(packet_type) << std::endl;
-        // std::cout << "[DEBUG] Received Packet Data: " << packet_data << std::endl;
         parseMessage(received_data);
         start_receive();
     } else {
@@ -87,13 +81,15 @@ void RType::Client::createSprite()
     SpriteElement spriteElement;
     SpriteType spriteType;
 
-    if (action == 1) { //change by used ID in server to create different types of sprites to be displayed
+    if (action == 200) { //change by used ID in server to create different types of sprites to be displayed
         spriteType = SpriteType::Enemy;
-    } else if (action == 2) {
+    } else if (action == 201) {
+        spriteType = SpriteType::Boss;
+    } else if (action == 202) {
         spriteType = SpriteType::Player;
-    } else if (action == 3) {
-        spriteType = SpriteType::Missile;
-    } else if (action == 4) {
+    } else if (action == 203) {
+        spriteType = SpriteType::Bullet;
+    } else if (action == 204) {
         spriteType = SpriteType::Background;
     } else {
         return;
@@ -117,10 +113,13 @@ void RType::Client::destroySprite()
 
 void RType::Client::loadTextures() //make sure to have the right textures in the right folder
 {
-    textures_[RType::SpriteType::Enemy].loadFromFile("enemy.png");
-    textures_[RType::SpriteType::Player].loadFromFile("player.png");
-    textures_[RType::SpriteType::Missile].loadFromFile("missile.png");
-    textures_[RType::SpriteType::Background].loadFromFile("background.png");
+    textures_[RType::SpriteType::Enemy].loadFromFile("../assets/enemy.png");
+    textures_[RType::SpriteType::Boss].loadFromFile("../assets/boss.png");
+    textures_[RType::SpriteType::Player].loadFromFile("../assets/player.png");
+    textures_[RType::SpriteType::Bullet].loadFromFile("../assets/bullet.png");
+    textures_[RType::SpriteType::Background].loadFromFile("../assets/background.png");
+    textures_[RType::SpriteType::Lobby_background].loadFromFile("../assets/lobby_background.png");
+    textures_[RType::SpriteType::Start_button].loadFromFile("../assets/start_button.png");
 }
 
 void RType::Client::drawSprites(sf::RenderWindow& window)
@@ -140,35 +139,50 @@ void RType::Client::updateSpritePosition()
     }
 }
 
-void RType::Client::parseMessage(std::string packet_data) //parse the packet send by server and stores the data in the right variables in Client class
+void RType::Client::parseMessage(std::string packet_data)
 {
-    std::stringstream ss(packet_data);
-    std::string segment;
-    std::vector<std::string> elements;
-
-    while (std::getline(ss, segment, ';'))
-        elements.push_back(segment);
-
-    if (elements.size() != 4) {
-        std::cerr << "[ERROR] Invalid packet format: " << packet_data << std::endl;
+    if (packet_data.empty()) {
+        std::cerr << "[ERROR] Empty packet data." << std::endl;
         return;
     }
+    uint8_t packet_type = static_cast<uint8_t>(packet_data[0]);
+    std::string packet_inside = packet_data.substr(2);
+    std::cout << "[DEBUG] Received Packet Type: " << static_cast<int>(packet_type) << std::endl;
+    std::cout << "[DEBUG] Received Packet Data: " << packet_inside << std::endl;
 
+    std::vector<std::string> elements;
+    std::stringstream ss(packet_inside);
+    std::string segment;
+    while (std::getline(ss, segment, ';')) {
+        elements.push_back(segment);
+    }
+    if (elements.size() != 3) {
+        std::cerr << "[ERROR] Invalid packet format: " << packet_inside << std::endl;
+        return;
+    }
     try {
-        action = std::stoul(elements[0]); //stoul converts string to unsigned long
-        server_id = std::stoul(elements[1]);
-        new_x = std::stof(elements[2]);
-        new_y = std::stof(elements[3]);
+        action = static_cast<int>(packet_type);
+        server_id = std::stoi(elements[0]);
+        new_x = std::stof(elements[1]);
+        new_y = std::stof(elements[2]);
+
+        std::cout << "[DEBUG] Action: " << action << std::endl;
+        std::cout << "[DEBUG] Server ID: " << server_id << std::endl;
+        std::cout << "[DEBUG] New X: " << new_x << std::endl;
+        std::cout << "[DEBUG] New Y: " << new_y << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "[ERROR] Failed to parse packet data: " << e.what() << std::endl;
     }
 }
+
 
 int RType::Client::main_loop()
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "R-Type Client");
     loadTextures();
     send(createPacket(Network::PacketType::REQCONNECT));
+
+    initLobbySprites(window);
 
     while (window.isOpen()) { //received data is modified in handle receive function and parsed here
         processEvents(window);
@@ -194,6 +208,17 @@ std::string RType::Client::createPacket(Network::PacketType type)
     return packet_str;
 }
 
+std::string RType::Client::createMousePacket(Network::PacketType type, int x, int y)
+{
+    Network::Packet packet;
+    packet.type = type;
+
+    std::ostringstream packet_str;
+    packet_str << static_cast<uint8_t>(type) << ";" << x << ";" << y;
+
+    return packet_str.str();
+}
+
 std::string deserializePacket(const std::string& packet_str)
 {
     Network::Packet packet;
@@ -207,6 +232,17 @@ void RType::Client::processEvents(sf::RenderWindow& window)
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             window.close();
+        }
+        if (event.type == sf::Event::MouseButtonPressed) {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            if (!sprites_.empty()) {
+                if (sprites_.back().id == -101) {
+                    send(createPacket(Network::PacketType::GAME_START));
+                    sprites_.clear();
+                } else {
+                    send(createMousePacket(Network::PacketType::MOUSE_CLICK, mousePos.x, mousePos.y));
+                }
+            }
         }
         if (event.type == sf::Event::KeyPressed) {
             if (event.key.code == sf::Keyboard::Right) {
@@ -233,7 +269,28 @@ void RType::Client::processEvents(sf::RenderWindow& window)
                 std::cout << "[DEBUG] Sending M: " << std::endl;
                 send(createPacket(Network::PacketType::OPEN_MENU));
             }
+            if (event.key.code == sf::Keyboard::Escape) {
+                initLobbySprites(window);
+                send(createPacket(Network::PacketType::GAME_END));
+            }
         }
     }
 }
 
+void RType::Client::initLobbySprites(sf::RenderWindow& window)
+{
+    sprites_.clear();
+    
+    SpriteElement backgroundElement;
+    backgroundElement.sprite.setTexture(textures_[SpriteType::Lobby_background]);
+    backgroundElement.sprite.setPosition(0, 0);
+    backgroundElement.id = -100;
+
+    SpriteElement buttonElement;
+    buttonElement.sprite.setTexture(textures_[SpriteType::Start_button]);
+    buttonElement.sprite.setPosition(window.getSize().x / 2 - textures_[SpriteType::Start_button].getSize().x / 2, window.getSize().y / 2 - textures_[SpriteType::Start_button].getSize().y / 2);
+    buttonElement.id = -101;
+
+    sprites_.push_back(backgroundElement);
+    sprites_.push_back(buttonElement);
+}

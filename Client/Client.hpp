@@ -25,9 +25,12 @@
 namespace RType {
     enum class SpriteType {
         Enemy,
+        Boss,
         Player,
-        Missile,
-        Background
+        Bullet,
+        Background,
+        Lobby_background,
+        Start_button
     };
 
     class SpriteElement {
@@ -60,6 +63,8 @@ namespace RType {
         void parseMessage(std::string packet_data);
         void destroySprite();
         void processEvents(sf::RenderWindow& window);
+        void initLobbySprites(sf::RenderWindow& window);
+        std::string createMousePacket(Network::PacketType type, int x = 0, int y = 0);
 
         boost::asio::ip::udp::socket socket_;
         boost::asio::ip::udp::endpoint server_endpoint_;
@@ -70,8 +75,8 @@ namespace RType {
         boost::asio::io_context& io_context_;
         std::vector<SpriteElement> sprites_;
         std::unordered_map<SpriteType, sf::Texture> textures_;
-        std::size_t action;
-        std::size_t server_id;
+        int action;
+        int server_id;
         float new_x = 0.0, new_y = 0.0;
     };
 }

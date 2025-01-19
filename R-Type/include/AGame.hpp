@@ -14,8 +14,26 @@
 #include "Bullet.hpp"
 #include "Registry.hpp"
 #include "Boss.hpp"
+#include "Registry.hpp"
+#include "Position.hpp"
+#include "Velocity.hpp"
+#include "Drawable.hpp"
+#include "Controllable.hpp"
+#include "Collidable.hpp"
+#include "Projectile.hpp"
 #include "PlayerAction.hpp"
+#include "Position.hpp"
+#include "Drawable.hpp"
+#include "Collidable.hpp"
+#include "Controllable.hpp"
+#include "Projectile.hpp"
+#include "Velocity.hpp"
+#include "Registry.hpp"
 #include <vector>
+
+namespace RType {
+    class Server;
+}
 
 class AGame : public IGame {
     protected:
@@ -25,8 +43,10 @@ class AGame : public IGame {
         std::vector<Bullet> bullets;
         std::vector<Boss> bosses;
         Registry registry;
+        RType::Server* m_server;
 
     public:
+        AGame();
         virtual ~AGame();
 
         // Implement player action management functions
@@ -39,6 +59,20 @@ class AGame : public IGame {
         std::pair<float, float> getPlayerPosition(int playerId) const override;
         std::pair<float, float> getBulletPosition(int bulletId) const override;
         std::pair<float, float> getEnemyPosition(int enemyId) const override;
+        std::pair<float, float> getBossPosition(int enemyId) const override;
+
+        // Implement entity spawn and delete management functions
+        void spawnEnemy(float x, float y) override;
+        void spawnBoss(float x, float y) override;
+        void spawnPlayer(int playerId, float x, float y) override;
+        void spawnBullet(int playerId) override;
+        void killBosses(int entityId) override;
+        void killBullets(int entityId) override;
+        void killEnemies(int entityId) override;
+        void killPlayers(int entityId) override;
+        void killEntity(int entityId) override;
+
+        void registerComponents();
 };
 
 #endif // AGAME_HPP
