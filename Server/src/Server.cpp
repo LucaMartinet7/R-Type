@@ -40,7 +40,7 @@ void RType::Server::send_to_client(const std::string& message, const udp::endpoi
         boost::asio::buffer(message), client_endpoint,
         [](const boost::system::error_code& error, std::size_t bytes_transferred) {
             if (!error) {
-                // std::cout << "[DEBUG] Message sent to client." << std::endl;
+                std::cout << "[DEBUG] Message sent to client." << std::endl;
             } else {
                 std::cerr << "[ERROR] Error sending to client: " << error.message() << std::endl;
             }

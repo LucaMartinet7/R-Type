@@ -12,7 +12,7 @@
 using boost::asio::ip::udp;
 
 RType::Client::Client(boost::asio::io_context& io_context, const std::string& host, short server_port, short client_port)
-    : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context), window(sf::VideoMode(1440, 720), "R-Type Client")
+    : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context), window(sf::VideoMode(1280, 720), "R-Type Client")
 {
     udp::resolver resolver(io_context);
     udp::resolver::query query(udp::v4(), host, std::to_string(server_port));
@@ -132,7 +132,6 @@ void RType::Client::loadTextures() //make sure to have the right textures in the
     textures_[RType::SpriteType::Player].loadFromFile("../assets/player.png");
     textures_[RType::SpriteType::Bullet].loadFromFile("../assets/bullet.png");
     textures_[RType::SpriteType::Background].loadFromFile("../assets/background.png");
-    textures_[RType::SpriteType::Lobby_background].loadFromFile("../assets/lobby_background.png");
     textures_[RType::SpriteType::Start_button].loadFromFile("../assets/start_button.png");
 }
 
@@ -199,10 +198,24 @@ void RType::Client::resetValues()
     new_y = 0.0;
 }
 
+void RType::Client::LoadSound()
+{
+    if (!buffer_background_.loadFromFile("../assets/sound.wav")) {
+        std::cerr << "[ERROR] loading sound file" << std::endl;
+    }
+    if (!buffer_shoot_.loadFromFile("../assets/shoot.wav")) {
+        std::cerr << "[ERROR] loading sound file" << std::endl;
+    }
+    sound_background_.setBuffer(buffer_background_);
+    sound_shoot_.setBuffer(buffer_shoot_);
+    sound_background_.play();
+}
+
 int RType::Client::main_loop()
 {
     loadTextures();
     send(createPacket(Network::PacketType::REQCONNECT));
+    LoadSound();
 
     while (this->window.isOpen()) { //received data is modified in handle receive function and parsed here
         processEvents(this->window);
@@ -211,7 +224,7 @@ int RType::Client::main_loop()
         updateSpritePosition();
         resetValues();
         mutex_.unlock();
-        
+
         this->window.clear();
         drawSprites(window);
         this->window.display();
@@ -262,6 +275,7 @@ void RType::Client::processEvents(sf::RenderWindow& window)
                     sprites_.clear();
                 } else {
                     send(createMousePacket(Network::PacketType::MOUSE_CLICK, mousePos.x, mousePos.y));
+                    sound_shoot_.play();
                 }
             }
         }
@@ -307,7 +321,7 @@ void RType::Client::initLobbySprites(sf::RenderWindow& window)
     sprites_.clear();
     
     SpriteElement backgroundElement;
-    backgroundElement.sprite.setTexture(textures_[SpriteType::Lobby_background]);
+    backgroundElement.sprite.setTexture(textures_[SpriteType::Background]);
     backgroundElement.sprite.setPosition(0, 0);
     backgroundElement.id = -100;
 
