@@ -208,6 +208,9 @@ void RType::Client::LoadSound()
     }
     sound_background_.setBuffer(buffer_background_);
     sound_shoot_.setBuffer(buffer_shoot_);
+    sound_shoot_.setVolume(BASE_AUDIO);
+    sound_background_.setVolume(BASE_AUDIO);
+    sound_background_.setLoop(true);
     sound_background_.play();
 }
 
@@ -274,7 +277,7 @@ void RType::Client::processEvents(sf::RenderWindow& window)
                     send(createPacket(Network::PacketType::GAME_START));
                     sprites_.clear();
                 } else {
-                    send(createMousePacket(Network::PacketType::MOUSE_CLICK, mousePos.x, mousePos.y));
+                    send(createMousePacket(Network::PacketType::PLAYER_SHOOT, mousePos.x, mousePos.y));
                     sound_shoot_.play();
                 }
             }
@@ -312,6 +315,16 @@ void RType::Client::processEvents(sf::RenderWindow& window)
                 initLobbySprites(window);
                 send(createPacket(Network::PacketType::GAME_END));
             }
+            if (event.key.code == sf::Keyboard::Num1) {
+                float newVolume = sound_background_.getVolume() - 5;
+                if (newVolume < 0) newVolume = 0;
+                sound_background_.setVolume(newVolume);
+            }
+            if (event.key.code == sf::Keyboard::Num2) {
+                float newVolume = sound_background_.getVolume() + 5;
+                if (newVolume > 100) newVolume = 100;
+                sound_background_.setVolume(newVolume);
+            }
         }
     }
 }
@@ -319,7 +332,7 @@ void RType::Client::processEvents(sf::RenderWindow& window)
 void RType::Client::initLobbySprites(sf::RenderWindow& window)
 {
     sprites_.clear();
-    
+
     SpriteElement backgroundElement;
     backgroundElement.sprite.setTexture(textures_[SpriteType::Background]);
     backgroundElement.sprite.setPosition(0, 0);
