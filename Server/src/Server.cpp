@@ -176,8 +176,6 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
     return data;
 }
 
-//factory sending
-
 void RType::Server::PacketFactory() {
     for (int playerId = 0; playerId < m_game->getPlayerCount(); ++playerId) {
         try {
@@ -192,7 +190,7 @@ void RType::Server::PacketFactory() {
     for (int enemyId = 0; enemyId < m_game->getEnemiesCount(); ++enemyId) {
         try {
             auto [x, y] = m_game->getEnemyPosition(enemyId);
-            std::string data = "Enemy;" + std::to_string(enemyId + 500) + ";" + std::to_string(x) + ";" + std::to_string(y);
+            std::string data = std::to_string(enemyId + 500) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid enemy ID: " << enemyId << " - " << e.what() << std::endl;
@@ -202,7 +200,7 @@ void RType::Server::PacketFactory() {
     for (int bulletId = 0; bulletId < m_game->getBulletsCount(); ++bulletId) {
         try {
             auto [x, y] = m_game->getBulletPosition(bulletId);
-            std::string data = "Bullet;" + std::to_string(bulletId + 200) + ";" + std::to_string(x) + ";" + std::to_string(y);
+            std::string data = std::to_string(bulletId + 200) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid bullet ID: " << bulletId << " - " << e.what() << std::endl;
