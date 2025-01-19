@@ -198,10 +198,24 @@ void RType::Client::resetValues()
     new_y = 0.0;
 }
 
+void RType::Client::LoadSound()
+{
+    if (!buffer_background_.loadFromFile("../assets/sound.wav")) {
+        std::cerr << "[ERROR] loading sound file" << std::endl;
+    }
+    if (!buffer_shoot_.loadFromFile("../assets/shoot.wav")) {
+        std::cerr << "[ERROR] loading sound file" << std::endl;
+    }
+    sound_background_.setBuffer(buffer_background_);
+    sound_shoot_.setBuffer(buffer_shoot_);
+    sound_background_.play();
+}
+
 int RType::Client::main_loop()
 {
     loadTextures();
     send(createPacket(Network::PacketType::REQCONNECT));
+    LoadSound();
 
     while (this->window.isOpen()) { //received data is modified in handle receive function and parsed here
         processEvents(this->window);
@@ -210,7 +224,7 @@ int RType::Client::main_loop()
         updateSpritePosition();
         resetValues();
         mutex_.unlock();
-        
+
         this->window.clear();
         drawSprites(window);
         this->window.display();
@@ -261,6 +275,7 @@ void RType::Client::processEvents(sf::RenderWindow& window)
                     sprites_.clear();
                 } else {
                     send(createMousePacket(Network::PacketType::MOUSE_CLICK, mousePos.x, mousePos.y));
+                    sound_shoot_.play();
                 }
             }
         }

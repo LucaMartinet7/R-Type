@@ -13,6 +13,9 @@
 #include <boost/bind/bind.hpp>
 #include <boost/array.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/System.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include <array>
 #include <thread>
@@ -64,6 +67,7 @@ namespace RType {
         void processEvents(sf::RenderWindow& window);
         void initLobbySprites(sf::RenderWindow& window);
         void resetValues();
+        void LoadSound();
         std::string createMousePacket(Network::PacketType type, int x = 0, int y = 0);
 
         sf::RenderWindow window;
@@ -79,5 +83,9 @@ namespace RType {
         int action;
         int server_id;
         float new_x = 0.0, new_y = 0.0;
+        sf::SoundBuffer buffer_background_;
+        sf::Sound sound_background_;
+        sf::SoundBuffer buffer_shoot_;
+        sf::Sound sound_shoot_;
     };
 }
