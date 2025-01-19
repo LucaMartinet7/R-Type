@@ -22,14 +22,16 @@ This document defines the communication protocol between the server and clients 
 ## Packet Structure
 Each packet exchanged between the server and clients consists of:
 - **Type (`PacketType`)**: Specifies the packet category (1 byte).
-- **Client ID (`uint32_t`)**: Identifies the client (4 bytes).
-- **Payload**: A 256-byte array for additional data.
+- **Entity_ID**: Identifies the Entity (Player/Enemy/Image etc).
+- **Positions**: x and y positions or "-1" if not relevant.
 
 ---
 
 ## Connection
-1. Clients connect to the server at the designated endpoint and port (e.g., `12345`).
-2. Upon connection, the server sends a `CONNECTED` packet to confirm.
+1. The Server listens on a specified port (e.g., `./r-type_server 8080`).
+2. Clients connect to the Server at the designated endpoint and port (e.g., `./r-type_client localhost 8080 8081`).
+3. Upon connection, the Client sends a `REQCONNECT` packet to confirm.
+4. The Server responds with a `GAME_STARTED` or `GAME_NOT_STARTED` packet.
 
 ---
 
@@ -37,15 +39,12 @@ Each packet exchanged between the server and clients consists of:
 
 ### Creating a Game
 1. Client sends a `GAME_START` packet to create a new game instance.
-   - Payload: Optionally specify game settings (e.g., level or mode).
-2. Server responds with a `LEADER_CHANGE` packet, assigning the client as the leader.
-
+2. Server responds with a `GAME_STARTED` packet.
+3. Clients receive the `GAME_STARTED` packet and begin gameplay.
 ---
 
 ### Joining a Game
-1. Client sends a `PLAYER_JOIN` packet to join an existing game instance.
-   - Payload: Specify the game instance ID.
-2. Server responds with a `CONNECTED` packet to confirm addition to the instance.
+1. All clients connected to the server receive a `GAME_START` packet.
 
 ---
 
@@ -53,11 +52,11 @@ Each packet exchanged between the server and clients consists of:
 
 ### Server-to-Client Packets
 1. **Game State Updates**
-   - **Packet Type**: `MAP_UPDATE`
+   - **Packet Type**: `CHANGE`
    - **Payload**: Serialized game state (e.g., entity positions).
 2. **Player Events**
    - **Packet Type**:
-     - `PLAYER_MOVED` for movement.
+     - `CHANGE` for movement.
      - `PLAYER_SHOOT` for firing.
      - `PLAYER_SCORE` for score updates.
      - `PLAYER_DEAD` for destruction.
@@ -65,32 +64,31 @@ Each packet exchanged between the server and clients consists of:
    - **Payload**: Relevant player data.
 3. **Enemy Events**
    - **Packet Type**:
-     - `ENEMY_SPAWNED` for new enemy creation.
-     - `ENEMY_MOVED` for movement.
-     - `ENEMY_DEAD` for destruction.
+     - `CREATE_ENEMY` for new Enemy creation.
+     - `CREATE_BOSS` for new Boss creation.
+     - `CHANGE` for movement.
+     - `DELETE` for destruction.
    - **Payload**: Relevant enemy data.
 4. **Game End**
    - **Packet Type**:
       - `GAME_END`
       - `GAME_START`
-   - **Payload**: Relevant game data.
-5. **Server Checks**
-   - **Packet Type**:
-      - `REQCONNECT` for creation.
-      - `DISCONNECTED` for destruction.
-   - **Payload**: Relevant Server data.
 
 ---
 
 ### Client-to-Server Packets
-1. **Player Actions**
+1. **Server Checks**
    - **Packet Type**:
-     - `PLAYER_MOVED` for directional input.
+      - `REQCONNECT` for creation.
+      - `DISCONNECTED` for destruction.
+2. **Player Actions**
+   - **Packet Type**:
+     - `PLAYER_RIGHT/LEFT/UP/DOWN` for directional input.
      - `PLAYER_SHOOT` for firing.
-   - **Payload**: Input data (e.g., direction or action).
-2. **Player Status**
-   - **Packet Type**: `PLAYER_HIT`
-   - **Payload**: Current player health.
+3. **Game Actions**
+   - **Packet Type**:
+     - `OPEN_MENU` for menu interactions.
+     - `MOUSE_CLICK` for mouse events.
 
 ---
 
@@ -98,18 +96,26 @@ Each packet exchanged between the server and clients consists of:
 
 | **Packet Type**      | **Payload Format**                                         | **Description**                                |
 |-----------------------|-----------------------------------------------------------|------------------------------------------------|
-| `REQCONNECT`          | `None`                                                    | Sent by the server to confirm connection.      |
-| `GAME_START`          | `[LEVEL_ID]`                                              | Start a new game with the specified level.     |
-| `PLAYER_JOIN`         | `[INSTANCE_ID]`                                           | Join the specified game instance.              |
-| `PLAYER_MOVED`        | `[X, Y]`                                                  | Update player position or direction.           |
-| `PLAYER_SHOOT`        | `[ID, X, Y]`                                              | Player fires a projectile.                     |
-| `MAP_UPDATE`          | `[All Info]`                                              | Full game state update for all entities.       |
+| `REQCONNECT`          | `None`                                                    | Sent by the Client to confirm connection.      |
+| `DISCONNECTED`        | `None`                                                    | Client disconnects from the server.            |
+| `GAME_START`          | `None`                                                    | Start a new game.                              |
+| `GAME_NOT_STARTED`    | `None`                                                    | Game not started yet.                          |
+| `GAME_STARTED`        | `None`                                                    | Game has started.                              |
+| `DELETE`              | `[ID]`                                                    | Delete the specified entity.                   |
 | `GAME_END`            | `[RESULT]`                                                | End of game with the outcome.                  |
-| `DISCONNECTED`        | `None`
+| `PLAYER_SHOOT`        | `[ID, X, Y]`                                              | Player fires a projectile.                     |
+| `CREATE_ENEMY`        | `[ID, X, Y]`                                              | Create a new enemy at the specified position.  |
+| `CREATE_BOSS`         | `[ID, X, Y]`                                              | Create a new boss at the specified position.   |
+| `CREATE_PLAYER`       | `[ID, X, Y]`                                              | Create a new player at the specified position. |
+| `CREATE_BULLET`       | `[ID, X, Y]`                                              | Create a new bullet at the specified position. |
+| `BACKGROUND`          | `[ID, X, Y]`                                              | Update the background.                         |
+| `CREATE_POWERUP`      | `[ID, X, Y]`                                              | Create a new power-up.                         |
+| `CHANGE`              | `[ID, X, Y]`                                              | Change the specified entity's position.        |
+| `PLAYER_[DIRECTION]`  | `[ACTION;ID;X;Y]`                                         | Move specific Entity to next position.         |
 
 ---
 
 ## Error Handling
-1. Malformed or unauthorized packets result in a `` response.
+1. Malformed or unauthorized packets result in a `[PacketHandler] Received unknown packet type.` response.
 
 ---

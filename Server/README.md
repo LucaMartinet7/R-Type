@@ -21,13 +21,13 @@ The project is organized into several key components to ensure modularity and ma
 - **`Server.cpp`**: Implements the core server logic, including handling client connections and broadcasting messages.
 - **`main.cpp`**: Entry point of the application. Initializes the server and handles startup configurations.
 - **`PacketHandler.cpp`**: Defines the processing logic for different packet types, such as player movements and game events.
-- **`Packet.cpp`**: Handles the structure and serialization of network packets.
 
 ### Header Files
 - **`Server.hpp`**: Declares the server class and its methods for handling networking.
 - **`ThreadSafeQueue.hpp`**: Provides a thread-safe queue implementation for packet processing.
 - **`PacketHandler.hpp`**: Declares methods for managing and handling game packets.
 - **`PacketType.hpp`**: Defines enumerations for different packet types.
+- **`Packet.hpp`**: Connects PacketType with packet data structures.
 - **`Data.hpp`**: Includes data structures for packet payloads and game state representations.
 
 ### Networking
@@ -36,6 +36,7 @@ The project is organized into several key components to ensure modularity and ma
 
 ### Multi-threading
 - Employs a `ThreadSafeQueue` to decouple packet receiving and processing for better performance.
+- Utilizes multiple threads for Game logic and Server operations.
 
 ---
 
@@ -59,7 +60,6 @@ The project is organized into several key components to ensure modularity and ma
 ### Prerequisites
 
 - **C++ Compiler**: GCC 9.4+ or Clang 10+.
-- **Boost Library**: Version 1.74 or newer.
 
 ---
 
@@ -76,5 +76,18 @@ Supported packet types include:
 - `PLAYER_UP/RIGHT/LEFT/DOWN` - Updates player positions.
 - `GAME_START`, `GAME_END` - Start and end game events.
 - `DISCONNECTED` - Client disconnection notifications.
+- `PLAYER_SHOOT` - Client shooting actions.
+- `OPEN_MENU` - Client menu interactions.
+- `MOUSE_CLICK` - Client mouse click events.
+- `CREATE_ENEMY` - Server-generated enemy creation events.
+- `CREATE_BOSS` - Server-generated boss creation events.
+- `CREATE_PLAYER` - Server-generated player creation events.
+- `CREATE_BULLET` - Server-generated bullet creation events.
+- `BACKGROUND` - Server-generated background updates.
+- `CREATE_POWERUP` - Server-generated power-up creation events.
+- `DELETE` - Server-generated entity deletion events.
+- `CHANGE` - Server-generated entity state/position change events.
+- `GAME_NOT_STARTED` - Server-generated game not started events.
+- `GAME_STARTED` - Server-generated game started events.
 
 ---
