@@ -62,8 +62,8 @@ class AGame : public IGame {
         std::pair<float, float> getBossPosition(int enemyId) const override;
 
         // Implement entity spawn and delete management functions
-        void spawnEnemy(float x, float y) override;
-        void spawnBoss(float x, float y) override;
+        void spawnEnemy(int enemyId, float x, float y) override;
+        void spawnBoss(int boosId, float x, float y) override;
         void spawnPlayer(int playerId, float x, float y) override;
         void spawnBullet(int playerId) override;
         void killBosses(int entityId) override;

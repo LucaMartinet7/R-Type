@@ -26,9 +26,9 @@ public:
     virtual void killBosses(int entityId) = 0;
     virtual void killEntity(int entityId) = 0;
     virtual void spawnPlayer(int playerId, float x, float y) = 0;
-    virtual void spawnEnemy(float x, float y) = 0;
+    virtual void spawnEnemy(int enemyId, float x, float y) = 0;
     virtual void spawnBullet(int playerId) = 0;
-    virtual void spawnBoss(float x, float y) = 0;
+    virtual void spawnBoss(int bossId, float x, float y) = 0;
     virtual size_t getPlayerCount() const = 0;
     virtual size_t getEnemiesCount() const = 0;
     virtual size_t getBulletsCount() const = 0;

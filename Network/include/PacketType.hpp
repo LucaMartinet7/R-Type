@@ -35,12 +35,15 @@ namespace Network {
         PLAYER_DOWN = 19,   //no pos
         OPEN_MENU = 20,     //no pos
         MOUSE_CLICK = 21,   //pos
-        CREATE_ENEMY = 200,
-        CREATE_BOSS = 201,
-        CREATE_PLAYER = 202,
-        CREATE_BULLET = 203,
-        CREATE_POWERUP = 204,
-        DELETE = 300,
-        CHANGE = 500,
+        CREATE_ENEMY = 22,
+        CREATE_BOSS = 23,
+        CREATE_PLAYER = 24,
+        CREATE_BULLET = 25,
+        BACKGROUND = 26,
+        CREATE_POWERUP = 27,
+        DELETE = 28,
+        CHANGE = 29,
+        GAME_STARTED = 30,
+        GAME_NOT_STARTED = 31,
     };
 }

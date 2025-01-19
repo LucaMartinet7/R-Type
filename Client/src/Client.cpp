@@ -12,7 +12,7 @@
 using boost::asio::ip::udp;
 
 RType::Client::Client(boost::asio::io_context& io_context, const std::string& host, short server_port, short client_port)
-    : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context)
+    : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context), window(sf::VideoMode(1440, 720), "R-Type Client")
 {
     udp::resolver resolver(io_context);
     udp::resolver::query query(udp::v4(), host, std::to_string(server_port));
@@ -56,16 +56,21 @@ void RType::Client::handle_receive(const boost::system::error_code& error, std::
         mutex_.lock();
         received_data.assign(recv_buffer_.data(), bytes_transferred);
         parseMessage(received_data);
+        if (action == 31) {
+            initLobbySprites(this->window);
+            action = 0;
+        }
         start_receive();
     } else {
         std::cerr << "[DEBUG] Error receiving: " << error.message() << std::endl;
+        start_receive();
     }
 }
 
 void RType::Client::handle_send(const boost::system::error_code& error, std::size_t bytes_transferred)
 {
     if (!error) {
-        std::cout << "[DEBUG] Message sent." << std::endl;
+        // std::cout << "[DEBUG] Message sent." << std::endl;
     } else {
         std::cerr << "[DEBUG] Error sending: " << error.message() << std::endl;
     }
@@ -81,15 +86,15 @@ void RType::Client::createSprite()
     SpriteElement spriteElement;
     SpriteType spriteType;
 
-    if (action == 200) { //change by used ID in server to create different types of sprites to be displayed
+    if (action == 22) { //change by used ID in server to create different types of sprites to be displayed
         spriteType = SpriteType::Enemy;
-    } else if (action == 201) {
+    } else if (action == 23) {
         spriteType = SpriteType::Boss;
-    } else if (action == 202) {
+    } else if (action == 24) {
         spriteType = SpriteType::Player;
-    } else if (action == 203) {
+    } else if (action == 25) {
         spriteType = SpriteType::Bullet;
-    } else if (action == 204) {
+    } else if (action == 26) {
         spriteType = SpriteType::Background;
     } else {
         return;
@@ -103,11 +108,18 @@ void RType::Client::createSprite()
 
 void RType::Client::destroySprite()
 {
-    if (action == 300) {
+    if (action == 28) {
         for (auto it = sprites_.begin(); it != sprites_.end(); ++it) {
             if (server_id == it->id) {
                 sprites_.erase(it);
                 break;
+            }
+        }
+    }
+    if (action == 3) {
+        for (auto it = sprites_.begin(); it != sprites_.end(); ++it) {
+            if (it->id == -100 || it->id == -101) {
+                sprites_.erase(it);
             }
         }
     }
@@ -133,7 +145,7 @@ void RType::Client::drawSprites(sf::RenderWindow& window)
 
 void RType::Client::updateSpritePosition()
 {
-    if (action == 500) {
+    if (action == 29) {
         for (auto& spriteElement : sprites_) {
             if (server_id == spriteElement.id) {
                 spriteElement.sprite.setPosition(new_x, new_y);
@@ -189,23 +201,20 @@ void RType::Client::resetValues()
 
 int RType::Client::main_loop()
 {
-    sf::RenderWindow window(sf::VideoMode(1440, 720), "R-Type Client");
     loadTextures();
     send(createPacket(Network::PacketType::REQCONNECT));
 
-    initLobbySprites(window);
-
-    while (window.isOpen()) { //received data is modified in handle receive function and parsed here
-        processEvents(window);
+    while (this->window.isOpen()) { //received data is modified in handle receive function and parsed here
+        processEvents(this->window);
         createSprite();
         destroySprite();
         updateSpritePosition();
         resetValues();
         mutex_.unlock();
         
-        window.clear();
+        this->window.clear();
         drawSprites(window);
-        window.display();
+        this->window.display();
     }
     sendExitPacket();
     return 0;

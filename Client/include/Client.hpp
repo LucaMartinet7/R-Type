@@ -67,6 +67,7 @@ namespace RType {
         void resetValues();
         std::string createMousePacket(Network::PacketType type, int x = 0, int y = 0);
 
+        sf::RenderWindow window;
         boost::asio::ip::udp::socket socket_;
         boost::asio::ip::udp::endpoint server_endpoint_;
         std::array<char, MAX_LENGTH> recv_buffer_;

@@ -24,15 +24,14 @@ RType::Server::Server(boost::asio::io_context& io_context, short port, ThreadSaf
     start_receive();
 }
 
-void RType::Server::setGameState(GameState* game) {
-    m_game = game;
-}
-
 RType::Server::~Server()
 {
     socket_.close();
 }
 
+void RType::Server::setGameState(GameState* game) {
+    m_game = game;
+}
 //SEND MESSAGES
 
 void RType::Server::send_to_client(const std::string& message, const udp::endpoint& client_endpoint)
@@ -41,7 +40,7 @@ void RType::Server::send_to_client(const std::string& message, const udp::endpoi
         boost::asio::buffer(message), client_endpoint,
         [](const boost::system::error_code& error, std::size_t bytes_transferred) {
             if (!error) {
-                std::cout << "[DEBUG] Message sent to client." << std::endl;
+                // std::cout << "[DEBUG] Message sent to client." << std::endl;
             } else {
                 std::cerr << "[ERROR] Error sending to client: " << error.message() << std::endl;
             }
@@ -97,6 +96,10 @@ void RType::Server::handle_receive(const boost::system::error_code &error, std::
         m_packetQueue.push(packet);
         start_receive();
     }
+    else {
+        std::cerr << "[ERROR] Error receiving: " << error.message() << std::endl;
+        start_receive();
+    }
 }
 
 Network::Packet RType::Server::deserializePacket(const std::string& packet_str)
@@ -110,6 +113,7 @@ std::string RType::Server::createPacket(const Network::PacketType& type, const s
 {
     std::string packet_str;
     std::string packet_data = data.empty() ? "-1;-1;-1" : data;
+    std::cout << "[DEBUG] Creating packet with type: " << static_cast<int>(type) << " and data: " << packet_data << std::endl;
 
     packet_str.push_back(static_cast<uint8_t>(type));
     packet_str.push_back(static_cast<uint8_t>(';'));
@@ -148,8 +152,14 @@ Network::ReqConnect RType::Server::reqConnectData(boost::asio::ip::udp::endpoint
     size_t idClient;
     idClient = createClient(client_endpoint);
     data.id = idClient;
-    send_to_client(createPacket(Network::PacketType::REQCONNECT, ""), client_endpoint);
+    {
+    std::lock_guard<std::mutex> lock(clients_mutex_);
+    if (m_running)
+        send_to_client(createPacket(Network::PacketType::GAME_STARTED, ""), client_endpoint);
+    else
+        send_to_client(createPacket(Network::PacketType::GAME_NOT_STARTED, ""), client_endpoint);
     return data;
+    }
 }
 
 Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endpoint& client_endpoint)
@@ -176,8 +186,6 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
     return data;
 }
 
-//factory sending
-
 void RType::Server::PacketFactory() {
     for (int playerId = 0; playerId < m_game->getPlayerCount(); ++playerId) {
         try {
@@ -192,7 +200,7 @@ void RType::Server::PacketFactory() {
     for (int enemyId = 0; enemyId < m_game->getEnemiesCount(); ++enemyId) {
         try {
             auto [x, y] = m_game->getEnemyPosition(enemyId);
-            std::string data = "Enemy;" + std::to_string(enemyId + 500) + ";" + std::to_string(x) + ";" + std::to_string(y);
+            std::string data = std::to_string(enemyId + 500) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid enemy ID: " << enemyId << " - " << e.what() << std::endl;
@@ -202,7 +210,7 @@ void RType::Server::PacketFactory() {
     for (int bulletId = 0; bulletId < m_game->getBulletsCount(); ++bulletId) {
         try {
             auto [x, y] = m_game->getBulletPosition(bulletId);
-            std::string data = "Bullet;" + std::to_string(bulletId + 200) + ";" + std::to_string(x) + ";" + std::to_string(y);
+            std::string data = std::to_string(bulletId + 200) + ";" + std::to_string(x) + ";" + std::to_string(y);
             Broadcast(createPacket(Network::PacketType::CHANGE, data));
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid bullet ID: " << bulletId << " - " << e.what() << std::endl;

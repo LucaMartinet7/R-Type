@@ -50,7 +50,7 @@ void GameState::run(int numPlayers) {
         // }
 
         // Sleep for a short duration to simulate frame time
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 }
 
@@ -83,7 +83,7 @@ void GameState::startNextWave() {
     currentWave++;
     enemiesPerWave += 5; // Increase the number of enemies per wave
     for (int i = 0; i < enemiesPerWave; ++i) {
-        spawnEnemy(distX(rng), distY(rng));
+        spawnEnemy(i, distX(rng), distY(rng));
     }
 }
 
