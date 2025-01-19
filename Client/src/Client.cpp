@@ -274,7 +274,7 @@ void RType::Client::processEvents(sf::RenderWindow& window)
                     send(createPacket(Network::PacketType::GAME_START));
                     sprites_.clear();
                 } else {
-                    send(createMousePacket(Network::PacketType::MOUSE_CLICK, mousePos.x, mousePos.y));
+                    send(createMousePacket(Network::PacketType::PLAYER_SHOOT, mousePos.x, mousePos.y));
                     sound_shoot_.play();
                 }
             }
