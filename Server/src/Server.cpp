@@ -184,46 +184,84 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
     return data;
 }
 
-void RType::Server::PacketFactory() {
+bool RType::Server::hasPositionChanged(int id, float x, float y, std::unordered_map<int, std::pair<float, float>>& lastKnownPositions) {
+    auto it = lastKnownPositions.find(id);
+    if (it == lastKnownPositions.end() || it->second != std::make_pair(x, y)) {
+        lastKnownPositions[id] = {x, y};
+        return true;
+    }
+    return false;
+}
+
+void RType::Server::playerPacketFactory() {
+    static std::unordered_map<int, std::pair<float, float>> lastKnownPositions;
+
     for (int playerId = 0; playerId < m_game->getPlayerCount(); ++playerId) {
         try {
             auto [x, y] = m_game->getPlayerPosition(playerId);
-            std::string data = std::to_string(playerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
-            Broadcast(createPacket(Network::PacketType::CHANGE, data));
+            if (hasPositionChanged(playerId, x, y, lastKnownPositions)) {
+                std::string data = std::to_string(playerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+                Broadcast(createPacket(Network::PacketType::CHANGE, data));
+            }
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid player ID: " << playerId << " - " << e.what() << std::endl;
         }
     }
+}
+
+void RType::Server::enemyPacketFactory() {
+    static std::unordered_map<int, std::pair<float, float>> lastKnownPositions;
 
     for (int enemyId = 0; enemyId < m_game->getEnemiesCount(); ++enemyId) {
         try {
             auto [x, y] = m_game->getEnemyPosition(enemyId);
-            std::string data = std::to_string(enemyId + 500) + ";" + std::to_string(x) + ";" + std::to_string(y);
-            Broadcast(createPacket(Network::PacketType::CHANGE, data));
+            if (hasPositionChanged(enemyId, x, y, lastKnownPositions)) {
+                std::string data = std::to_string(enemyId + 500) + ";" + std::to_string(x) + ";" + std::to_string(y);
+                Broadcast(createPacket(Network::PacketType::CHANGE, data));
+            }
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid enemy ID: " << enemyId << " - " << e.what() << std::endl;
         }
     }
+}
+
+void RType::Server::bulletPacketFactory() {
+    static std::unordered_map<int, std::pair<float, float>> lastKnownPositions;
 
     for (int bulletId = 0; bulletId < m_game->getBulletsCount(); ++bulletId) {
         try {
             auto [x, y] = m_game->getBulletPosition(bulletId);
-            std::string data = std::to_string(bulletId + 200) + ";" + std::to_string(x) + ";" + std::to_string(y);
-            Broadcast(createPacket(Network::PacketType::CHANGE, data));
+            if (hasPositionChanged(bulletId, x, y, lastKnownPositions)) {
+                std::string data = std::to_string(bulletId + 200) + ";" + std::to_string(x) + ";" + std::to_string(y);
+                Broadcast(createPacket(Network::PacketType::CHANGE, data));
+            }
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid bullet ID: " << bulletId << " - " << e.what() << std::endl;
         }
     }
+}
+
+void RType::Server::bossPacketFactory() {
+    static std::unordered_map<int, std::pair<float, float>> lastKnownPositions;
 
     for (int bossId = 0; bossId < m_game->getBossCount(); ++bossId) {
         try {
             auto [x, y] = m_game->getBossPosition(bossId);
-            std::string data = std::to_string(bossId + 900) + ";" + std::to_string(x) + ";" + std::to_string(y);
-            Broadcast(createPacket(Network::PacketType::CHANGE, data));
+            if (hasPositionChanged(bossId, x, y, lastKnownPositions)) {
+                std::string data = std::to_string(bossId + 900) + ";" + std::to_string(x) + ";" + std::to_string(y);
+                Broadcast(createPacket(Network::PacketType::CHANGE, data));
+            }
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid boss ID: " << bossId << " - " << e.what() << std::endl;
         }
     }
+}
+
+void RType::Server::PacketFactory() {
+    playerPacketFactory();
+    enemyPacketFactory();
+    bulletPacketFactory();
+    bossPacketFactory();
 }
 
 void RType::Server::start_send_timer() {
