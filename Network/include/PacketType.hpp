@@ -43,5 +43,7 @@ namespace Network {
         CREATE_POWERUP = 27,
         DELETE = 28,
         CHANGE = 29,
+        GAME_STARTED = 30,
+        GAME_NOT_STARTED = 31,
     };
 }

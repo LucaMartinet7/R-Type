@@ -40,7 +40,7 @@ void RType::Server::send_to_client(const std::string& message, const udp::endpoi
         boost::asio::buffer(message), client_endpoint,
         [](const boost::system::error_code& error, std::size_t bytes_transferred) {
             if (!error) {
-                std::cout << "[DEBUG] Message sent to client." << std::endl;
+                // std::cout << "[DEBUG] Message sent to client." << std::endl;
             } else {
                 std::cerr << "[ERROR] Error sending to client: " << error.message() << std::endl;
             }
@@ -96,6 +96,10 @@ void RType::Server::handle_receive(const boost::system::error_code &error, std::
         m_packetQueue.push(packet);
         start_receive();
     }
+    else {
+        std::cerr << "[ERROR] Error receiving: " << error.message() << std::endl;
+        start_receive();
+    }
 }
 
 Network::Packet RType::Server::deserializePacket(const std::string& packet_str)
@@ -148,8 +152,14 @@ Network::ReqConnect RType::Server::reqConnectData(boost::asio::ip::udp::endpoint
     size_t idClient;
     idClient = createClient(client_endpoint);
     data.id = idClient;
-    send_to_client(createPacket(Network::PacketType::REQCONNECT, ""), client_endpoint);
+    {
+    std::lock_guard<std::mutex> lock(clients_mutex_);
+    if (m_running)
+        send_to_client(createPacket(Network::PacketType::GAME_STARTED, ""), client_endpoint);
+    else
+        send_to_client(createPacket(Network::PacketType::GAME_NOT_STARTED, ""), client_endpoint);
     return data;
+    }
 }
 
 Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endpoint& client_endpoint)

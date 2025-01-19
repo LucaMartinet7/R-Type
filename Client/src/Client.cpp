@@ -59,13 +59,14 @@ void RType::Client::handle_receive(const boost::system::error_code& error, std::
         start_receive();
     } else {
         std::cerr << "[DEBUG] Error receiving: " << error.message() << std::endl;
+        start_receive();
     }
 }
 
 void RType::Client::handle_send(const boost::system::error_code& error, std::size_t bytes_transferred)
 {
     if (!error) {
-        std::cout << "[DEBUG] Message sent." << std::endl;
+        // std::cout << "[DEBUG] Message sent." << std::endl;
     } else {
         std::cerr << "[DEBUG] Error sending: " << error.message() << std::endl;
     }
@@ -127,6 +128,7 @@ void RType::Client::loadTextures() //make sure to have the right textures in the
 void RType::Client::drawSprites(sf::RenderWindow& window)
 {
     for (auto& spriteElement : sprites_) {
+        std::cout << "Drawing sprite with ID: " << spriteElement.id << std::endl;
         window.draw(spriteElement.sprite);
     }
 }

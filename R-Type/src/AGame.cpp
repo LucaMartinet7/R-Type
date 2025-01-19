@@ -53,7 +53,7 @@ void AGame::processPlayerActions() {
             spawnBullet(playerId);
             action.setProcessed(true);
         }
-        // Handle other actions or ignore unknown action IDs 
+        // Handle other actions or ignore unknown action IDs
     }
     deletePlayerAction();
 }
