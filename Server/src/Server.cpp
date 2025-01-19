@@ -19,9 +19,10 @@ using boost::asio::ip::udp;
  * @param port The port number on which the server will listen for incoming UDP packets.
  */
 RType::Server::Server(boost::asio::io_context& io_context, short port, ThreadSafeQueue<Network::Packet>& packetQueue, GameState* game)
-: socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue), m_game(game), _nbClients(0), m_running(false)
+: socket_(io_context, udp::endpoint(udp::v4(), port)), m_packetQueue(packetQueue), m_game(game), _nbClients(0), m_running(false), send_timer_(io_context) // Initialize send_timer_
 {
     start_receive();
+    start_send_timer(); // Start the send timer
 }
 
 RType::Server::~Server()
@@ -51,10 +52,7 @@ void RType::Server::Broadcast(const std::string& message)
 {
     {
         std::lock_guard<std::mutex> lock(clients_mutex_);
-
-        for (const auto& client : clients_) {
-            send_to_client(message, client.second.getEndpoint());
-        }
+        send_queue_.push(message); // Add to queue
     }
 }
 
@@ -225,5 +223,27 @@ void RType::Server::PacketFactory() {
         } catch (const std::out_of_range& e) {
             std::cerr << "[ERROR] Invalid boss ID: " << bossId << " - " << e.what() << std::endl;
         }
+    }
+}
+
+void RType::Server::start_send_timer() {
+    send_timer_.expires_after(std::chrono::milliseconds(1));
+    send_timer_.async_wait(boost::bind(&Server::handle_send_timer, this, boost::asio::placeholders::error));
+}
+
+void RType::Server::handle_send_timer(const boost::system::error_code& error) {
+    if (!error) {
+        std::lock_guard<std::mutex> lock(clients_mutex_);
+        if (!send_queue_.empty()) {
+            std::string message = send_queue_.front();
+            send_queue_.pop();
+            for (const auto& client : clients_) {
+                send_to_client(message, client.second.getEndpoint());
+            }
+        }
+        // Restart the timer
+        start_send_timer();
+    } else {
+        std::cerr << "[DEBUG] Timer error: " << error.message() << std::endl;
     }
 }
