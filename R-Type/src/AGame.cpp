@@ -131,10 +131,7 @@ void AGame::spawnPlayer(int playerId, float x, float y) {
     if (playerId >= 0 && playerId < 4) {
         players.emplace_back(registry, x, y);
 
-        Player& lastPlayer = players.back();
-        Registry::Entity lastPlayerId = lastPlayer.getEntity();
-
-        std::string data = std::to_string(lastPlayerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
+        std::string data = std::to_string(playerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
         std::cout << "Player " << playerId << " spawned at " << x << ", " << y << std::endl;
         m_server->Broadcast(m_server->createPacket(Network::PacketType::CREATE_PLAYER, data));
     }

@@ -104,6 +104,7 @@ void PacketHandler::handleGameStart(const Network::Packet &packet)
         m_server.m_running = true;
         const auto& clients = m_server.getClients();
         numPlayers = clients.size();
+        m_server.Broadcast(m_server.createPacket(Network::PacketType::GAME_START, ""));
     }
     std::thread gameThread([this, numPlayers] {
         m_game.run(numPlayers);

@@ -12,7 +12,7 @@
 using boost::asio::ip::udp;
 
 RType::Client::Client(boost::asio::io_context& io_context, const std::string& host, short server_port, short client_port)
-    : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context)
+    : socket_(io_context, udp::endpoint(udp::v4(), client_port)), io_context_(io_context), window(sf::VideoMode(1440, 720), "R-Type Client")
 {
     udp::resolver resolver(io_context);
     udp::resolver::query query(udp::v4(), host, std::to_string(server_port));
@@ -56,6 +56,10 @@ void RType::Client::handle_receive(const boost::system::error_code& error, std::
         mutex_.lock();
         received_data.assign(recv_buffer_.data(), bytes_transferred);
         parseMessage(received_data);
+        if (action == 31) {
+            initLobbySprites(this->window);
+            action = 0;
+        }
         start_receive();
     } else {
         std::cerr << "[DEBUG] Error receiving: " << error.message() << std::endl;
@@ -112,6 +116,13 @@ void RType::Client::destroySprite()
             }
         }
     }
+    if (action == 3) {
+        for (auto it = sprites_.begin(); it != sprites_.end(); ++it) {
+            if (it->id == -100 || it->id == -101) {
+                sprites_.erase(it);
+            }
+        }
+    }
 }
 
 void RType::Client::loadTextures() //make sure to have the right textures in the right folder
@@ -128,7 +139,6 @@ void RType::Client::loadTextures() //make sure to have the right textures in the
 void RType::Client::drawSprites(sf::RenderWindow& window)
 {
     for (auto& spriteElement : sprites_) {
-        std::cout << "Drawing sprite with ID: " << spriteElement.id << std::endl;
         window.draw(spriteElement.sprite);
     }
 }
@@ -191,24 +201,20 @@ void RType::Client::resetValues()
 
 int RType::Client::main_loop()
 {
-    sf::RenderWindow window(sf::VideoMode(1440, 720), "R-Type Client");
     loadTextures();
     send(createPacket(Network::PacketType::REQCONNECT));
 
-    if (action == 31)
-        initLobbySprites(window);
-
-    while (window.isOpen()) { //received data is modified in handle receive function and parsed here
-        processEvents(window);
+    while (this->window.isOpen()) { //received data is modified in handle receive function and parsed here
+        processEvents(this->window);
         createSprite();
         destroySprite();
         updateSpritePosition();
         resetValues();
         mutex_.unlock();
         
-        window.clear();
+        this->window.clear();
         drawSprites(window);
-        window.display();
+        this->window.display();
     }
     sendExitPacket();
     return 0;
