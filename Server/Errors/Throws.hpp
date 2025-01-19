@@ -1,10 +1,3 @@
-/*
-** EPITECH PROJECT, 2024
-** R-Type [WSL: Ubuntu]
-** File description:
-** Throws
-*/
-
 #pragma once
 
 #include <exception>
@@ -24,10 +17,7 @@ namespace RType
     {
     public:
         NtsException(std::string const &message, std::string const &type = "Unknown") noexcept
-        {
-            _message = message;
-            _type = type;
-        }
+            : _message(message), _type(type) {}
 
         std::string const &getType() const { return _type; }
         const char *what() const noexcept override { return _message.c_str(); }
@@ -37,10 +27,18 @@ namespace RType
         std::string _type;
     };
 
-    //parse
+    // Parsing exceptions
     NEW_EXCEPTION(InvalidPortException)
-    //general
+    NEW_EXCEPTION(InvalidArgumentException)
+
+    // Network exceptions
+    NEW_EXCEPTION(NetworkException)
+    NEW_EXCEPTION(ConnectionFailedException)
+    NEW_EXCEPTION(TimeoutException)
+
+    // General exceptions
     NEW_EXCEPTION(StandardException)
     NEW_EXCEPTION(UnknownException)
     NEW_EXCEPTION(PermissionDeniedException)
+    NEW_EXCEPTION(NotImplementedException)
 }

@@ -8,7 +8,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CLIENT_BINARY "r-type_client")
 set(SERVER_BINARY "r-type_server")
-set(GAME_ENGINE_BINARY "r-type_game_engine")
 
 # If you need to define Boost placeholders globally
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
@@ -22,6 +21,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/ECS/systems/
     ${CMAKE_SOURCE_DIR}/ECS/components/
     ${CMAKE_SOURCE_DIR}/Server/Errors/
+    ${CMAKE_SOURCE_DIR}/Client/include/
+
 )
 
 # --- Subdirectories ---
