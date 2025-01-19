@@ -281,6 +281,10 @@ void RType::Client::processEvents(sf::RenderWindow& window)
                 std::cout << "[DEBUG] Sending M: " << std::endl;
                 send(createPacket(Network::PacketType::OPEN_MENU));
             }
+            if (event.key.code == sf::Keyboard::Space) {
+                std::cout << "[DEBUG] Sending Space: " << std::endl;
+                send(createPacket(Network::PacketType::PLAYER_SHOOT));
+            }
             if (event.key.code == sf::Keyboard::Escape) {
                 initLobbySprites(window);
                 send(createPacket(Network::PacketType::GAME_END));

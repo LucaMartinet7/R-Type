@@ -161,6 +161,8 @@ void AGame::killPlayers(int entityId) {
         if (it->getEntity() == entityId) {
             registry.kill_entity(it->getEntity());
             it = players.erase(it);
+            std::string data = std::to_string(entityId) + ";0;0";
+            m_server->Broadcast(m_server->createPacket(Network::PacketType::DELETE, data));
             break;
         } else {
             ++it;
@@ -173,6 +175,8 @@ void AGame::killEnemies(int entityId) {
         if (it->getEntity() == entityId) {
             registry.kill_entity(it->getEntity());
             it = enemies.erase(it);
+            std::string data = std::to_string(entityId + 500) + ";0;0";
+            m_server->Broadcast(m_server->createPacket(Network::PacketType::DELETE, data));
             break;
         } else {
             ++it;
@@ -185,6 +189,8 @@ void AGame::killBullets(int entityId) {
         if (it->getEntity() == entityId) {
             registry.kill_entity(it->getEntity());
             it = bullets.erase(it);
+            std::string data = std::to_string(entityId + 200) + ";0;0";
+            m_server->Broadcast(m_server->createPacket(Network::PacketType::DELETE, data));
             break;
         } else {
             ++it;
@@ -197,6 +203,8 @@ void AGame::killBosses(int entityId) {
         if (it->getEntity() == entityId) {
             registry.kill_entity(it->getEntity());
             it = bosses.erase(it);
+            std::string data = std::to_string(entityId + 900) + ";0;0";
+            m_server->Broadcast(m_server->createPacket(Network::PacketType::DELETE, data));
             break;
         } else {
             ++it;
@@ -209,6 +217,4 @@ void AGame::killEntity(int entityId) {
     killEnemies(entityId);
     killBullets(entityId);
     killBosses(entityId);
-    std::string data = std::to_string(entityId) + ";0;0";
-    m_server->Broadcast(m_server->createPacket(Network::PacketType::DELETE, data));
 }
