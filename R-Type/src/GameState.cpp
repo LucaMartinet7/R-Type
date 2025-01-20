@@ -27,7 +27,7 @@ void GameState::run(int numPlayers) {
         // Update game state
         update();
 
-         Check if all enemies are cleared and start the next wave or spawn the boss
+         //Check if all enemies are cleared and start the next wave or spawn the boss
         if (areEnemiesCleared()) {
              if (isBossSpawned()) {
                  std::cout << "Boss defeated! Game over." << std::endl;
