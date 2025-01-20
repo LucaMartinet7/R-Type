@@ -1,0 +1,9 @@
+<map id="signalHandler" name="signalHandler">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,31,117,56"/>
+<area shape="rect" id="Node000002" href="$de/df5/classRType_1_1Client.html#a35710071bee4deee306183fc670954d5" title=" " alt="" coords="165,31,377,56"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="118,41,152,41,152,46,118,46"/>
+<area shape="rect" id="Node000003" href="$de/df5/classRType_1_1Client.html#a19df5c934d3b589cce1e5a6530f30f49" title=" " alt="" coords="425,5,623,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="377,30,412,27,412,32,378,35"/>
+<area shape="rect" id="Node000004" href="$de/df5/classRType_1_1Client.html#a0c7d4512ad778c1f771de6768954f031" title=" " alt="" coords="451,55,597,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="378,51,438,56,437,62,377,56"/>
+</map>

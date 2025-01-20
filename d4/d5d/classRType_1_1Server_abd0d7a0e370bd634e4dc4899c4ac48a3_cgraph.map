@@ -1,0 +1,11 @@
+<map id="RType::Server::disconnectData" name="RType::Server::disconnectData">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,80,224,105"/>
+<area shape="rect" id="Node000002" href="$d6/d51/classsparse__array.html#a1cdf824b5897fb3ffc857843b37453b2" title=" " alt="" coords="275,5,425,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="154,77,271,39,294,32,296,37,273,45,156,82"/>
+<area shape="rect" id="Node000003" href="$d6/d51/classsparse__array.html#af6749bdfbdc5200a77549f52594107eb" title=" " alt="" coords="281,55,419,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="224,78,268,73,268,79,224,84"/>
+<area shape="rect" id="Node000004" href="$d6/d51/classsparse__array.html#ac0bea77704ce39c1a731dc69de8d9d2d" title=" " alt="" coords="275,104,425,129"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="224,101,262,105,261,110,224,106"/>
+<area shape="rect" id="Node000005" href="$d6/d51/classsparse__array.html#a9437af3619227d4ab973cad2f6bfa818" title=" " alt="" coords="272,154,428,194"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="153,103,279,147,277,152,151,108"/>
+</map>
