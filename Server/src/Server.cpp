@@ -184,8 +184,8 @@ Network::DisconnectData RType::Server::disconnectData(boost::asio::ip::udp::endp
     return data;
 }
 
-void RType::Server::PacketFactory() {
-    for (int playerId = 0; playerId < m_game->getPlayerCount(); ++playerId) {
+void RType::Server::BroadcastPlayerPositions() {
+        for (int playerId = 0; playerId < m_game->getPlayerCount(); ++playerId) {
         try {
             auto [x, y] = m_game->getPlayerPosition(playerId);
             std::string data = std::to_string(playerId) + ";" + std::to_string(x) + ";" + std::to_string(y);
@@ -194,8 +194,10 @@ void RType::Server::PacketFactory() {
             std::cerr << "[ERROR] Invalid player ID: " << playerId << " - " << e.what() << std::endl;
         }
     }
+}
 
-    for (int enemyId = 0; enemyId < m_game->getEnemiesCount(); ++enemyId) {
+void RType::Server::BroadcastEnemyPositions() {
+        for (int enemyId = 0; enemyId < m_game->getEnemiesCount(); ++enemyId) {
         try {
             auto [x, y] = m_game->getEnemyPosition(enemyId);
             std::string data = std::to_string(enemyId + 500) + ";" + std::to_string(x) + ";" + std::to_string(y);
@@ -204,8 +206,10 @@ void RType::Server::PacketFactory() {
             std::cerr << "[ERROR] Invalid enemy ID: " << enemyId << " - " << e.what() << std::endl;
         }
     }
+}
 
-    for (int bulletId = 0; bulletId < m_game->getBulletsCount(); ++bulletId) {
+void RType::Server::BroadcastBulletPositions() {
+        for (int bulletId = 0; bulletId < m_game->getBulletsCount(); ++bulletId) {
         try {
             auto [x, y] = m_game->getBulletPosition(bulletId);
             std::string data = std::to_string(bulletId + 200) + ";" + std::to_string(x) + ";" + std::to_string(y);
@@ -214,8 +218,10 @@ void RType::Server::PacketFactory() {
             std::cerr << "[ERROR] Invalid bullet ID: " << bulletId << " - " << e.what() << std::endl;
         }
     }
+}
 
-    for (int bossId = 0; bossId < m_game->getBossCount(); ++bossId) {
+void RType::Server::BroadcastBossPositions() {
+        for (int bossId = 0; bossId < m_game->getBossCount(); ++bossId) {
         try {
             auto [x, y] = m_game->getBossPosition(bossId);
             std::string data = std::to_string(bossId + 900) + ";" + std::to_string(x) + ";" + std::to_string(y);
