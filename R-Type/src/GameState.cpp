@@ -19,16 +19,6 @@ void GameState::initializeplayers(int numPlayers) {
 void GameState::update() {
     registry.run_systems();
     processPlayerActions();
-
-    if (areEnemiesCleared()) {
-        if (currentWave >= 3 && !isBossSpawned()) {
-            spawnBoss(nextBossId++, 400.0f, 300.0f);
-        } else {
-            startNextWave();
-        }
-    } else {
-        spawnEnemiesRandomly();
-    }
 }
 
 void GameState::run(int numPlayers) {
@@ -37,20 +27,22 @@ void GameState::run(int numPlayers) {
         // Update game state
         update();
 
-        // Check if all enemies are cleared and start the next wave or spawn the boss
-        // if (areEnemiesCleared()) {
-        //     if (isBossSpawned()) {
-        //         std::cout << "Boss defeated! Game over." << std::endl;
-        //         break;
-        //     } else if (currentWave >= 3) {
-        //         spawnBoss(400.0f, 300.0f); // Spawn boss at the center of the screen
-        //     } else {
-        //         startNextWave();
-        //     }
-        // }
+         Check if all enemies are cleared and start the next wave or spawn the boss
+        if (areEnemiesCleared()) {
+             if (isBossSpawned()) {
+                 std::cout << "Boss defeated! Game over." << std::endl;
+                 break;
+             } else if (currentWave >= 3) {
+                 spawnBoss(nextBossId++, 400.0f, 300.0f); // Spawn boss at the center of the screen
+             } else {
+                 startNextWave();
+             }
+        } else {
+            spawnEnemiesRandomly();
+        }
 
-        // Sleep for a short duration to simulate frame time
-        // std::this_thread::sleep_for(std::chrono::milliseconds(16));
+        //Sleep for a short duration to simulate frame time
+        //std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
 }
 
@@ -164,7 +156,7 @@ void GameState::spawnEnemiesRandomly() {
     auto now = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastSpawnTime).count();
 
-    if (elapsed > distTime(rng)) {
+    if (elapsed > distTime(rng) && enemies.size() < 10) {
         float x = distX(rng);
         float y = distY(rng);
         spawnEnemy(nextEnemyId++, x, y);
