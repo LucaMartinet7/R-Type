@@ -5,11 +5,10 @@
 #include <algorithm>
 #include <iostream>
 #include <thread>
-#include <chrono>
 
 GameState::GameState(RType::Server* server)
     : AGame(server), rng(std::random_device()()), distX(0.0f, 800.0f), distY(0.0f, 600.0f),
-      distTime(1000, 5000), currentWave(0), enemiesPerWave(5), m_server(server) {}
+      distTime(1000, 5000), currentWave(0), enemiesPerWave(5), m_server(server), nextEnemyId(0), nextBossId(0) {}
 
 void GameState::initializeplayers(int numPlayers) {
     for (int i = 0; i < numPlayers; ++i) {
@@ -20,6 +19,16 @@ void GameState::initializeplayers(int numPlayers) {
 void GameState::update() {
     registry.run_systems();
     processPlayerActions();
+
+    if (areEnemiesCleared()) {
+        if (currentWave >= 3 && !isBossSpawned()) {
+            spawnBoss(nextBossId++, 400.0f, 300.0f);
+        } else {
+            startNextWave();
+        }
+    } else {
+        spawnEnemiesRandomly();
+    }
 }
 
 void GameState::run(int numPlayers) {
@@ -148,6 +157,18 @@ void GameState::checkCollisions() {
         } else if (isPlayer2 && isEnemy1) {
             registry.kill_entity(entity2);
         }
+    }
+}
+
+void GameState::spawnEnemiesRandomly() {
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastSpawnTime).count();
+
+    if (elapsed > distTime(rng)) {
+        float x = distX(rng);
+        float y = distY(rng);
+        spawnEnemy(nextEnemyId++, x, y);
+        lastSpawnTime = now;
     }
 }
 
