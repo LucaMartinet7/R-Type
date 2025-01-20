@@ -38,10 +38,7 @@ namespace RType {
 
         void setGameState(GameState* game);
         void Broadcast(const std::string& message);
-        void BroadcastPlayerPositions();
-        void BroadcastBulletPositions();
-        void BroadcastEnemyPositions();
-        void BroadcastBossPositions();
+        void PacketFactory();
         Network::ReqConnect reqConnectData(boost::asio::ip::udp::endpoint& client_endpoint);
         Network::DisconnectData disconnectData(boost::asio::ip::udp::endpoint& client_endpoint);
         void handle_game_packet(const Network::Packet& packet, const boost::asio::ip::udp::endpoint& client_endpoint);
