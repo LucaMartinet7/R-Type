@@ -112,27 +112,90 @@ This design ensures modularity, scalability, and ease of maintenance.
 - C++17 or newer.
 - GCC 9.4+, Clang 10+, or MSVC.
 
-### Build Instructions
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/LucaMartinet7/R-Type.git
-   ```
-2. Install dependencies:
-   - **Linux**:
-   - **macOS**:
-   - **Windows**:
-3. Build the project:
-   ```bash
-   mkdir build
-   cd build
-   cmake ..
-   make
-   ```
-4. Run the server and client:
-   ```bash
-   ./r-type_server <port>
-   ./r-type_client <host> <server-port> <client-port>
-   ```
+
+## Build Instructions
+
+## Clone the Repository
+```bash
+git clone https://github.com/LucaMartinet7/R-Type.git
+```
+
+## Install Dependencies
+
+### Linux
+Create a file named `install_dependencies.sh` with the following content:
+```bash
+#!/bin/bash
+
+# Update package lists
+sudo apt update
+
+# Install C++ compiler
+sudo apt install -y g++
+
+# Install CMake
+sudo apt install -y cmake
+
+# Provide a link to Docker installation manual
+echo "For Docker installation, please refer to: https://docs.docker.com/engine/install/"
+
+echo "Dependencies installed successfully."
+```
+
+Make the script executable and run it:
+```bash
+chmod +x install_dependencies.sh
+./install_dependencies.sh
+```
+
+### macOS
+Use Homebrew to install the required dependencies:
+```bash
+brew install cmake g++
+```
+For Docker installation, visit: [Docker for macOS](https://docs.docker.com/docker-for-mac/install/).
+
+### Windows
+Use your preferred package manager to install:
+- Visual Studio with C++ build tools
+- [CMake](https://cmake.org/download/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+## Docker Build
+
+To build the Docker image:
+```bash
+docker build --no-cache -t r-type-server .
+```
+
+Run the container to test:
+```bash
+docker run -p 8080:8080 r-type-server
+```
+
+## Manual Build
+
+If you prefer to build the project manually, follow these steps:
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
+
+## Run the Server and Client
+
+Start the server:
+```bash
+./r-type_server <port>
+```
+
+Start the client:
+```bash
+./r-type_client <host> <server-port> <client-port>
+```
+
+
 
 ## Contribution Guidelines
 - Follow the existing coding standards.
