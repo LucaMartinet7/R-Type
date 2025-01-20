@@ -123,25 +123,7 @@ git clone https://github.com/LucaMartinet7/R-Type.git
 ## Install Dependencies
 
 ### Linux
-Create a file named `install_dependencies.sh` with the following content:
-```bash
-#!/bin/bash
-
-# Update package lists
-sudo apt update
-
-# Install C++ compiler
-sudo apt install -y g++
-
-# Install CMake
-sudo apt install -y cmake
-
-# Provide a link to Docker installation manual
-echo "For Docker installation, please refer to: https://docs.docker.com/engine/install/"
-
-echo "Dependencies installed successfully."
-```
-
+Using the file named `install_dependencies.sh`.
 Make the script executable and run it:
 ```bash
 chmod +x install_dependencies.sh
