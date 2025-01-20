@@ -119,7 +119,7 @@ void RType::Client::destroySprite()
     }
     if (action == 3) {
         for (auto it = sprites_.begin(); it != sprites_.end(); ++it) {
-            if (it->id == -100 || it->id == -101) {
+            if (it->id == -101) {
                 sprites_.erase(it);
             }
         }
@@ -268,66 +268,95 @@ void RType::Client::processEvents(sf::RenderWindow& window)
 {
     sf::Event event;
     while (window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed) {
-            window.close();
-        }
-        if (event.type == sf::Event::MouseButtonPressed) {
-            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-            if (!sprites_.empty()) {
-                if (sprites_.back().id == -101) {
-                    send_queue_.push(createPacket(Network::PacketType::GAME_START));
-                    sprites_.clear();
-                } else {
-                    send_queue_.push(createMousePacket(Network::PacketType::PLAYER_SHOOT, mousePos.x, mousePos.y));
-                    sound_shoot_.play();
-                }
-            }
-        }
-        if (event.type == sf::Event::KeyPressed) {
-            if (event.key.code == sf::Keyboard::Right) {
-                std::cout << "[DEBUG] Sending Right: " << std::endl;
-                send_queue_.push(createPacket(Network::PacketType::PLAYER_RIGHT));
-            }
-            if (event.key.code == sf::Keyboard::Left) {
-                std::cout << "[DEBUG] Sending Left: " << std::endl;
-                send_queue_.push(createPacket(Network::PacketType::PLAYER_LEFT));
-            }
-            if (event.key.code == sf::Keyboard::Up) {
-                std::cout << "[DEBUG] Sending Up: " << std::endl;
-                send_queue_.push(createPacket(Network::PacketType::PLAYER_UP));
-            }
-            if (event.key.code == sf::Keyboard::Down) {
-                std::cout << "[DEBUG] Sending Down: " << std::endl;
-                send_queue_.push(createPacket(Network::PacketType::PLAYER_DOWN));
-            }
-            if (event.key.code == sf::Keyboard::Q) {
-                sendExitPacket();
+        switch (event.type) {
+            case sf::Event::Closed:
                 window.close();
+                break;
+            case sf::Event::MouseButtonPressed: {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                if (!sprites_.empty()) {
+                    if (sprites_.back().id == -101) {
+                        send_queue_.push(createPacket(Network::PacketType::GAME_START));
+                        sprites_.pop_back();
+                    } else {
+                        send_queue_.push(createMousePacket(Network::PacketType::PLAYER_SHOOT, mousePos.x, mousePos.y));
+                        sound_shoot_.play();
+                    }
+                }
+                break;
             }
-            if (event.key.code == sf::Keyboard::M) {
-                std::cout << "[DEBUG] Sending M: " << std::endl;
-                send_queue_.push(createPacket(Network::PacketType::OPEN_MENU));
-            }
-            if (event.key.code == sf::Keyboard::Space) {
-                std::cout << "[DEBUG] Sending Space: " << std::endl;
-                send_queue_.push(createPacket(Network::PacketType::PLAYER_SHOOT));
-            }
-            if (event.key.code == sf::Keyboard::Escape) {
-                initLobbySprites(window);
-                send_queue_.push(createPacket(Network::PacketType::GAME_END));
-            }
-            if (event.key.code == sf::Keyboard::Num1) {
-                float newVolume = sound_background_.getVolume() - 5;
-                if (newVolume < 0) newVolume = 0;
-                sound_background_.setVolume(newVolume);
-            }
-            if (event.key.code == sf::Keyboard::Num2) {
-                float newVolume = sound_background_.getVolume() + 5;
-                if (newVolume > 100) newVolume = 100;
-                sound_background_.setVolume(newVolume);
-            }
+            case sf::Event::KeyPressed:
+                handleKeyPress(event.key.code, window);
+                break;
+
+            default:
+                break;
         }
     }
+}
+
+void RType::Client::handleKeyPress(sf::Keyboard::Key key, sf::RenderWindow& window)
+{
+    switch (key) {
+        case sf::Keyboard::Right:
+            std::cout << "[DEBUG] Sending Right: " << std::endl;
+            send_queue_.push(createPacket(Network::PacketType::PLAYER_RIGHT));
+            break;
+
+        case sf::Keyboard::Left:
+            std::cout << "[DEBUG] Sending Left: " << std::endl;
+            send_queue_.push(createPacket(Network::PacketType::PLAYER_LEFT));
+            break;
+
+        case sf::Keyboard::Up:
+            std::cout << "[DEBUG] Sending Up: " << std::endl;
+            send_queue_.push(createPacket(Network::PacketType::PLAYER_UP));
+            break;
+
+        case sf::Keyboard::Down:
+            std::cout << "[DEBUG] Sending Down: " << std::endl;
+            send_queue_.push(createPacket(Network::PacketType::PLAYER_DOWN));
+            break;
+
+        case sf::Keyboard::Q:
+            sendExitPacket();
+            window.close();
+            break;
+
+        case sf::Keyboard::M:
+            std::cout << "[DEBUG] Sending M: " << std::endl;
+            send_queue_.push(createPacket(Network::PacketType::OPEN_MENU));
+            break;
+
+        case sf::Keyboard::Space:
+            std::cout << "[DEBUG] Sending Space: " << std::endl;
+            send_queue_.push(createPacket(Network::PacketType::PLAYER_SHOOT));
+            break;
+
+        case sf::Keyboard::Escape:
+            initLobbySprites(window);
+            send_queue_.push(createPacket(Network::PacketType::GAME_END));
+            break;
+
+        case sf::Keyboard::Num1:
+            adjustVolume(-5);
+            break;
+
+        case sf::Keyboard::Num2:
+            adjustVolume(5);
+            break;
+
+        default:
+            break;
+    }
+}
+
+void RType::Client::adjustVolume(float change)
+{
+    float newVolume = sound_background_.getVolume() + change;
+    if (newVolume < 0) newVolume = 0;
+    if (newVolume > 100) newVolume = 100;
+    sound_background_.setVolume(newVolume);
 }
 
 void RType::Client::initLobbySprites(sf::RenderWindow& window)

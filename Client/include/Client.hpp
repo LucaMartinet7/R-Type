@@ -52,10 +52,9 @@ namespace RType {
         void start_receive();
         int main_loop();
         std::string createPacket(Network::PacketType type);
-
-        void sendExitPacket() {
-            send(createPacket(Network::PacketType::DISCONNECTED));
-        }
+        void adjustVolume(float change);
+        void handleKeyPress(sf::Keyboard::Key key, sf::RenderWindow& window);
+        void sendExitPacket() { send(createPacket(Network::PacketType::DISCONNECTED)); }
 
     private:
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
