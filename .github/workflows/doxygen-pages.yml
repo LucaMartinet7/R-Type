@@ -25,5 +25,5 @@ jobs:
         with:
           personal_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: ./html
+          publish_dir: ./docs/html
           commit_message: "Deploy Doxygen docs to GitHub Pages"
