@@ -38,6 +38,7 @@ void AGame::registerComponents()
 
 void AGame::addPlayerAction(int playerId, int actionId) {
     std::cout << "Player " << playerId << " performed action " << actionId << std::endl;
+    std::lock_guard<std::mutex> lock(playerActionsMutex);
     playerActions.emplace_back(playerId, actionId);
 }
 
@@ -57,6 +58,7 @@ void AGame::processPlayerActions() {
         }
         // Handle other actions or ignore unknown action IDs
     }
+    std::lock_guard<std::mutex> lock(playerActionsMutex);
     deletePlayerAction();
 }
 
