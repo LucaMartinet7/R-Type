@@ -30,6 +30,7 @@
 #include "Velocity.hpp"
 #include "Registry.hpp"
 #include <vector>
+#include <mutex>
 
 namespace RType {
     class Server;
@@ -44,6 +45,7 @@ class AGame : public IGame {
         std::vector<Boss> bosses;
         Registry registry;
         RType::Server* m_server;
+        std::mutex playerActionsMutex;
 
     public:
         AGame(RType::Server* server);
