@@ -32,9 +32,18 @@ var index =
       [ "Error Handling", "index.html#autotoc_md36", null ]
     ] ],
     [ "Getting Started", "index.html#autotoc_md37", [
-      [ "Requirements", "index.html#autotoc_md38", null ],
-      [ "Build Instructions", "index.html#autotoc_md39", null ]
+      [ "Requirements", "index.html#autotoc_md38", null ]
     ] ],
-    [ "Contribution Guidelines", "index.html#autotoc_md40", null ],
-    [ "Contact", "index.html#autotoc_md41", null ]
+    [ "Build Instructions", "index.html#autotoc_md39", null ],
+    [ "Clone the Repository", "index.html#autotoc_md40", null ],
+    [ "Install Dependencies", "index.html#autotoc_md41", [
+      [ "Linux", "index.html#autotoc_md42", null ],
+      [ "macOS", "index.html#autotoc_md43", null ],
+      [ "Windows", "index.html#autotoc_md44", null ]
+    ] ],
+    [ "Docker Build", "index.html#autotoc_md45", null ],
+    [ "Manual Build", "index.html#autotoc_md46", null ],
+    [ "Run the Server and Client", "index.html#autotoc_md47", null ],
+    [ "Contribution Guidelines", "index.html#autotoc_md48", null ],
+    [ "Contact", "index.html#autotoc_md49", null ]
 ];

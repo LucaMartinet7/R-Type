@@ -10,5 +10,5 @@ var searchData=
   ['getting_20started_7',['Getting Started',['../index.html#autotoc_md37',1,'']]],
   ['gettype_8',['getType',['../df/df7/classRType_1_1NtsException.html#a85501f8927fc84a0438e33f2b2bebe0c',1,'RType::NtsException']]],
   ['global_5fclient_9',['global_client',['../d7/d02/Client_2main_8cpp.html#a0b17365c109b25086058ef7682f9beaa',1,'main.cpp']]],
-  ['guidelines_10',['Contribution Guidelines',['../index.html#autotoc_md40',1,'']]]
+  ['guidelines_10',['Contribution Guidelines',['../index.html#autotoc_md48',1,'']]]
 ];

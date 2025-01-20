@@ -245,34 +245,50 @@ Requirements</h2>
 <li>C++17 or newer.</li>
 <li>GCC <a class="el" href="d6/d51/classsparse__array.html#a9437af3619227d4ab973cad2f6bfa818">9.4</a>+, Clang 10+, or MSVC.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md39"></a>
-Build Instructions</h2>
-<ol type="1">
-<li>Clone the repository: <div class="fragment"><div class="line">git clone https://github.com/LucaMartinet7/R-Type.git</div>
-</div><!-- fragment --></li>
-<li>Install dependencies:<ul>
-<li><b>Linux</b>:</li>
-<li><b>macOS</b>:</li>
-<li><b>Windows</b>:</li>
+<h1><a class="anchor" id="autotoc_md39"></a>
+Build Instructions</h1>
+<h1><a class="anchor" id="autotoc_md40"></a>
+Clone the Repository</h1>
+<div class="fragment"><div class="line">git clone https://github.com/LucaMartinet7/R-Type.git</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md41"></a>
+Install Dependencies</h1>
+<h2><a class="anchor" id="autotoc_md42"></a>
+Linux</h2>
+<p>Using the file named <code><a class="el" href="d6/d51/classsparse__array.html#a9437af3619227d4ab973cad2f6bfa818">install_dependencies.sh</a></code>. Make the script executable and run it: </p><div class="fragment"><div class="line">chmod +x install_dependencies.sh</div>
+<div class="line">./install_dependencies.sh</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md43"></a>
+macOS</h2>
+<p>Use Homebrew to install the required dependencies: </p><div class="fragment"><div class="line">brew install cmake g++</div>
+</div><!-- fragment --><p> For Docker installation, visit: <a href="https://docs.docker.com/docker-for-mac/install/">Docker for macOS</a>.</p>
+<h2><a class="anchor" id="autotoc_md44"></a>
+Windows</h2>
+<p>Use your preferred package manager to install:</p><ul>
+<li>Visual Studio with C++ build tools</li>
+<li><a href="https://cmake.org/download/">CMake</a></li>
+<li><a href="https://www.docker.com/products/docker-desktop/">Docker Desktop</a>.</li>
 </ul>
-</li>
-<li>Build the project: <div class="fragment"><div class="line">mkdir build</div>
+<h1><a class="anchor" id="autotoc_md45"></a>
+Docker Build</h1>
+<p>To build the Docker image: </p><div class="fragment"><div class="line">docker build --no-cache -t r-type-server .</div>
+</div><!-- fragment --><p>Run the container to test: </p><div class="fragment"><div class="line">docker run -p 8080:8080 r-type-server</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md46"></a>
+Manual Build</h1>
+<p>If you prefer to build the project manually, follow these steps: </p><div class="fragment"><div class="line">mkdir build</div>
 <div class="line">cd build</div>
 <div class="line">cmake ..</div>
 <div class="line">make</div>
-</div><!-- fragment --></li>
-<li>Run the server and client: <div class="fragment"><div class="line">./r-type_server &lt;port&gt;</div>
-<div class="line">./r-type_client &lt;host&gt; &lt;server-port&gt; &lt;client-port&gt;</div>
-</div><!-- fragment --></li>
-</ol>
-<h1><a class="anchor" id="autotoc_md40"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md47"></a>
+Run the Server and Client</h1>
+<p>Start the server: </p><div class="fragment"><div class="line">./r-type_server &lt;port&gt;</div>
+</div><!-- fragment --><p>Start the client: </p><div class="fragment"><div class="line">./r-type_client &lt;host&gt; &lt;server-port&gt; &lt;client-port&gt;</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md48"></a>
 Contribution Guidelines</h1>
 <ul>
 <li>Follow the existing coding standards.</li>
 <li>Use meaningful commit messages.</li>
 <li>Discuss significant changes via issues before creating pull requests.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md41"></a>
+<h1><a class="anchor" id="autotoc_md49"></a>
 Contact</h1>
 <ul>
 <li>Email: <a href="#" onclick="location.href='mai'+'lto:'+'eti'+'en'+'ne.'+'na'+'mur'+'@e'+'pit'+'ec'+'h.e'+'u'; return false;">etien<span class="obfuscator">.nosp@m.</span>ne.n<span class="obfuscator">.nosp@m.</span>amur@<span class="obfuscator">.nosp@m.</span>epit<span class="obfuscator">.nosp@m.</span>ech.e<span class="obfuscator">.nosp@m.</span>u</a></li>

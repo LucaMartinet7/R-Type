@@ -1,8 +1,9 @@
 var searchData=
 [
-  ['value_5ftype_0',['value_type',['../d6/d51/classsparse__array.html#ab7403a6f935fa66034cce5bdcf49a9fc',1,'sparse_array']]],
-  ['velocity_1',['Velocity',['../dd/dd5/structVelocity.html',1,'']]],
-  ['velocity_2ehpp_2',['Velocity.hpp',['../d5/dad/Velocity_8hpp.html',1,'']]],
-  ['vx_3',['vx',['../dd/dd5/structVelocity.html#a2592d4678c041df7b39ae7663ec0ed5d',1,'Velocity']]],
-  ['vy_4',['vy',['../dd/dd5/structVelocity.html#ae2a7111ea8910254dce8882f3ab760a3',1,'Velocity']]]
+  ['technical_20details_0',['Technical Details',['../index.html#autotoc_md33',1,'']]],
+  ['the_20repository_1',['Clone the Repository',['../index.html#autotoc_md40',1,'']]],
+  ['the_20server_20and_20client_2',['Run the Server and Client',['../index.html#autotoc_md47',1,'']]],
+  ['throws_2ehpp_3',['Throws.hpp',['../d3/d5f/Throws_8hpp.html',1,'']]],
+  ['type_20ecs_4',['README: R-Type ECS',['../de/d11/md_Documentation_2ECS__README.html',1,'']]],
+  ['type_20project_5',['R-Type Project',['../index.html',1,'']]]
 ];
